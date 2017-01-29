@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="ly.count.android.demo">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/icon"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <intent-filter android:label="@string/deep_link">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- Accepts URIs that begin with "countly://test” -->
+                <!-- test with adb shell am start -a android.intent.action.VIEW -d "countly://test" ly.count.android.demo  -->
+                <data android:scheme="countly"
+                      android:host="test" />
+
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ActivityExampleAPM"
+            android:label="@string/activity_name_apm" >
+        </activity>
+
+        <activity
+            android:name=".ActivityExampleCrashReporting"
+            android:label="@string/activity_name_crash_reporting" >
+        </activity>
+
+        <activity
+            android:name=".ActivityExampleCustomEvents"
+            android:label="@string/activity_name_custom_events" >
+        </activity>
+
+        <activity
+            android:name=".ActivityExampleMultiThreading"
+            android:label="@string/activity_name_multithreading" >
+        </activity>
+
+        <activity
+            android:name=".ActivityExampleOthers"
+            android:label="@string/activity_name_others" >
+        </activity>
+
+        <activity
+            android:name=".ActivityExampleUserDetails"
+            android:label="@string/activity_name_user_detail" >
+        </activity>
+
+        <activity
+            android:name=".ActivityExampleViewTracking"
+            android:label="@string/activity_name_view_tracking" >
+        </activity>
+
+        <service android:name="org.openudid.OpenUDID_service" android:exported="false">
+            <intent-filter>
+                <action android:name="org.OpenUDID.GETUDID" />
+            </intent-filter>
+        </service>
+
+        <receiver android:name="ly.count.android.sdk.ReferrerReceiver" android:exported="true">
+            <intent-filter>
+                <action android:name="com.android.vending.INSTALL_REFERRER" />
+            </intent-filter>
+        </receiver>
+
+    </application>
+
+</manifest>

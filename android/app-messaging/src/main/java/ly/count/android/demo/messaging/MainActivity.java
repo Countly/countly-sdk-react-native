@@ -8,25 +8,31 @@ import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import ly.count.android.sdk.Countly;
 import ly.count.android.sdk.messaging.CountlyMessaging;
 import ly.count.android.sdk.messaging.Message;
+import me.leolin.shortcutbadger.ShortcutBadgeException;
+import me.leolin.shortcutbadger.ShortcutBadger;
 
 public class MainActivity extends Activity {
 
     private BroadcastReceiver messageReceiver;
 
-    /** Called when the activity is first created. */
+    /** You should use try.count.ly instead of YOUR_SERVER for the line below if you are using Countly trial service */
+    final String COUNTLY_SERVER_URL = "YOUR_SERVER";
+    final String COUNTLY_APP_KEY = "YOUR_APP_KEY";
+    final String COUNTLY_MESSAGING_PROJECT_ID = "YOUR_PROJECT_ID(NUMBERS ONLY)";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /** You should use try.count.ly instead of YOUR_SERVER for the line below if you are using Countly trial service */
         Countly.sharedInstance()
-                .init(this, "YOUR_SERVER", "YOUR_APP_KEY")
-                .initMessaging(this, MainActivity.class, "YOUR_PROJECT_ID(NUMBERS ONLY)", Countly.CountlyMessagingMode.TEST);
+                .init(this, COUNTLY_SERVER_URL, COUNTLY_APP_KEY)
+                .initMessaging(this, MainActivity.class, COUNTLY_MESSAGING_PROJECT_ID, Countly.CountlyMessagingMode.TEST);
 //                .setLocation(LATITUDE, LONGITUDE);
 //                .setLoggingEnabled(true);
 
@@ -72,6 +78,22 @@ public class MainActivity extends Activity {
             public void onReceive(Context context, Intent intent) {
                 Message message = intent.getParcelableExtra(CountlyMessaging.BROADCAST_RECEIVER_ACTION_MESSAGE);
                 Log.i("CountlyActivity", "Got a message with data: " + message.getData());
+
+                //Badge related things
+                Bundle data = message.getData();
+                String badgeString = data.getString("badge");
+                try {
+                    if(badgeString != null) {
+                        int badgeCount = Integer.parseInt(badgeString);
+
+                        boolean succeded = ShortcutBadger.applyCount(getApplicationContext(), badgeCount);
+                        if (!succeded) {
+                            Toast.makeText(getApplicationContext(), "Unable to put badge", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                } catch (NumberFormatException exception) {
+                    Toast.makeText(getApplicationContext(), "Unable to parse given badge number", Toast.LENGTH_SHORT).show();
+                }
             }
         };
         IntentFilter filter = new IntentFilter();

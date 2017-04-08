@@ -61,14 +61,14 @@ public class CountlyReactNative extends ReactContextBaseJavaModule {
 
         if(args.length() == 2){
             Countly.sharedInstance()
-                .init(context, serverUrl, appKey,null,DeviceId.Type.OPEN_UDID);
+                .init(_reactContext, serverUrl, appKey,null,DeviceId.Type.OPEN_UDID);
         }else if(args.length() == 3){
             String yourDeviceID = args.getString(2);
             Countly.sharedInstance()
-                .init(context, serverUrl, appKey,yourDeviceID,null);
+                .init(_reactContext, serverUrl, appKey,yourDeviceID,null);
         }else{
             Countly.sharedInstance()
-                .init(context, serverUrl, appKey,null,DeviceId.Type.ADVERTISING_ID);
+                .init(_reactContext, serverUrl, appKey,null,DeviceId.Type.ADVERTISING_ID);
         }
 		Countly.sharedInstance().onStart(getCurrentActivity());
 	}

@@ -58,18 +58,18 @@ public class CountlyReactNative extends ReactContextBaseJavaModule {
 	public void init(ReadableArray args){
         String serverUrl = args.getString(0);
         String appKey = args.getString(1);
-
-        if(args.length() == 2){
-            Countly.sharedInstance()
-                .init(_reactContext, serverUrl, appKey,null,DeviceId.Type.OPEN_UDID);
-        }else if(args.length() == 3){
-            String yourDeviceID = args.getString(2);
-            Countly.sharedInstance()
-                .init(_reactContext, serverUrl, appKey,yourDeviceID,null);
-        }else{
-            Countly.sharedInstance()
-                .init(_reactContext, serverUrl, appKey,null,DeviceId.Type.ADVERTISING_ID);
-        }
+        Countly.sharedInstance().init(_reactContext, serverUrl, appKey);
+        // if(args.size() == 2){
+        //     Countly.sharedInstance()
+        //         .init(_reactContext, serverUrl, appKey,null,DeviceId.Type.OPEN_UDID);
+        // }else if(args.size() == 3){
+        //     String yourDeviceID = args.getString(2);
+        //     Countly.sharedInstance()
+        //         .init(_reactContext, serverUrl, appKey,yourDeviceID,null);
+        // }else{
+        //     Countly.sharedInstance()
+        //         .init(_reactContext, serverUrl, appKey,null,DeviceId.Type.ADVERTISING_ID);
+        // }
 		Countly.sharedInstance().onStart(getCurrentActivity());
 	}
 
@@ -169,7 +169,7 @@ public class CountlyReactNative extends ReactContextBaseJavaModule {
             int eventCount= Integer.parseInt(args.getString(2));
             float eventSum= new Float(args.getString(3)).floatValue();
             HashMap<String, String> segmentation = new HashMap<String, String>();
-            for(int i=4,il=args.length();i<il;i+=2){
+            for(int i=4,il=args.size();i<il;i+=2){
                 segmentation.put(args.getString(i), args.getString(i+1));
             }
             Countly.sharedInstance().endEvent(eventName, segmentation, eventCount,eventSum);
@@ -279,27 +279,7 @@ public class CountlyReactNative extends ReactContextBaseJavaModule {
         Countly.userData.save();
     }
 
-    @ReactMethod
-    public void userData_setOnce(ReadableArray args){
-        String keyName = args.getString(0);
-        String minScore = args.getString(1);
-        Countly.userData.setOnce(keyName, minScore);
-        Countly.userData.save();
-    }
 
-    @ReactMethod
-    public void userData_setOnce(ReadableArray args){
-        String keyName = args.getString(0);
-        String minScore = args.getString(1);
-        Countly.userData.setOnce(keyName, minScore);
-        Countly.userData.save();
-    }
-
-    @ReactMethod
-    public void recordView(ReadableArray args){
-        String viewName = args.getString(0);
-        Countly.sharedInstance().recordView(viewName);
-    }
 }
 
 

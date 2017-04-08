@@ -279,6 +279,13 @@ public class CountlyReactNative extends ReactContextBaseJavaModule {
         Countly.userData.save();
     }
 
+    @ReactMethod
+    public void userData_setOnce(ReadableArray args){
+        String keyName = args.getString(0);
+        String minScore = args.getString(1);
+        Countly.userData.setOnce(keyName, minScore);
+        Countly.userData.save();
+    }
 
 }
 

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { AppRegistry, Text, Button, View, Image } from 'react-native';
+import { AppRegistry, Text, Button, ScrollView, Image } from 'react-native';
 import Countly from './Countly';
 
-Countly.init("https://try.count.ly","0e8a00e8c01395a0af8be0e55da05a404bb23c3e");
+Countly.init("https://try.count.ly","111dcd50d5f4a43a23202330cec19c069a68bc19");
 class AwesomeProject extends Component {
     constructor(props) {
         super(props);
@@ -24,7 +24,7 @@ class AwesomeProject extends Component {
       options.phone = "+91 812 840 2946";
       options.picture = "http://www.trinisofttechnologies.com/images/logo.png";
       options.picturePath = "";
-      options.gender = "Male";
+      options.gender = "M";
       options.byear = 1989;
       Countly.setUserData(options);
     };
@@ -105,7 +105,7 @@ class AwesomeProject extends Component {
 
     render() {
         return (
-          <View>
+          <ScrollView>
             <Text style={[{fontSize:25, textAlign: 'center'}]}>Countly Cordova Demo App</Text>
             <Image source={{uri: 'https://count.ly/wp-content/uploads/2014/10/countly_logo_color.png'}} style={{width: 300, height: 88}} />
             < Button onPress = { this.onStart } title = "Start" color = "#5bbd72"> </Button>
@@ -151,7 +151,7 @@ class AwesomeProject extends Component {
             <Text style={[{textAlign: 'center'}]}>Other Methods End</Text>
 
             
-          </View>
+          </ScrollView>
         );
     }
 }

@@ -7,7 +7,7 @@
 
 ## About this SDK
 
-This repository includes the Countly React Native SDK. See [Countly React Native SDK](http://resources.count.ly) documentation for installation.
+This repository includes the Countly React Native SDK. See [Countly React Native SDK](http://resources.count.ly/docs/react-native) documentation for installation.
 
 ### Other Github resources ###
 
@@ -31,44 +31,3 @@ If you liked Countly (just like we do!), [why not use one of our badges](https:/
 
 Have any questions? Visit [http://community.count.ly](http://community.count.ly "Countly Community Forum").
 
-# Getting Started
-=================
-
-```cmd
-react-native init AwesomeProject
-cd AwesomeProject
-adb reverse tcp:8081 tcp:8081
-react-native run-android
-npm start
-```
-
-# Plugin Installation Guide
-===========================
-
-```cmd
-npm install https://github.com/Countly/countly-sdk-react-native.git
-
-# go to android/settings.gradle
-# and add these 2 lines
-
-include ':countly-sdk-react-native'
-project(':countly-sdk-react-native').projectDir = new File(rootProject.projectDir,   './node_modules/countly-sdk-react-native/android/sdk')
-
-# Add this line in android/app/build.gradle inside dependencies {}
-compile project(':countly-sdk-react-native')
-
-# go to android/src/main/java/com/{{projectname}}/MainApplication.java
-# import this below line
-import ly.count.android.sdk.CountlyReactNativePackage;
-
-# and add this line below new MainReactPackage(),
-new CountlyReactNativePackage()
-
-# So it should look like this in the end
-protected List<ReactPackage> getPackages() {
-    return Arrays.<ReactPackage>asList(
-        new MainReactPackage(),
-        new CountlyReactNativePackage()
-    );
-}
-```

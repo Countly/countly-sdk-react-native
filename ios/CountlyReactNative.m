@@ -14,11 +14,12 @@ CountlyConfig* config = nil;
 
 @implementation CountlyReactNative
 
-  RCT_EXPORT_MODULE();
+RCT_EXPORT_MODULE();
 
 
-- (void)echo:(NSArray*)arguments
+RCT_EXPORT_METHOD(echo:(NSArray*)arguments)
 {
+  RCTLogInfo(@"Nicolson look here this is called");
 }
 
 - (void)init:(NSArray*)arguments
@@ -47,7 +48,7 @@ CountlyConfig* config = nil;
       NSString* countString = [arguments objectAtIndex:2];
       int countInt = [countString intValue];
       [[Countly sharedInstance] recordEvent:eventName count:countInt];
-
+      
     }
     else if ([eventType  isEqual: @"eventWithSum"]){
       NSString* eventName = [arguments objectAtIndex:1];
@@ -86,24 +87,24 @@ CountlyConfig* config = nil;
   } else {
   }
   
-
+  
 }
 - (void)recordView:(NSArray*)arguments
 {
-
+  
   NSString* recordView = [arguments objectAtIndex:0];
   [Countly.sharedInstance reportView:recordView];
-
+  
 }
 - (void)setloggingenabled:(NSArray*)arguments
 {
-
-
+  
+  
 }
 
 - (void)setuserdata:(NSArray*)arguments
 {
-
+  
   NSString* name = [arguments objectAtIndex:0];
   NSString* username = [arguments objectAtIndex:1];
   NSString* email = [arguments objectAtIndex:2];
@@ -136,7 +137,7 @@ CountlyConfig* config = nil;
   //                                             kCLYUserUsername: username,
   //                                             kCLYUserPicture: picture
   //                                                          }];
-
+  
 }
 
 
@@ -149,30 +150,30 @@ CountlyConfig* config = nil;
   if(mode == 1){
     // [[CountlyConnectionQueue sharedInstance] setStartedWithTest:YES];
   }
-//  CountlyPushNotifications.sharedInstance.token = token;
-//  [CountlyPushNotifications.sharedInstance sendToken];
+  //  CountlyPushNotifications.sharedInstance.token = token;
+  //  [CountlyPushNotifications.sharedInstance sendToken];
   // [Countly.sharedInstance didRegisterForRemoteNotificationsWithDeviceToken:tokenByte];
   
   // [[CountlyConnectionQueue sharedInstance] tokenSession:token];
   
-
-
+  
+  
 }
 
 - (void)start:(NSArray*)arguments
 {
   [Countly.sharedInstance resume];
   
-
-
+  
+  
 }
 
 - (void)stop:(NSArray*)arguments
 {
   [Countly.sharedInstance suspend];
   
-
- 
+  
+  
 }
 
 - (void)changeDeviceId:(NSArray*)arguments
@@ -180,14 +181,14 @@ CountlyConfig* config = nil;
   NSString* newDeviceID = [arguments objectAtIndex:0];
   [Countly.sharedInstance setNewDeviceID:newDeviceID onServer:YES];
   
-
-
+  
+  
 }
 
 - (void)setHttpPostForced:(NSArray*)arguments
 {
-
-
+  
+  
 }
 
 - (void)enableParameterTamperingProtection:(NSArray*)arguments
@@ -195,8 +196,8 @@ CountlyConfig* config = nil;
   NSString* salt = [arguments objectAtIndex:0];
   config.secretSalt = salt;
   
-
-
+  
+  
 }
 
 - (void)startEvent:(NSArray*)arguments
@@ -204,14 +205,14 @@ CountlyConfig* config = nil;
   NSString* eventName = [arguments objectAtIndex:0];
   [Countly.sharedInstance startEvent:eventName];
   
-
-
+  
+  
 }
 
 - (void)endEvent:(NSArray*)arguments
 {
   NSString* eventType = [arguments objectAtIndex:0];
-
+  
   
   if ([eventType  isEqual: @"event"]) {
     NSString* eventName = [arguments objectAtIndex:1];
@@ -232,7 +233,7 @@ CountlyConfig* config = nil;
   else{
   }
   
-
+  
 }
 
 - (void)setLocation:(NSArray*)arguments
@@ -245,16 +246,16 @@ CountlyConfig* config = nil;
   
   config.location = (CLLocationCoordinate2D){latitudeDouble,longitudeDouble};
   
-
-
+  
+  
 }
 
 - (void)enableCrashReporting:(NSArray*)arguments
 {
   config.features = @[CLYCrashReporting];
   
-
-
+  
+  
 }
 
 - (void)addCrashLog:(NSArray*)arguments
@@ -263,8 +264,8 @@ CountlyConfig* config = nil;
   NSString* messagingMode = [arguments objectAtIndex:1];
   int mode = [messagingMode intValue];
   NSData *tokenByte = [token dataUsingEncoding:NSUTF8StringEncoding];
-
-
+  
+  
 }
 
 - (void)userData_setProperty:(NSArray*)arguments
@@ -275,8 +276,8 @@ CountlyConfig* config = nil;
   [Countly.user set:keyName value:keyValue];
   [Countly.user save];
   
-
-
+  
+  
 }
 
 - (void)userData_increment:(NSArray*)arguments
@@ -286,8 +287,8 @@ CountlyConfig* config = nil;
   [Countly.user increment:keyName];
   [Countly.user save];
   
-
-
+  
+  
 }
 
 - (void)userData_incrementBy:(NSArray*)arguments
@@ -299,8 +300,8 @@ CountlyConfig* config = nil;
   [Countly.user incrementBy:keyName value:keyValueInteger];
   [Countly.user save];
   
-
-
+  
+  
 }
 
 - (void)userData_multiply:(NSArray*)arguments
@@ -312,8 +313,8 @@ CountlyConfig* config = nil;
   [Countly.user multiply:keyName value:keyValueInteger];
   [Countly.user save];
   
-
-
+  
+  
 }
 
 - (void)userData_saveMax:(NSArray*)arguments
@@ -325,8 +326,8 @@ CountlyConfig* config = nil;
   [Countly.user max:keyName value:keyValueInteger];
   [Countly.user save];
   
-
-
+  
+  
 }
 
 - (void)userData_saveMin:(NSArray*)arguments
@@ -338,8 +339,8 @@ CountlyConfig* config = nil;
   [Countly.user min:keyName value:keyValueInteger];
   [Countly.user save];
   
-
-
+  
+  
 }
 
 - (void)userData_setOnce:(NSArray*)arguments
@@ -350,8 +351,8 @@ CountlyConfig* config = nil;
   [Countly.user setOnce:keyName value:keyValue];
   [Countly.user save];
   
-
-
+  
+  
 }
 
 - (void)demo:(NSArray*)arguments
@@ -360,8 +361,8 @@ CountlyConfig* config = nil;
   NSString* messagingMode = [arguments objectAtIndex:1];
   int mode = [messagingMode intValue];
   NSData *tokenByte = [token dataUsingEncoding:NSUTF8StringEncoding];
-
-
+  
+  
 }
 
 @end

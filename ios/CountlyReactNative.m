@@ -160,7 +160,7 @@ RCT_EXPORT_METHOD(echo:(NSArray*)arguments)
   
 }
 
-- (void)start:(NSArray*)arguments
+- (void)start
 {
   [Countly.sharedInstance resume];
   
@@ -168,7 +168,7 @@ RCT_EXPORT_METHOD(echo:(NSArray*)arguments)
   
 }
 
-- (void)stop:(NSArray*)arguments
+- (void)stop
 {
   [Countly.sharedInstance suspend];
   

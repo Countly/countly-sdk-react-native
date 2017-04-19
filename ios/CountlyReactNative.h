@@ -9,8 +9,8 @@
 - (void)setloggingenabled:(NSArray*)arguments;
 - (void)setuserdata:(NSArray*)arguments;
 - (void)onregistrationid:(NSArray*)arguments;
-- (void)start:(NSArray*)arguments;
-- (void)stop:(NSArray*)arguments;
+- (void)start;
+- (void)stop;
 - (void)recordView:(NSArray*)arguments;
 
 - (void)setHttpPostForced:(NSArray*)arguments;

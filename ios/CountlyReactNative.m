@@ -22,7 +22,7 @@ RCT_EXPORT_METHOD(echo:(NSArray*)arguments)
   RCTLogInfo(@"Nicolson look here this is called");
 }
 
-- (void)init:(NSArray*)arguments
+RCT_EXPORT_METHOD(init:(NSArray*)arguments)
 {
   NSString* serverurl = [arguments objectAtIndex:0];
   NSString* appkey = [arguments objectAtIndex:1];
@@ -39,7 +39,7 @@ RCT_EXPORT_METHOD(echo:(NSArray*)arguments)
   
 }
 
-- (void)event:(NSArray*)arguments
+RCT_EXPORT_METHOD(event:(NSArray*)arguments)
 {
   NSString* eventType = [arguments objectAtIndex:0];
   if (eventType != nil && [eventType length] > 0) {
@@ -89,20 +89,20 @@ RCT_EXPORT_METHOD(echo:(NSArray*)arguments)
   
   
 }
-- (void)recordView:(NSArray*)arguments
+RCT_EXPORT_METHOD(recordView:(NSArray*)arguments)
 {
   
   NSString* recordView = [arguments objectAtIndex:0];
   [Countly.sharedInstance reportView:recordView];
   
 }
-- (void)setloggingenabled:(NSArray*)arguments
+RCT_EXPORT_METHOD(setloggingenabled:(NSArray*)arguments)
 {
   
   
 }
 
-- (void)setuserdata:(NSArray*)arguments
+RCT_EXPORT_METHOD(setuserdata:(NSArray*)arguments)
 {
   
   NSString* name = [arguments objectAtIndex:0];
@@ -141,7 +141,7 @@ RCT_EXPORT_METHOD(echo:(NSArray*)arguments)
 }
 
 
-- (void)onregistrationid:(NSArray*)arguments
+RCT_EXPORT_METHOD(onregistrationid:(NSArray*)arguments)
 {
   NSString* token = [arguments objectAtIndex:0];
   NSString* messagingMode = [arguments objectAtIndex:1];
@@ -160,7 +160,7 @@ RCT_EXPORT_METHOD(echo:(NSArray*)arguments)
   
 }
 
-- (void)start
+RCT_EXPORT_METHOD(start)
 {
   [Countly.sharedInstance resume];
   
@@ -168,7 +168,7 @@ RCT_EXPORT_METHOD(echo:(NSArray*)arguments)
   
 }
 
-- (void)stop
+RCT_EXPORT_METHOD(stop)
 {
   [Countly.sharedInstance suspend];
   
@@ -176,7 +176,7 @@ RCT_EXPORT_METHOD(echo:(NSArray*)arguments)
   
 }
 
-- (void)changeDeviceId:(NSArray*)arguments
+RCT_EXPORT_METHOD(changeDeviceId:(NSArray*)arguments)
 {
   NSString* newDeviceID = [arguments objectAtIndex:0];
   [Countly.sharedInstance setNewDeviceID:newDeviceID onServer:YES];
@@ -185,13 +185,13 @@ RCT_EXPORT_METHOD(echo:(NSArray*)arguments)
   
 }
 
-- (void)setHttpPostForced:(NSArray*)arguments
+RCT_EXPORT_METHOD(setHttpPostForced:(NSArray*)arguments)
 {
   
   
 }
 
-- (void)enableParameterTamperingProtection:(NSArray*)arguments
+RCT_EXPORT_METHOD(enableParameterTamperingProtection:(NSArray*)arguments)
 {
   NSString* salt = [arguments objectAtIndex:0];
   config.secretSalt = salt;
@@ -200,7 +200,7 @@ RCT_EXPORT_METHOD(echo:(NSArray*)arguments)
   
 }
 
-- (void)startEvent:(NSArray*)arguments
+RCT_EXPORT_METHOD(startEvent:(NSArray*)arguments)
 {
   NSString* eventName = [arguments objectAtIndex:0];
   [Countly.sharedInstance startEvent:eventName];
@@ -209,7 +209,7 @@ RCT_EXPORT_METHOD(echo:(NSArray*)arguments)
   
 }
 
-- (void)endEvent:(NSArray*)arguments
+RCT_EXPORT_METHOD(endEvent:(NSArray*)arguments)
 {
   NSString* eventType = [arguments objectAtIndex:0];
   
@@ -236,7 +236,7 @@ RCT_EXPORT_METHOD(echo:(NSArray*)arguments)
   
 }
 
-- (void)setLocation:(NSArray*)arguments
+RCT_EXPORT_METHOD(setLocation:(NSArray*)arguments)
 {
   NSString* latitudeString = [arguments objectAtIndex:0];
   NSString* longitudeString = [arguments objectAtIndex:1];
@@ -250,7 +250,7 @@ RCT_EXPORT_METHOD(echo:(NSArray*)arguments)
   
 }
 
-- (void)enableCrashReporting:(NSArray*)arguments
+RCT_EXPORT_METHOD(enableCrashReporting:(NSArray*)arguments)
 {
   config.features = @[CLYCrashReporting];
   
@@ -258,7 +258,7 @@ RCT_EXPORT_METHOD(echo:(NSArray*)arguments)
   
 }
 
-- (void)addCrashLog:(NSArray*)arguments
+RCT_EXPORT_METHOD(addCrashLog:(NSArray*)arguments)
 {
   NSString* token = [arguments objectAtIndex:0];
   NSString* messagingMode = [arguments objectAtIndex:1];
@@ -268,7 +268,7 @@ RCT_EXPORT_METHOD(echo:(NSArray*)arguments)
   
 }
 
-- (void)userData_setProperty:(NSArray*)arguments
+RCT_EXPORT_METHOD(userData_setProperty:(NSArray*)arguments)
 {
   NSString* keyName = [arguments objectAtIndex:0];
   NSString* keyValue = [arguments objectAtIndex:1];
@@ -280,7 +280,7 @@ RCT_EXPORT_METHOD(echo:(NSArray*)arguments)
   
 }
 
-- (void)userData_increment:(NSArray*)arguments
+RCT_EXPORT_METHOD(userData_increment:(NSArray*)arguments)
 {
   NSString* keyName = [arguments objectAtIndex:0];
   
@@ -291,7 +291,7 @@ RCT_EXPORT_METHOD(echo:(NSArray*)arguments)
   
 }
 
-- (void)userData_incrementBy:(NSArray*)arguments
+RCT_EXPORT_METHOD(userData_incrementBy:(NSArray*)arguments)
 {
   NSString* keyName = [arguments objectAtIndex:0];
   NSString* keyValue = [arguments objectAtIndex:1];
@@ -304,7 +304,7 @@ RCT_EXPORT_METHOD(echo:(NSArray*)arguments)
   
 }
 
-- (void)userData_multiply:(NSArray*)arguments
+RCT_EXPORT_METHOD(userData_multiply:(NSArray*)arguments)
 {
   NSString* keyName = [arguments objectAtIndex:0];
   NSString* keyValue = [arguments objectAtIndex:1];
@@ -317,7 +317,7 @@ RCT_EXPORT_METHOD(echo:(NSArray*)arguments)
   
 }
 
-- (void)userData_saveMax:(NSArray*)arguments
+RCT_EXPORT_METHOD(userData_saveMax:(NSArray*)arguments)
 {
   NSString* keyName = [arguments objectAtIndex:0];
   NSString* keyValue = [arguments objectAtIndex:1];
@@ -330,7 +330,7 @@ RCT_EXPORT_METHOD(echo:(NSArray*)arguments)
   
 }
 
-- (void)userData_saveMin:(NSArray*)arguments
+RCT_EXPORT_METHOD(userData_saveMin:(NSArray*)arguments)
 {
   NSString* keyName = [arguments objectAtIndex:0];
   NSString* keyValue = [arguments objectAtIndex:1];
@@ -343,7 +343,7 @@ RCT_EXPORT_METHOD(echo:(NSArray*)arguments)
   
 }
 
-- (void)userData_setOnce:(NSArray*)arguments
+RCT_EXPORT_METHOD(userData_setOnce:(NSArray*)arguments)
 {
   NSString* keyName = [arguments objectAtIndex:0];
   NSString* keyValue = [arguments objectAtIndex:1];
@@ -355,7 +355,7 @@ RCT_EXPORT_METHOD(echo:(NSArray*)arguments)
   
 }
 
-- (void)demo:(NSArray*)arguments
+RCT_EXPORT_METHOD(demo:(NSArray*)arguments)
 {
   NSString* token = [arguments objectAtIndex:0];
   NSString* messagingMode = [arguments objectAtIndex:1];

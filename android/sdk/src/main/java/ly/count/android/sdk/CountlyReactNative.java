@@ -76,9 +76,9 @@ public class CountlyReactNative extends ReactContextBaseJavaModule {
     @ReactMethod
     public void changeDeviceId(ReadableArray args){
         String newDeviceID = args.getString(0);
-        Countly.sharedInstance().changeDeviceId(newDeviceID);  
+        Countly.sharedInstance().changeDeviceId(newDeviceID);
     }
-    
+
     @ReactMethod
     public void setHttpPostForced(ReadableArray args){
         int isEnabled = Integer.parseInt(args.getString(0));
@@ -88,25 +88,25 @@ public class CountlyReactNative extends ReactContextBaseJavaModule {
             Countly.sharedInstance().setHttpPostForced(false);
         }
     }
-    
+
     @ReactMethod
     public void enableParameterTamperingProtection(ReadableArray args){
         String salt = args.getString(0);
         Countly.sharedInstance().enableParameterTamperingProtection(salt);
     }
-    
+
     @ReactMethod
     public void setLocation(ReadableArray args){
         double latitude = Double.parseDouble(args.getString(0));
         double longitude = Double.parseDouble(args.getString(1));
         Countly.sharedInstance().setLocation(latitude, longitude);
     }
-    
+
     @ReactMethod
     public void enableCrashReporting(){
         Countly.sharedInstance().enableCrashReporting();
     }
-    
+
     @ReactMethod
     public void addCrashLog(ReadableArray args){
         String record = args.getString(0);
@@ -211,7 +211,7 @@ public class CountlyReactNative extends ReactContextBaseJavaModule {
         String registrationId = args.getString(0);
         int messagingMode = Integer.parseInt(args.getString(1));
         String projectId = args.getString(2);
-        
+
         Countly.CountlyMessagingMode mode = null;
         if(messagingMode == 0){
             mode = Countly.CountlyMessagingMode.TEST;
@@ -219,7 +219,8 @@ public class CountlyReactNative extends ReactContextBaseJavaModule {
         else{
             mode = Countly.CountlyMessagingMode.PRODUCTION;
         }
-        Countly.sharedInstance().onRegistrationId(registrationId,mode);
+        Countly.sharedInstance().initMessaging(this.getCurrentActivity(), this.getCurrentActivity().getClass(), projectId, mode);
+        // Countly.sharedInstance().onRegistrationId(registrationId,mode);
 	}
 
 	@ReactMethod

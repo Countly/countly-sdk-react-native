@@ -35,8 +35,7 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.google.android.gms:play-services-gcm:10.0.1'
-    compile project(':sdk')
-//    compile 'ly.count:sdk-android:16.06.04'
+    compile project(':countly-sdk-react-native')
 }
 
 publish {

@@ -21,15 +21,14 @@ Countly.init = function(serverUrl,appKey){
     CountlyReactNative.init([serverUrl,appKey]);
 }
 
-Countly.initMessaging = function(options){
-    Countly.projectId = options.projectId;
-    Countly.messageMode = options.messageMode;
-    // Countly.Push.onRegisterPushNotification();
+Countly.initMessaging = function(projectId, messageMode, registrationId){
+    Countly.projectId = projectId;
+    Countly.messageMode = messageMode;
 
     var args = [];
-    args.push(options.registrationId || "");
-    args.push(options.messageMode || "0");
-    args.push(options.projectId || "");
+    args.push(registrationId || "");
+    args.push(messageMode || "0");
+    args.push(projectId || "");
     CountlyReactNative.onregistrationid(args);
 }
 
@@ -186,4 +185,4 @@ Countly.userData.setOnce = function(keyName, setOnce){
     CountlyReactNative.userData_setOnce([keyName.toString() || "", setOnce.toString() || ""]);
 };
 
-export default Countly; 
+export default Countly;

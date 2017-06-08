@@ -14,6 +14,5 @@
     "countly"
   ],
   "dependencies": {
-    "countly-sdk-react-native": "git+https://github.com/trinisofttechnologies/countly-sdk-react-native.git"
   }
 }

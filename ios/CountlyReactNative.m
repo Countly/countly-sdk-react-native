@@ -148,16 +148,16 @@ RCT_EXPORT_METHOD(onregistrationid:(NSArray*)arguments)
   int mode = [messagingMode intValue];
   NSData *tokenByte = [token dataUsingEncoding:NSUTF8StringEncoding];
   if(mode == 1){
-    // [[CountlyConnectionQueue sharedInstance] setStartedWithTest:YES];
-  }
+    config.features = @[CLYPushNotifications];
+  };
+  [Countly.sharedInstance askForNotificationPermission];
+
+  // cordova code for push notification.
   //  CountlyPushNotifications.sharedInstance.token = token;
   //  [CountlyPushNotifications.sharedInstance sendToken];
   // [Countly.sharedInstance didRegisterForRemoteNotificationsWithDeviceToken:tokenByte];
   
   // [[CountlyConnectionQueue sharedInstance] tokenSession:token];
-  
-  
-  
 }
 
 RCT_EXPORT_METHOD(start)

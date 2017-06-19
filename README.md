@@ -20,6 +20,33 @@ For more information about Countly Enterprise Edition, see [comparison of differ
 
 There are also other Countly SDK repositories (both official and community supported) on [Countly Resources](http://resources.count.ly/v1.0/docs/downloading-sdks).
 
+## Getting started
+
+```shell
+$ npm install react-native-countly --save
+$ react-native link react-native-countly
+```
+
+## Usage
+
+```javascript
+import React from 'react';
+import Countly from 'react-native-countly';
+
+class App extends React.Component {
+
+  componentDidMount() {
+    Countly.init(<Countly_Server>, <App_Key>);
+    Countly.start();
+  }
+  
+  render() {
+  	 {/* render something. */}
+  }
+}
+
+```
+
 ## Roadmap
 
 * Crash reporting 

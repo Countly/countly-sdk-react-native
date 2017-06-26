@@ -7,6 +7,7 @@
 #import "CountlyReactNative.h"
 #import "CountlyConfig.h"
 #import "CountlyPushNotifications.h"
+#import "CountlyNotificationService.h"
 
 
 CountlyConfig* config = nil;

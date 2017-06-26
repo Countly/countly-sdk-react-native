@@ -163,7 +163,7 @@ RCT_EXPORT_METHOD(onregistrationid:(NSArray*)arguments)
 
 RCT_EXPORT_METHOD(start)
 {
-  [Countly.sharedInstance resume];
+//  [Countly.sharedInstance resume];
   
   
   
@@ -171,7 +171,7 @@ RCT_EXPORT_METHOD(start)
 
 RCT_EXPORT_METHOD(stop)
 {
-  [Countly.sharedInstance suspend];
+//  [Countly.sharedInstance suspend];
   
   
   
@@ -296,7 +296,8 @@ RCT_EXPORT_METHOD(userData_incrementBy:(NSArray*)arguments)
 {
   NSString* keyName = [arguments objectAtIndex:0];
   NSString* keyValue = [arguments objectAtIndex:1];
-  int keyValueInteger = [keyValue intValue];
+  int keyValueIntegers = [keyValue intValue];
+  NSNumber* keyValueInteger = [NSNumber numberWithInteger:keyValueIntegers]; //[keyValue intValue];
   
   [Countly.user incrementBy:keyName value:keyValueInteger];
   [Countly.user save];
@@ -309,7 +310,8 @@ RCT_EXPORT_METHOD(userData_multiply:(NSArray*)arguments)
 {
   NSString* keyName = [arguments objectAtIndex:0];
   NSString* keyValue = [arguments objectAtIndex:1];
-  int keyValueInteger = [keyValue intValue];
+  int keyValueIntegers = [keyValue intValue];
+  NSNumber* keyValueInteger = [NSNumber numberWithInteger:keyValueIntegers]; //[keyValue intValue];
   
   [Countly.user multiply:keyName value:keyValueInteger];
   [Countly.user save];
@@ -322,7 +324,8 @@ RCT_EXPORT_METHOD(userData_saveMax:(NSArray*)arguments)
 {
   NSString* keyName = [arguments objectAtIndex:0];
   NSString* keyValue = [arguments objectAtIndex:1];
-  int keyValueInteger = [keyValue intValue];
+  int keyValueIntegers = [keyValue intValue];
+  NSNumber* keyValueInteger = [NSNumber numberWithInteger:keyValueIntegers]; //[keyValue intValue];
   
   [Countly.user max:keyName value:keyValueInteger];
   [Countly.user save];
@@ -335,7 +338,8 @@ RCT_EXPORT_METHOD(userData_saveMin:(NSArray*)arguments)
 {
   NSString* keyName = [arguments objectAtIndex:0];
   NSString* keyValue = [arguments objectAtIndex:1];
-  int keyValueInteger = [keyValue intValue];
+  int keyValueIntegers = [keyValue intValue];
+  NSNumber* keyValueInteger = [NSNumber numberWithInteger:keyValueIntegers]; //[keyValue intValue];
   
   [Countly.user min:keyName value:keyValueInteger];
   [Countly.user save];

@@ -31,6 +31,7 @@ RCT_EXPORT_METHOD(init:(NSArray*)arguments)
   config = CountlyConfig.new;
   config.appKey = appkey;
   config.host = serverurl;
+  config.features = @[CLYPushNotifications];
   
   if (serverurl != nil && [serverurl length] > 0) {
     [[Countly sharedInstance] startWithConfig:config];

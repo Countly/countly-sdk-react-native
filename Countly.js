@@ -132,6 +132,10 @@ Countly.changeDeviceId = function(newDeviceID){
 Countly.enableParameterTamperingProtection = function(salt){
     CountlyReactNative.enableParameterTamperingProtection([salt.toString() || ""]);
 }
+Countly.enableCrashReporting = function(){
+    CountlyReactNative.enableCrashReporting();
+}
+
 Countly.startEvent = function(eventName){
     CountlyReactNative.startEvent([eventName.toString() || ""]);
 }

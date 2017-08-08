@@ -17,10 +17,6 @@ CountlyConfig* config = nil;
 RCT_EXPORT_MODULE();
 
 
-RCT_EXPORT_METHOD(echo:(NSArray*)arguments)
-{
-  RCTLogInfo(@"Nicolson look here this is called");
-}
 
 RCT_EXPORT_METHOD(init:(NSArray*)arguments)
 {

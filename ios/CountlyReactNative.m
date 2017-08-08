@@ -27,7 +27,7 @@ RCT_EXPORT_METHOD(init:(NSArray*)arguments)
   NSString* serverurl = [arguments objectAtIndex:0];
   NSString* appkey = [arguments objectAtIndex:1];
   
-  if (serverurl == nil){
+  if (config == nil){
     config = CountlyConfig.new;
   }
   config.appKey = appkey;
@@ -196,7 +196,7 @@ RCT_EXPORT_METHOD(setHttpPostForced:(NSArray*)arguments)
 RCT_EXPORT_METHOD(enableParameterTamperingProtection:(NSArray*)arguments)
 {
   NSString* salt = [arguments objectAtIndex:0];
-  if (serverurl == nil){
+  if (config == nil){
     config = CountlyConfig.new;
   }
   config.secretSalt = salt;
@@ -249,7 +249,7 @@ RCT_EXPORT_METHOD(setLocation:(NSArray*)arguments)
   double latitudeDouble = [latitudeString doubleValue];
   double longitudeDouble = [longitudeString doubleValue];
   
-  if (serverurl == nil){
+  if (config == nil){
     config = CountlyConfig.new;
   }
   config.location = (CLLocationCoordinate2D){latitudeDouble,longitudeDouble};
@@ -257,7 +257,7 @@ RCT_EXPORT_METHOD(setLocation:(NSArray*)arguments)
 
 RCT_EXPORT_METHOD(enableCrashReporting:(NSArray*)arguments)
 {
-  if (serverurl == nil){
+  if (config == nil){
     config = CountlyConfig.new;
   }
   config.features = @[CLYCrashReporting];

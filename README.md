@@ -1,4 +1,7 @@
 
+**IMPORTANT NOTICE** : New React Native framework doesn’t accept to include custom native modules beyond the React Native APIs and components. Therefore we are currently fixing our React Native SDK to overcome this limitation. For those who are still using the old React Native version, who have create the app 'react-native init AwesomeProject', they can still continue to use our existing sdk. Please be patient as we come up with a new SDK. Thank you!
+
+
 ## What's Countly?
 [Countly](http://count.ly) is an innovative, real-time, open source mobile analytics and push notifications platform. It collects data from mobile devices, and visualizes this information to analyze mobile application usage and end-user behavior. There are two parts of Countly: [the server that collects and analyzes data](http://github.com/countly/countly-server), and mobile SDK that sends this data. Both parts are open source with different licensing terms.
 

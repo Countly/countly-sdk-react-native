@@ -1,10 +1,17 @@
-var Countly = {};
+import { Platform, NativeModules, AsyncStorage } from 'react-native';
+
+// import { DeviceInfo } from 'react-native-device-info';
+// var DeviceInfo = require('react-native-device-info');
+
+export let Countly = {};
+
 var Ajax = {};
 
 // CONST
 Countly.SESSION_INTERVAL = 60;
 Ajax.query = function(data) {
     var queryString = "";
+    queryString += "test=none&"
     for (var key in data) {
         if (typeof data[key] == "object") {
             queryString += (key + "=" + JSON.stringify(data[key]) + "&");
@@ -26,70 +33,105 @@ Ajax.get = function(url, data, callback) {
     data.device_id = Countly.DEVICE_ID;
     data.app_key = Countly.APP_KEY;
     data.timestamp = Ajax.getTime();
-
-    fetch(Countly.ROOT_URL + url + "?" + Ajax.query(data)).then((response) => response.json())
+    var url = Countly.ROOT_URL + url + "?" + Ajax.query(data);
+    if(Countly.isDebug)
+      console.log(url);
+    fetch(url).then((response) => response.json())
         .then((responseJson) => {
+          if(Countly.isDebug)
+            console.log(responseJson);
             callback(responseJson);
         })
         .catch((error) => {
+            if(Countly.isDebug)
+              console.log(error);
             callback(error);
         });
 
 };
 
-Ajax.getItem = function(key) {
+Ajax.getItem = function(key, callback) {
     try {
-        return AsyncStorage.getItem('@Countly:' +key);
+        AsyncStorage.getItem('@Countly:' +key, callback);
     } catch (error) {
+        console.log("Error while getting", key);
         return null;
     }
 };
 
 
 Ajax.setItem = function(key, value) {
+  console.log(key, value)
     try {
-        AsyncStorage.setItem('@Countly:' +key, value);
+        AsyncStorage.setItem('@Countly:' +key, value, function(result){
+            console.log("Ajax.setItem", result)
+        });
     } catch (error) {
         console.log("Error while storing", key, value);
     }
 };
+Countly.isDebug = false;
 Countly.init = function(ROOT_URL, APP_KEY, DEVICE_ID) {
-    if (!DEVICE_ID)
-        DEVICE_ID = Ajax.id();
+    Ajax.getItem("DEVICE_ID", function(S_DEVICE_ID){
+      console.log(S_DEVICE_ID)
+      Countly.ROOT_URL = ROOT_URL;
+      Countly.APP_KEY = APP_KEY;
+      Countly.DEVICE_ID = DEVICE_ID || S_DEVICE_ID || Ajax.id();
+      Ajax.setItem("DEVICE_ID", Countly.DEVICE_ID);
+      Ajax.get("/i", {}, function(result) {
+          Countly.session();
+          setInterval(Countly.session, Countly.SESSION_INTERVAL * 1000);
+      });
 
-    Countly.ROOT_URL = ROOT_URL;
-    Countly.APP_KEY = APP_KEY;
-    Countly.DEVICE_ID = DEVICE_ID || Ajax.getItem("DEVICE_ID") || Ajax.id();
-    Ajax.setItem("DEVICE_ID", Countly.DEVICE_ID);
-    Ajax.get("/i", {}, function(result) {
-        console.log(result);
-        Countly.session();
-        setInterval(Countly.session, Countly.SESSION_INTERVAL * 1000);
     });
 };
 
 Countly.session = function() {
     Ajax.get("/i", { begin_session: 1, session_duration: Countly.SESSION_INTERVAL, metrics: Countly.getDevice() }, function(result) {
-        console.log(result);
     });
 };
 
-
+Countly.getOS = function(){
+  if(Platform.OS.match("android"))
+      return "Android";
+  if(Platform.OS.match("ios"))
+      return "iOS";
+      return Platform.OS;
+}
 Countly.getDevice = function() {
     var metrics = {
-        "_os": "Android",
-        "_os_version": "4.1",
-        "_device": "Samsung Galaxy",
-        "_resolution": "1200x800",
-        "_carrier": "Vodafone",
-        "_app_version": "1.2",
-        "_density": "MDPI",
-        "_locale": "en_US",
-        "_store": "com.android.vending"
-    }
+        "_os": Countly.getOS(),
+        "_os_version": Platform.Version,
+        // "_device": "Samsung Galaxy",
+        // "_resolution": "1200x800",
+        // "_carrier": "Vodafone",
+        // "_app_version": "1.2",
+        // "_density": "MDPI",
+        // "_locale": "en_US",
+        // "_store": "com.android.vending"
+    };
+
+
+    // var metrics = {
+    //     "_os": Platform.os,
+    //     "_os_version": DeviceInfo.getSystemVersion(),
+    //     "_device": DeviceInfo.getModel(),
+    //     "_resolution": screen.width+ "x" +screen.height,
+    //     "_app_version": DeviceInfo.getVersion(),
+    //     // "_density": "MDPI",
+    //     "_locale": navigator.language || navigator.userLanguage,
+    //     "_store": DeviceInfo.getBundleId()
+    // }
     return metrics;
 }
 
+Countly.start = function(){
+
+};
+
+Countly.stop = function(){
+
+};
 
 Countly.changeDeviceId = function(newDeviceId){
     Ajax.get("/i", {old_device_id: Countly.DEVICE_ID, device_id: newDeviceId}, function(result) {
@@ -118,26 +160,21 @@ Countly.enableParameterTamperingProtection = function(salt){
 
 
 Countly.recordEvent = function(events){
-    if(!count)
-        count = 1;
-    var events = {
-        key: events.name,
-        count: events.count,
-        sum: events.sum || 0,
-        segments: events.segments || {}
-    }
-
-    Ajax.get("/i", {events: events}, function(result) {
-        console.log(result);
+  if(events)
+    events.count = events.count || 1;
+    Ajax.get("/i", {events: [events]}, function(result) {
+        console.log("Countly.recordEvent",result);
     });
 }
 
-Countly.startEvent = function(){
-
+var storedEvents = {};
+Countly.startEvent = function(eventName){
+  storedEvents[eventName] = Ajax.getTime();
 }
 
-Countly.endEvent = function(){
-
+Countly.endEvent = function(eventName){
+  Countly.recordEvent({key: eventName, "dur": Ajax.getTime() - storedEvents[eventName] || 0});
+  delete storedEvents[eventName];
 }
 
 // Events
@@ -145,33 +182,70 @@ Countly.endEvent = function(){
 // user data
 Countly.setUserData = function(user_details) {
     Ajax.get("/i", { user_details: user_details }, function(result) {
-        console.log(result)
     });
 }
 
 Countly.userData = {};
 Countly.userData.setProperty = function(keyName, keyValue){
-
+  var update = {};
+  update[keyName] = keyValue;
+  Ajax.get("/i", { user_details: {"custom": update} }, function(result) {
+  });
 };
 Countly.userData.increment = function(keyName){
-
+  var update = {};
+  update[keyName] = {"$inc": 1};
+  Ajax.get("/i", { user_details: {"custom": update} }, function(result) {
+  });
 };
 Countly.userData.incrementBy = function(keyName, keyValue){
-
+  var update = {};
+  update[keyName] = {"$inc": keyValue};
+  Ajax.get("/i", { user_details: {"custom": update} }, function(result) {
+  });
 };
 Countly.userData.multiply = function(keyName, keyValue){
-
+  var update = {};
+  update[keyName] = {"$mul": keyValue};
+  Ajax.get("/i", { user_details: {"custom": update} }, function(result) {
+  });
 };
 Countly.userData.saveMax = function(keyName, keyValue){
-
+  var update = {};
+  update[keyName] = {"$max": keyValue};
+  Ajax.get("/i", { user_details: {"custom": update} }, function(result) {
+  });
 };
 Countly.userData.saveMin = function(keyName, keyValue){
-
+  var update = {};
+  update[keyName] = {"$min": keyValue};
+  Ajax.get("/i", { user_details: {"custom": update} }, function(result) {
+  });
 };
 Countly.userData.setOnce = function(keyName, keyValue){
-
+  var update = {};
+  update[keyName] = {"$setOnce": keyValue};
+  Ajax.get("/i", { user_details: {"custom": update} }, function(result) {
+  });
 };
-
+Countly.userData.pullValue = function(keyName, keyValue){
+  var update = {};
+  update[keyName] = {"$pull": keyValue};
+  Ajax.get("/i", { user_details: {"custom": update} }, function(result) {
+  });
+};
+Countly.userData.pushValue = function(keyName, keyValue){
+  var update = {};
+  update[keyName] = {"$push": keyValue};
+  Ajax.get("/i", { user_details: {"custom": update} }, function(result) {
+  });
+};
+Countly.userData.addToSetValue = function(keyName, keyValue){
+  var update = {};
+  update[keyName] = {"$addToSet": keyValue};
+  Ajax.get("/i", { user_details: {"custom": update} }, function(result) {
+  });
+};
 // user data
 
 // crash report
@@ -183,38 +257,10 @@ Countly.addCrashLog = function(crashLog){
 // crash report
 
 Countly.recordView = function(viewName){
-
+  Countly.recordEvent({"key": "[CLY]_view", "segmentation": {"name": viewName, "segment": Countly.getOS(), "visit": 1}})
 }
 
-export default Countly;
-
-
-// Test Use Case
-
-var app = {};
-Countly.init("http://try.count.ly", "111dcd50d5f4a43a23202330cec19c069a68bc19", "123456");
-
-
-setTimeout(function() {
-    // app.setUserData();
-}, 500);
-
-app.setUserData = function(){
-    Countly.setUserData({
-        "name": "Nicolson Dsouza",
-        "username": "nicolsondsouza",
-        "email": "nicolson@trinisofttechnologies@gmail.com",
-        "organization": "Trinisoft Technologies",
-        "phone": "+17278287040",
-        //Web URL to picture
-        "picture": "https://avatars1.githubusercontent.com/u/10754117?v=4&s=460",
-        "gender": "M",
-        "byear": 1989, //birth year
-        "custom": {
-            "key1": "value1",
-            "key2": "value2"
-        }
-    });
-}
-
-
+setTimeout(function(){
+  console.log("NativeModules")
+  console.log(NativeModules)
+},1000);

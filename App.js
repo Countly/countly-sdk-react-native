@@ -7,6 +7,7 @@ import { Countly } from './Countly';
 export default class App extends React.Component {
 
     init = function(){
+      Countly.isDebug = true;
       Countly.init("https://try.count.ly","111dcd50d5f4a43a23202330cec19c069a68bc19");
     };
     onStart = function(){
@@ -100,7 +101,7 @@ export default class App extends React.Component {
     };
 
     changeDeviceId = function(){
-      Countly.changeDeviceId("123456");
+      Countly.changeDeviceId("654321");
     };
 
     enableParameterTamperingProtection = function(){

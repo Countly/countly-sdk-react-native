@@ -1,8 +1,13 @@
-import { Platform, NativeModules, AsyncStorage } from 'react-native';
+import { Platform, NativeModules, AsyncStorage, Dimensions } from 'react-native';
+// import { DeviceInfo } from 'react-native-device-info';
+var DeviceInfo = null;
 try{
-  // import { DeviceInfo } from 'react-native-device-info';
-  var DeviceInfo = require('react-native-device-info');
+  DeviceInfo = require('react-native-device-info');
+  if(!NativeModules.RNDeviceInfo){
+        DeviceInfo = null;
+  }
 }catch(err){
+    console.log(err);
   DeviceInfo = null;
 }
 
@@ -129,6 +134,8 @@ Countly.session = function() {
     Ajax.get("/i", { begin_session: 1, session_duration: Countly.SESSION_INTERVAL, metrics: Countly.getDevice() }, function(result) {});
 };
 
+
+// Device
 Countly.getOS = function() {
     if (Platform.OS.match("android"))
         return "Android";
@@ -136,32 +143,44 @@ Countly.getOS = function() {
         return "iOS";
     return Platform.OS;
 }
+Countly.device = {};
 Countly.getDevice = function() {
-    var metrics = {
-        "_os": Countly.getOS(),
-        "_os_version": Platform.Version,
-        // "_device": "Samsung Galaxy",
-        // "_resolution": "1200x800",
-        // "_carrier": "Vodafone",
-        // "_app_version": "1.2",
-        // "_density": "MDPI",
-        // "_locale": "en_US",
-        // "_store": "com.android.vending"
-    };
-
-
-    // var metrics = {
-    //     "_os": Platform.os,
-    //     "_os_version": DeviceInfo.getSystemVersion(),
-    //     "_device": DeviceInfo.getModel(),
-    //     "_resolution": screen.width+ "x" +screen.height,
-    //     "_app_version": DeviceInfo.getVersion(),
-    //     // "_density": "MDPI",
-    //     "_locale": navigator.language || navigator.userLanguage,
-    //     "_store": DeviceInfo.getBundleId()
-    // }
-    return metrics;
+    if(DeviceInfo){
+        Countly.device = {
+            "_os": Platform.os,
+            "_os_version": DeviceInfo.getSystemVersion(),
+            "_device": DeviceInfo.getModel(),
+            "_resolution": screen.width+ "x" +screen.height,
+            "_app_version": DeviceInfo.getVersion(),
+            // "_density": "MDPI",
+            "_locale": navigator.language || navigator.userLanguage,
+            "_store": DeviceInfo.getBundleId()
+        }
+    
+    }else{
+        var {height, width, scale} = Dimensions.get('window');
+        Countly.device = {
+            "_os": Countly.getOS(),
+            "_os_version": Countly.getVersion(Countly.getOS(), Platform.Version),
+            "_resolution": (width * scale)+ "x" +(height * scale),
+            "_locale": Countly.device._locale,
+        };
+    }
+    return Countly.device;
 }
+
+Countly.getVersion = function(os, version){
+    if(os === "Android"){
+        return version;
+    }else{
+        return version;
+    }
+}
+
+NativeModules.ExponentUtil.getCurrentLocaleAsync().then((local)=>{
+    Countly.device._locale = local;
+});
+// Device
 
 Countly.start = function() {
 
@@ -313,5 +332,18 @@ setTimeout(function() {
   //     console.log(err, keys)
   //   });
   // });
-  
+  // console.log(Dimensions.get('window'))
+    // DeviceInfo.getSystemVersion()
+    // DeviceInfo.getModel()
+    // DeviceInfo.getVersion()
+    // DeviceInfo.getBundleId()
+    // console.log(DeviceInfo)
+    // DeviceInfo.getDeviceLocale().then((err, result)=>{
+    //     console.log(err, result)
+    // })
+    // DeviceInfo.getDeviceLocale()
+    // console.log("Device Locale");
+    // console.log(require('react-native'))
+    
+    // console.log()
 }, 1000);

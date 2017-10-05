@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Text, Button, ScrollView, Image } from 'react-native';
 
-import { Countly } from './Countly';
+import { Countly } from 'countly-sdk-react-native';
 
 export default class App extends React.Component {
 
@@ -20,7 +20,7 @@ export default class App extends React.Component {
       Countly.setUserData({
           "name": "Nicolson Dsouza",
           "username": "nicolsondsouza",
-          "email": "nicolson@trinisofttechnologies@gmail.com",
+          "email": "nicolson@trinisofttechnologies.com",
           "organization": "Trinisoft Technologies",
           "phone": "+17278287040",
           //Web URL to picture

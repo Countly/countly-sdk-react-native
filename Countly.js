@@ -1,5 +1,5 @@
 import { Platform, NativeModules, AsyncStorage, Dimensions } from 'react-native';
-// import { DeviceInfo } from 'react-native-device-info';
+
 var DeviceInfo = null;
 try{
   DeviceInfo = require('react-native-device-info');
@@ -110,7 +110,7 @@ Ajax.setItem = function(key, value,callback) {
 };
 Countly.isDebug = false;
 Countly.init = function(ROOT_URL, APP_KEY, DEVICE_ID) {
-    Countly.isInit = true;            
+    Countly.isInit = true;
     Ajax.getItem("DEVICE_ID", function(err, S_DEVICE_ID) {
         Countly.ROOT_URL = ROOT_URL;
         Countly.APP_KEY = APP_KEY;
@@ -156,7 +156,7 @@ Countly.getDevice = function() {
             "_locale": navigator.language || navigator.userLanguage,
             "_store": DeviceInfo.getBundleId()
         }
-    
+
     }else{
         var {height, width, scale} = Dimensions.get('window');
         Countly.device = {
@@ -177,9 +177,10 @@ Countly.getVersion = function(os, version){
     }
 }
 
-NativeModules.ExponentUtil.getCurrentLocaleAsync().then((local)=>{
-    Countly.device._locale = local;
-});
+if(NativeModules.ExponentUtil)
+  NativeModules.ExponentUtil.getCurrentLocaleAsync().then((local)=>{
+      Countly.device._locale = local;
+  });
 // Device
 
 Countly.start = function() {
@@ -344,6 +345,6 @@ setTimeout(function() {
     // DeviceInfo.getDeviceLocale()
     // console.log("Device Locale");
     // console.log(require('react-native'))
-    
+
     // console.log()
 }, 1000);

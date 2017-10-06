@@ -109,6 +109,7 @@ Ajax.setItem = function(key, value,callback) {
     }
 };
 Countly.isDebug = false;
+Countly.isInit = false;
 Countly.init = function(ROOT_URL, APP_KEY, DEVICE_ID) {
     Countly.isInit = true;
     Ajax.getItem("DEVICE_ID", function(err, S_DEVICE_ID) {
@@ -184,6 +185,8 @@ if(NativeModules.ExponentUtil)
 
 Countly.sessionId = null;
 Countly.start = function() {
+    if(!Countly.isInit)
+      return;
     Countly.stop();
     Countly.session();
     Countly.sessionId = setInterval(Countly.session, Countly.SESSION_INTERVAL * 1000);

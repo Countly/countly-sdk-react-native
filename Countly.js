@@ -117,8 +117,7 @@ Countly.init = function(ROOT_URL, APP_KEY, DEVICE_ID) {
         Countly.DEVICE_ID = DEVICE_ID || S_DEVICE_ID || Ajax.id();
         Ajax.setItem("DEVICE_ID", Countly.DEVICE_ID);
         Ajax.get("/i", {}, function(result) {
-            Countly.session();
-            setInterval(Countly.session, Countly.SESSION_INTERVAL * 1000);
+
         });
 
     });
@@ -183,12 +182,15 @@ if(NativeModules.ExponentUtil)
   });
 // Device
 
+Countly.sessionId = null;
 Countly.start = function() {
-
+    Countly.stop();
+    Countly.session();
+    Countly.sessionId = setInterval(Countly.session, Countly.SESSION_INTERVAL * 1000);
 };
 
 Countly.stop = function() {
-
+  clearInterval(Countly.sessionId);
 };
 
 Countly.changeDeviceId = function(newDeviceId) {

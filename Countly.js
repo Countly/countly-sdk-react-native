@@ -190,7 +190,9 @@ Countly.start = function() {
 };
 
 Countly.stop = function() {
-  clearInterval(Countly.sessionId);
+  if(Countly.sessionId)
+    clearInterval(Countly.sessionId);
+  Countly.sessionId = null;
 };
 
 Countly.changeDeviceId = function(newDeviceId) {

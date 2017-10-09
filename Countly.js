@@ -347,6 +347,7 @@ Countly.log = function(arg1, arg2){
 }
 
 setTimeout(function() {
+  // Countly.isDebug = true;
   // Ajax.setItem("hello", "world", ()=>{
   //   Ajax.getItem("hello", (err, value)=>{
   //     Countly.log(err, value)
@@ -365,7 +366,8 @@ setTimeout(function() {
     // DeviceInfo.getDeviceLocale().then((err, result)=>{
     //     Countly.log(err, result)
     // })
-    // DeviceInfo.getDeviceLocale()
+    // Countly.log(DeviceInfo);
+    // Countly.log(DeviceInfo.getDeviceLocale())
     // Countly.log("Device Locale");
     // Countly.log(require('react-native'))
 

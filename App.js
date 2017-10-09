@@ -2,12 +2,14 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Text, Button, ScrollView, Image } from 'react-native';
 
-import { Countly } from 'countly-sdk-react-native';
+import Countly from 'countly-sdk-react-native';
 
+Countly.isDebug = true;
+// Countly.setHttpPostForced(true);
 export default class App extends React.Component {
 
     init = function(){
-      Countly.isDebug = true;
+
       Countly.init("https://try.count.ly","111dcd50d5f4a43a23202330cec19c069a68bc19");
     };
     onStart = function(){

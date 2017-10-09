@@ -7,7 +7,7 @@ try{
         DeviceInfo = null;
   }
 }catch(err){
-    console.log(err);
+    Countly.log(err);
   DeviceInfo = null;
 }
 
@@ -22,9 +22,9 @@ Ajax.query = function(data) {
     queryString += "test=none&"
     for (var key in data) {
         if (typeof data[key] == "object") {
-            queryString += (key + "=" + JSON.stringify(data[key]) + "&");
+            queryString += (key + "=" + encodeURIComponent(JSON.stringify(data[key])) + "&");
         } else {
-            queryString += (key + "=" + data[key] + "&");
+            queryString += (key + "=" + encodeURIComponent(data[key]) + "&");
         }
     }
     return queryString;
@@ -38,6 +38,8 @@ Ajax.getTime = function() {
     return new Date().getTime();
 }
 Ajax.get = function(url, data, callback) {
+    if(!Countly.isInit)
+      return;
     data.device_id = Countly.DEVICE_ID;
     data.app_key = Countly.APP_KEY;
     data.timestamp = Ajax.getTime();
@@ -45,25 +47,30 @@ Ajax.get = function(url, data, callback) {
       Ajax.post(url, data, callback);
       return;
     }
+    Countly.log("GET Method");
     var url = Countly.ROOT_URL + url + "?" + Ajax.query(data);
-    if (Countly.isDebug)
-        console.log(url);
+    Countly.log(url);
     fetch(url).then((response) => response.json())
         .then((responseJson) => {
-            if (Countly.isDebug)
-                console.log(responseJson);
+            Countly.log(responseJson);
             callback(responseJson);
         })
         .catch((error) => {
-            if (Countly.isDebug)
-                console.log(error);
+            Countly.log(error);
             callback(error);
         });
 
 };
 
 Ajax.post = function(url, data, callback) {
+    if(!Countly.isInit)
+      return;
+    Countly.log("POST Method");
+    data.device_id = Countly.DEVICE_ID;
+    data.app_key = Countly.APP_KEY;
+    data.timestamp = Ajax.getTime();
     var url = Countly.ROOT_URL + url + "?app_key=" + Countly.APP_KEY;
+    Countly.log(url, data);
     fetch(url, {
             method: 'POST',
             headers: {
@@ -75,13 +82,11 @@ Ajax.post = function(url, data, callback) {
                 requests: JSON.stringify([data]),
             })
         }).then((responseJson) => {
-            if (Countly.isDebug)
-                console.log(responseJson);
+            Countly.log(responseJson);
             callback(responseJson);
         })
         .catch((error) => {
-            if (Countly.isDebug)
-                console.log(error);
+            Countly.log(error);
             callback(error);
         });
 }
@@ -90,8 +95,7 @@ Ajax.getItem = function(key, callback) {
     try {
         AsyncStorage.getItem('Countly:' + key, callback);
     } catch (error) {
-        if (Countly.isDebug)
-            console.log("Error while getting", key);
+        Countly.log("Error while getting", key);
         return null;
     }
 };
@@ -104,8 +108,8 @@ Ajax.setItem = function(key, value,callback) {
               callback(result);
         });
     } catch (error) {
-        if (Countly.isDebug)
-            console.log("Error while storing", key, value);
+
+            Countly.log("Error while storing", key, value);
     }
 };
 Countly.isDebug = false;
@@ -336,27 +340,34 @@ Countly.getDeviceID = function(){
   return Countly.DEVICE_ID;
 }
 
+Countly.log = function(arg1, arg2){
+  if(Countly.isDebug){
+    console.log(arg1, arg2);
+  }
+}
+
 setTimeout(function() {
   // Ajax.setItem("hello", "world", ()=>{
   //   Ajax.getItem("hello", (err, value)=>{
-  //     console.log(err, value)
+  //     Countly.log(err, value)
   //   })
   //   AsyncStorage.getAllKeys((err, keys) => {
-  //     console.log(err, keys)
+  //     Countly.log(err, keys)
   //   });
   // });
-  // console.log(Dimensions.get('window'))
+
+  // Countly.log(Dimensions.get('window'))
     // DeviceInfo.getSystemVersion()
     // DeviceInfo.getModel()
     // DeviceInfo.getVersion()
     // DeviceInfo.getBundleId()
-    // console.log(DeviceInfo)
+    // Countly.log(DeviceInfo)
     // DeviceInfo.getDeviceLocale().then((err, result)=>{
-    //     console.log(err, result)
+    //     Countly.log(err, result)
     // })
     // DeviceInfo.getDeviceLocale()
-    // console.log("Device Locale");
-    // console.log(require('react-native'))
+    // Countly.log("Device Locale");
+    // Countly.log(require('react-native'))
 
-    // console.log()
+    // Countly.log()
 }, 1000);

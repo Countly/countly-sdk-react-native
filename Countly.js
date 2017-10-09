@@ -11,7 +11,7 @@ try{
   DeviceInfo = null;
 }
 
-export let Countly = {};
+export default Countly = {};
 
 var Ajax = {};
 
@@ -130,8 +130,12 @@ Countly.hasBeenCalledOnStart = function(){
 
 }
 
-Countly.session = function() {
-    Ajax.get("/i", { begin_session: 1, session_duration: Countly.SESSION_INTERVAL, metrics: Countly.getDevice() }, function(result) {});
+Countly.session = function(status) {
+    let session = { begin_session: 1, session_duration: Countly.SESSION_INTERVAL, metrics: Countly.getDevice() };
+    if(status == "session_update"){
+      delete session.begin_session;
+    };
+    Ajax.get("/i", session, function(result) {});
 };
 
 
@@ -145,20 +149,21 @@ Countly.getOS = function() {
 }
 Countly.device = {};
 Countly.getDevice = function() {
+    var {height, width, scale} = Dimensions.get('window');
     if(DeviceInfo){
         Countly.device = {
-            "_os": Platform.os,
+            "_os": Countly.getOS(),
             "_os_version": DeviceInfo.getSystemVersion(),
             "_device": DeviceInfo.getModel(),
-            "_resolution": screen.width+ "x" +screen.height,
+            "_resolution": (width * scale)+ "x" +(height * scale),
             "_app_version": DeviceInfo.getVersion(),
             // "_density": "MDPI",
-            "_locale": navigator.language || navigator.userLanguage,
+            "_locale": DeviceInfo.getDeviceLocale(),
             "_store": DeviceInfo.getBundleId()
         }
 
     }else{
-        var {height, width, scale} = Dimensions.get('window');
+
         Countly.device = {
             "_os": Countly.getOS(),
             "_os_version": Countly.getVersion(Countly.getOS(), Platform.Version),
@@ -188,8 +193,8 @@ Countly.start = function() {
     if(!Countly.isInit)
       return;
     Countly.stop();
-    Countly.session();
-    Countly.sessionId = setInterval(Countly.session, Countly.SESSION_INTERVAL * 1000);
+    Countly.session("session_start");
+    Countly.sessionId = setInterval(function(){Countly.session("session_update");}, Countly.SESSION_INTERVAL * 1000);
 };
 
 Countly.stop = function() {

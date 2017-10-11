@@ -139,6 +139,9 @@ Countly.session = function(status) {
     if(status == "session_update"){
       delete session.begin_session;
     };
+    if(status == "session_stop"){
+      session.end_session = true;
+    };
     Ajax.get("/i", session, function(result) {});
 };
 
@@ -159,11 +162,12 @@ Countly.getDevice = function() {
             "_os": Countly.getOS(),
             "_os_version": DeviceInfo.getSystemVersion(),
             "_device": DeviceInfo.getModel(),
+            "_carrier": DeviceInfo.getCarrier(),
             "_resolution": (width * scale)+ "x" +(height * scale),
             "_app_version": DeviceInfo.getVersion(),
-            // "_density": "MDPI",
+            "_density": DeviceInfo.getDensity(),
             "_locale": DeviceInfo.getDeviceLocale(),
-            "_store": DeviceInfo.getBundleId()
+            "_store": DeviceInfo.getBundleId(),
         }
 
     }else{
@@ -202,8 +206,10 @@ Countly.start = function() {
 };
 
 Countly.stop = function() {
-  if(Countly.sessionId)
+  if(Countly.sessionId){
+    Countly.session("session_stop");
     clearInterval(Countly.sessionId);
+  }
   Countly.sessionId = null;
 };
 

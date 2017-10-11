@@ -162,10 +162,10 @@ Countly.getDevice = function() {
             "_os": Countly.getOS(),
             "_os_version": DeviceInfo.getSystemVersion(),
             "_device": DeviceInfo.getModel(),
-            "_carrier": DeviceInfo.getCarrier(),
+            // "_carrier": DeviceInfo.getCarrier(),
             "_resolution": (width * scale)+ "x" +(height * scale),
             "_app_version": DeviceInfo.getVersion(),
-            "_density": DeviceInfo.getDensity(),
+            // "_density": DeviceInfo.getDensity(),
             "_locale": DeviceInfo.getDeviceLocale(),
             "_store": DeviceInfo.getBundleId(),
         }

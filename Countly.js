@@ -1,6 +1,5 @@
-import { Platform, NativeModules, AsyncStorage, Dimensions } from 'react-native';
+import { Platform, NativeModules, AsyncStorage, Dimensions, AppState } from 'react-native';
 
-var DeviceInfo = null;
 try{
   DeviceInfo = require('react-native-device-info');
   if(!NativeModules.RNDeviceInfo){
@@ -12,6 +11,12 @@ try{
 }
 
 export default Countly = {};
+var DeviceInfo = null;
+Countly.isDebug = false;
+Countly.isInit = false;
+Countly.isManualSessionHandling = true;
+
+
 
 var Ajax = {};
 
@@ -112,8 +117,7 @@ Ajax.setItem = function(key, value,callback) {
             Countly.log("Error while storing", key, value);
     }
 };
-Countly.isDebug = false;
-Countly.isInit = false;
+
 Countly.init = function(ROOT_URL, APP_KEY, DEVICE_ID) {
     Countly.isInit = true;
     Ajax.getItem("DEVICE_ID", function(err, S_DEVICE_ID) {
@@ -212,6 +216,24 @@ Countly.stop = function() {
   }
   Countly.sessionId = null;
 };
+
+Countly.isBackground = false;
+AppState.addEventListener('change', function(nextState){
+  if(Countly.isManualSessionHandling){
+    if(Countly.isBackground && AppState.currentState == 'active'){
+      Countly.log("foreground");
+      if(Countly.isBackground)
+        Countly.start();
+      Countly.isBackground = false;
+    }
+
+    if(AppState.currentState === "background"){
+      Countly.log("background");
+      Countly.stop();
+      Countly.isBackground = true;
+    }
+  }
+});
 
 Countly.changeDeviceId = function(newDeviceId) {
     var changeDevice = { old_device_id: Countly.DEVICE_ID};

@@ -14,7 +14,7 @@ export default Countly = {};
 var DeviceInfo = null;
 Countly.isDebug = false;
 Countly.isInit = false;
-Countly.isManualSessionHandling = true;
+Countly.isManualSessionHandling = false;
 
 
 
@@ -219,15 +219,15 @@ Countly.stop = function() {
 
 Countly.isBackground = false;
 AppState.addEventListener('change', function(nextState){
-  if(Countly.isManualSessionHandling){
-    if(Countly.isBackground && AppState.currentState == 'active'){
+  if(!Countly.isManualSessionHandling){
+    if(Countly.isBackground && nextState == 'active'){
       Countly.log("foreground");
       if(Countly.isBackground)
         Countly.start();
       Countly.isBackground = false;
     }
 
-    if(AppState.currentState === "background"){
+    if(nextState === "background"){
       Countly.log("background");
       Countly.stop();
       Countly.isBackground = true;

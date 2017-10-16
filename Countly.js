@@ -139,12 +139,11 @@ Countly.hasBeenCalledOnStart = function(){
 }
 
 Countly.session = function(status) {
-    let session = { begin_session: 1, session_duration: Countly.SESSION_INTERVAL, metrics: Countly.getDevice() };
-    if(status == "session_update"){
-      delete session.begin_session;
-    };
+    let session = { session_duration: Countly.SESSION_INTERVAL, metrics: Countly.getDevice() };
+    if(status == "session_start"){
+      session.begin_session = 1;
+    }
     if(status == "session_stop"){
-      delete session.begin_session;
       session.end_session = true;
     };
     Ajax.get("/i", session, function(result) {});

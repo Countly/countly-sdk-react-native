@@ -144,6 +144,7 @@ Countly.session = function(status) {
       delete session.begin_session;
     };
     if(status == "session_stop"){
+      delete session.begin_session;
       session.end_session = true;
     };
     Ajax.get("/i", session, function(result) {});

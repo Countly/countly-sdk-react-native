@@ -44,7 +44,7 @@ Ajax.getTime = function() {
 }
 Ajax.get = function(url, data, callback) {
     if(!Countly.isInit)
-      return;
+      return Countly.add(url, data);
     data.device_id = Countly.DEVICE_ID;
     data.app_key = Countly.APP_KEY;
     data.timestamp = Ajax.getTime();
@@ -118,15 +118,24 @@ Ajax.setItem = function(key, value,callback) {
     }
 };
 
+Countly.queue = [];
+Countly.add = function(url, data){
+  Countly.queue.push({url: url, data: data});
+};
+Countly.update = function(){
+  for(var i=0,il=Countly.queue.length;i<il;i++){
+    Ajax.get(Countly.queue[i].url, Countly.queue[i].data, function(){});
+  }
+}
 Countly.init = function(ROOT_URL, APP_KEY, DEVICE_ID) {
-    Countly.isInit = true;
     Ajax.getItem("DEVICE_ID", function(err, S_DEVICE_ID) {
+        Countly.isInit = true;
         Countly.ROOT_URL = ROOT_URL;
         Countly.APP_KEY = APP_KEY;
         Countly.DEVICE_ID = DEVICE_ID || S_DEVICE_ID || Ajax.id();
         Ajax.setItem("DEVICE_ID", Countly.DEVICE_ID);
         Ajax.get("/i", {}, function(result) {
-
+          Countly.update();
         });
 
     });

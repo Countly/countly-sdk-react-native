@@ -22,8 +22,7 @@ There are also other Countly SDK repositories (both official and community suppo
 
 ## Roadmap
 
-* User Profiles
-* Push Notifications
+* Push Notifications support
 
 ### How can I help you with your efforts?
 Glad you asked. We need ideas, feedbacks and constructive comments. All your suggestions will be taken care with upmost importance. We are on [Twitter](http://twitter.com/gocountly) and [Facebook](http://www.facebook.com/Countly) if you would like to keep up with our fast progress!

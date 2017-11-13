@@ -2,11 +2,11 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Text, Button, ScrollView, Image } from 'react-native';
 
-import Countly from 'countly-sdk-react-native';
+import Countly from './Countly.js';
 
 Countly.isDebug = true;
 // Countly.setHttpPostForced(true);
-export default class App extends React.Component {
+export default class AwesomeProject extends React.Component {
 
     init = function(){
 
@@ -115,19 +115,19 @@ export default class App extends React.Component {
       <ScrollView>
             <Text style={[{fontSize:25, textAlign: 'center'}]}>Countly React Native Demo</Text>
             <Image source={{uri: 'https://count.ly/wp-content/uploads/2014/10/countly_logo_color.png'}} style={{width: 300, height: 88}} />
-            < Button onPress = { this.init } title = "Init" color = "#5bbd72"> </Button>
-            < Button onPress = { this.onStart } title = "Start" color = "#5bbd72"> </Button>
-            < Button onPress = { this.onStop } title = "Stop" color = "#d95c5c"> </Button>
+            <Button onPress = { this.init } title = "Init" color = "#5bbd72"> </Button>
+            <Button onPress = { this.onStart } title = "Start" color = "#5bbd72"> </Button>
+            <Button onPress = { this.onStop } title = "Stop" color = "#d95c5c"> </Button>
 
             <Text style={[{textAlign: 'center'}]}>Events Start</Text>
 
-            < Button onPress = { this.basicEvent } title = "Basic Events" color = "#e0e0e0"> </Button>
-            < Button onPress = { this.eventWithSum } title = "Event with Sum" color = "#e0e0e0"> </Button>
-            < Button onPress = { this.eventWithSegment } title = "Event with Segment" color = "#e0e0e0"> </Button>
-            < Button onPress = { this.eventWithSumAndSegment } title = "Even with Sum and Segment" color = "#841584"> </Button>
-            < Button onPress = { this.allEvent } title = "All Event" color = "#1b1c1d"> </Button>
-            < Button onPress = { this.startEvent } title = "Timed event: Start" color = "#e0e0e0"> </Button>
-            < Button onPress = { this.endEvent } title = "Timed event: Stop" color = "#e0e0e0"> </Button>
+            <Button onPress = { this.basicEvent } title = "Basic Events" color = "#e0e0e0"> </Button>
+            <Button onPress = { this.eventWithSum } title = "Event with Sum" color = "#e0e0e0"> </Button>
+            <Button onPress = { this.eventWithSegment } title = "Event with Segment" color = "#e0e0e0"> </Button>
+            <Button onPress = { this.eventWithSumAndSegment } title = "Even with Sum and Segment" color = "#841584"> </Button>
+            <Button onPress = { this.allEvent } title = "All Event" color = "#1b1c1d"> </Button>
+            <Button onPress = { this.startEvent } title = "Timed event: Start" color = "#e0e0e0"> </Button>
+            <Button onPress = { this.endEvent } title = "Timed event: Stop" color = "#e0e0e0"> </Button>
 
 
 
@@ -136,24 +136,24 @@ export default class App extends React.Component {
             <Text style={[{textAlign: 'center'}]}>2017</Text>
             <Text style={[{textAlign: 'center'}]}>User Methods Start</Text>
 
-            < Button onPress = { this.onSendUserData } title = "Send Users Data" color = "#00b5ad"> </Button>
-            < Button onPress = { this.userData_setProperty } title = "UserData.setProperty" color = "#00b5ad"> </Button>
-            < Button onPress = { this.userData_increment } title = "UserData.increment" color = "#00b5ad"> </Button>
-            < Button onPress = { this.userData_incrementBy } title = "UserData.incrementBy" color = "#00b5ad"> </Button>
-            < Button onPress = { this.userData_multiply } title = "UserData.multiply" color = "#00b5ad"> </Button>
-            < Button onPress = { this.userData_saveMax } title = "UserData.saveMax" color = "#00b5ad"> </Button>
-            < Button onPress = { this.userData_saveMin } title = "UserData.saveMin" color = "#00b5ad"> </Button>
-            < Button onPress = { this.userData_setOnce } title = "UserData.setOnce" color = "#00b5ad"> </Button>
+            <Button onPress = { this.onSendUserData } title = "Send Users Data" color = "#00b5ad"> </Button>
+            <Button onPress = { this.userData_setProperty } title = "UserData.setProperty" color = "#00b5ad"> </Button>
+            <Button onPress = { this.userData_increment } title = "UserData.increment" color = "#00b5ad"> </Button>
+            <Button onPress = { this.userData_incrementBy } title = "UserData.incrementBy" color = "#00b5ad"> </Button>
+            <Button onPress = { this.userData_multiply } title = "UserData.multiply" color = "#00b5ad"> </Button>
+            <Button onPress = { this.userData_saveMax } title = "UserData.saveMax" color = "#00b5ad"> </Button>
+            <Button onPress = { this.userData_saveMin } title = "UserData.saveMin" color = "#00b5ad"> </Button>
+            <Button onPress = { this.userData_setOnce } title = "UserData.setOnce" color = "#00b5ad"> </Button>
 
             <Text style={[{textAlign: 'center'}]}>User Methods End</Text>
 
             <Text style={[{textAlign: 'center'}]}>Other Methods Start</Text>
-            < Button onPress = { function(){Countly.recordView("HomePage")} } title = "Record View: 'HomePage'" color = "#e0e0e0"> </Button>
-            < Button onPress = { function(){Countly.recordView("Dashboard")} } title = "Record View: 'Dashboard'" color = "#e0e0e0"> </Button>
+            <Button onPress = { function(){Countly.recordView("HomePage")} } title = "Record View: 'HomePage'" color = "#e0e0e0"> </Button>
+            <Button onPress = { function(){Countly.recordView("Dashboard")} } title = "Record View: 'Dashboard'" color = "#e0e0e0"> </Button>
 
-            < Button onPress = { this.pushMessage } title = "Push Message" color = "#00b5ad"> </Button>
-            < Button onPress = { this.changeDeviceId } title = "Change Device ID" color = "#00b5ad"> </Button>
-            < Button onPress = { this.enableParameterTamperingProtection } title = "Enable Parameter Tapmering Protection" color = "#00b5ad"> </Button>
+            <Button onPress = { this.pushMessage } title = "Push Message" color = "#00b5ad"> </Button>
+            <Button onPress = { this.changeDeviceId } title = "Change Device ID" color = "#00b5ad"> </Button>
+            <Button onPress = { this.enableParameterTamperingProtection } title = "Enable Parameter Tapmering Protection" color = "#00b5ad"> </Button>
 
 
             <Text style={[{textAlign: 'center'}]}>Other Methods End</Text>

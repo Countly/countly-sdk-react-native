@@ -1,22 +1,18 @@
 import { Platform, NativeModules, AsyncStorage, Dimensions, AppState } from 'react-native';
+var DeviceInfo, PushNotification = null;
 
-try{
-  DeviceInfo = require('react-native-device-info');
-  if(!NativeModules.RNDeviceInfo){
-        DeviceInfo = null;
-  }
-}catch(err){
-    Countly.log(err);
-  DeviceInfo = null;
-}
+DeviceInfo = require('react-native-device-info');
+PushNotification = require('react-native-push-notification');
+
+
 
 export default Countly = {};
 var DeviceInfo = null;
 Countly.isDebug = false;
 Countly.isInit = false;
 Countly.isManualSessionHandling = false;
-
-
+Countly.isReady = false;
+Countly.startTime = new Date().getTime();
 
 var Ajax = {};
 
@@ -127,19 +123,24 @@ Countly.update = function(){
     Ajax.get(Countly.queue[i].url, Countly.queue[i].data, function(){});
   }
 }
+Ajax.getItem("DEVICE_ID", function(err, S_DEVICE_ID) {
+  Countly.isReady = true;
+  Countly.DEVICE_ID = DEVICE_ID || S_DEVICE_ID || Ajax.id();
+});
 Countly.init = function(ROOT_URL, APP_KEY, DEVICE_ID) {
-    Ajax.getItem("DEVICE_ID", function(err, S_DEVICE_ID) {
-        Countly.isInit = true;
-        Countly.ROOT_URL = ROOT_URL;
-        Countly.APP_KEY = APP_KEY;
-        Countly.DEVICE_ID = DEVICE_ID || S_DEVICE_ID || Ajax.id();
-        Ajax.setItem("DEVICE_ID", Countly.DEVICE_ID);
-        Ajax.get("/i", {}, function(result) {
-          Countly.update();
-        });
+  if(!Countly.isReady){
+    return setTimeout(function(){Countly.init(ROOT_URL, APP_KEY, DEVICE_ID);},1000);
+  }
+  Countly.isInit = true;
+  Countly.ROOT_URL = ROOT_URL;
+  Countly.APP_KEY = APP_KEY;
+  Ajax.setItem("DEVICE_ID", Countly.DEVICE_ID);
+  Ajax.get("/i", {}, function(result) {
+    Countly.update();
+  });
 
-    });
 };
+
 Countly.isInitialized = function(){
     return Countly.isInit;
 }
@@ -300,85 +301,215 @@ Countly.userData.setProperty = function(keyName, keyValue) {
     Ajax.get("/i", { user_details: { "custom": update } }, function(result) {});
 };
 Countly.userData.increment = function(keyName) {
-    var update = {};
-    update[keyName] = { "$inc": 1 };
-    Ajax.get("/i", { user_details: { "custom": update } }, function(result) {});
+  var update = {};
+  update[keyName] = {
+    "$inc": 1
+  };
+  Ajax.get("/i", {
+    user_details: {
+      "custom": update
+    }
+  }, function(result) {});
 };
 Countly.userData.incrementBy = function(keyName, keyValue) {
-    var update = {};
-    update[keyName] = { "$inc": keyValue };
-    Ajax.get("/i", { user_details: { "custom": update } }, function(result) {});
+  var update = {};
+  update[keyName] = {
+    "$inc": keyValue
+  };
+  Ajax.get("/i", {
+    user_details: {
+      "custom": update
+    }
+  }, function(result) {});
 };
 Countly.userData.multiply = function(keyName, keyValue) {
-    var update = {};
-    update[keyName] = { "$mul": keyValue };
-    Ajax.get("/i", { user_details: { "custom": update } }, function(result) {});
+  var update = {};
+  update[keyName] = {
+    "$mul": keyValue
+  };
+  Ajax.get("/i", {
+    user_details: {
+      "custom": update
+    }
+  }, function(result) {});
 };
 Countly.userData.saveMax = function(keyName, keyValue) {
-    var update = {};
-    update[keyName] = { "$max": keyValue };
-    Ajax.get("/i", { user_details: { "custom": update } }, function(result) {});
+  var update = {};
+  update[keyName] = {
+    "$max": keyValue
+  };
+  Ajax.get("/i", {
+    user_details: {
+      "custom": update
+    }
+  }, function(result) {});
 };
 Countly.userData.saveMin = function(keyName, keyValue) {
-    var update = {};
-    update[keyName] = { "$min": keyValue };
-    Ajax.get("/i", { user_details: { "custom": update } }, function(result) {});
+  var update = {};
+  update[keyName] = {
+    "$min": keyValue
+  };
+  Ajax.get("/i", {
+    user_details: {
+      "custom": update
+    }
+  }, function(result) {});
 };
 Countly.userData.setOnce = function(keyName, keyValue) {
-    var update = {};
-    update[keyName] = { "$setOnce": keyValue };
-    Ajax.get("/i", { user_details: { "custom": update } }, function(result) {});
+  var update = {};
+  update[keyName] = {
+    "$setOnce": keyValue
+  };
+  Ajax.get("/i", {
+    user_details: {
+      "custom": update
+    }
+  }, function(result) {});
 };
 Countly.userData.pullValue = function(keyName, keyValue) {
-    var update = {};
-    update[keyName] = { "$pull": keyValue };
-    Ajax.get("/i", { user_details: { "custom": update } }, function(result) {});
+  var update = {};
+  update[keyName] = {
+    "$pull": keyValue
+  };
+  Ajax.get("/i", {
+    user_details: {
+      "custom": update
+    }
+  }, function(result) {});
 };
 Countly.userData.pushValue = function(keyName, keyValue) {
-    var update = {};
-    update[keyName] = { "$push": keyValue };
-    Ajax.get("/i", { user_details: { "custom": update } }, function(result) {});
+  var update = {};
+  update[keyName] = {
+    "$push": keyValue
+  };
+  Ajax.get("/i", {
+    user_details: {
+      "custom": update
+    }
+  }, function(result) {});
 };
 Countly.userData.addToSetValue = function(keyName, keyValue) {
-    var update = {};
-    update[keyName] = { "$addToSet": keyValue };
-    Ajax.get("/i", { user_details: { "custom": update } }, function(result) {});
+  var update = {};
+  update[keyName] = {
+    "$addToSet": keyValue
+  };
+  Ajax.get("/i", {
+    user_details: {
+      "custom": update
+    }
+  }, function(result) {});
 };
 // user data
+
+Countly.registerPush = function(mode, token) {
+  var data = {
+    token_session: 1,
+    test_mode: mode
+  }
+  data[Platform.OS + "_token"] = token;
+  Ajax.get("/i", data, function(result) {});
+};
+
+Countly.openPush = function(pushNumber) {
+  Ajax.get("/i", {
+    "key": "[CLY]_push_open",
+    "count": 1,
+    "segmentation": {
+      "i": pushNumber
+    }
+  }, function(result) {});
+};
+Countly.actionPush = function(pushNumber) {
+  Ajax.get("/i", {
+    "key": "[CLY]_push_action",
+    "count": 1,
+    "segmentation": {
+      "i": pushNumber
+    }
+  }, function(result) {});
+};
+Countly.sentPush = function(pushNumber) {
+  Ajax.get("/i", {
+    "key": "[CLY]_push_sent",
+    "count": 1,
+    "segmentation": {
+      "i": pushNumber
+    }
+  }, function(result) {});
+};
 
 // crash report
 
 Countly.addCrashLog = function(crashLog) {
+  var crash = {
+    //device metrics
+    "_os": "Android",
+    "_os_version": "4.1",
+    "_manufacture": "Samsung", //may not be provided for ios or be constant, like Apple
+    "_device": "Galaxy S4", //model for Android, iPhone1,1 etc for iOS
+    "_resolution": "1900x1080",
+    "_app_version": "2.1",
+    "_cpu": "armv7", //type of cpu used on device (for ios will be based on device)
+    "_opengl": "2.1", //version of open gl supported
 
+    //state of device
+    "_ram_current": 1024, //in megabytes
+    "_ram_total": 4096,
+    "_disk_current": 3000, //in megabytes
+    "_disk_total": 10240,
+    "_bat": 99, //battery level from 0 to 100
+    //or provide "_bat_current" and "_bat_total" if other scale
+    "_orientation": "portrait", //in which device was held, landscape, portrait, etc
+
+    //bools
+    "_root": false, //true if device is rooted/jailbroken, false or not provided if not
+    "_online": true, //true if device is connected to the internet (WiFi or 3G), false or 	not provided if not connected
+    "_muted": false, //true if volume is off, device is in muted state
+    "_background": false, //true if app was in background when it crashed
+
+    //error info
+    "_name": "Null Pointer exception", //optional if provided by OS/Platform, else will use first line of 		stack
+    "_error": "Some error stack here", //error stack, can provide multiple separated by blank new line
+    "_nonfatal": false, //true if handled exception, false or not provided if unhandled crash
+    "_logs": "logs provided here", //some additional logs provided, if any
+    "_run": (new Date().getTime() - Countly.startTime) / 1000, //running time since app start in seconds
+
+    //custom key/values provided by developers
+    "_custom": {
+      "facebook_sdk": "3.5",
+      "admob": "6.5"
+    }
+  }
 }
 
-Countly.enableCrashReporting = function(){
+Countly.enableCrashReporting = function() {}
+Countly.setCustomCrashSegments = function() {}
 
-}
-Countly.setCustomCrashSegments = function(){
-
-}
-
-Countly.logException = function(){
-
-}
+Countly.logException = function() {}
 
 // crash report
 
 Countly.recordView = function(viewName) {
-    Countly.recordEvent({ "key": "[CLY]_view", "segmentation": { "name": viewName, "segment": Countly.getOS(), "visit": 1 } })
+  Countly.recordEvent({
+    "key": "[CLY]_view",
+    "segmentation": {
+      "name": viewName,
+      "segment": Countly.getOS(),
+      "visit": 1
+    }
+  })
 }
 
-Countly.setViewTracking = function(isViewTracking){
+Countly.setViewTracking = function(isViewTracking) {
   Countly.isViewTracking = isViewTracking;
 }
 
-Countly.getDeviceID = function(){
+Countly.getDeviceID = function() {
   return Countly.DEVICE_ID;
 }
 
-Countly.log = function(arg1, arg2){
-  if(Countly.isDebug){
+Countly.log = function(arg1, arg2) {
+  if (Countly.isDebug) {
     console.log(arg1, arg2);
   }
 }
@@ -395,18 +526,18 @@ setTimeout(function() {
   // });
 
   // Countly.log(Dimensions.get('window'))
-    // DeviceInfo.getSystemVersion()
-    // DeviceInfo.getModel()
-    // DeviceInfo.getVersion()
-    // DeviceInfo.getBundleId()
-    // Countly.log(DeviceInfo)
-    // DeviceInfo.getDeviceLocale().then((err, result)=>{
-    //     Countly.log(err, result)
-    // })
-    // Countly.log(DeviceInfo);
-    // Countly.log(DeviceInfo.getDeviceLocale())
-    // Countly.log("Device Locale");
-    // Countly.log(require('react-native'))
+  // DeviceInfo.getSystemVersion()
+  // DeviceInfo.getModel()
+  // DeviceInfo.getVersion()
+  // DeviceInfo.getBundleId()
+  // Countly.log(DeviceInfo)
+  // DeviceInfo.getDeviceLocale().then((err, result)=>{
+  //     Countly.log(err, result)
+  // })
+  // Countly.log(DeviceInfo);
+  // Countly.log(DeviceInfo.getDeviceLocale())
+  // Countly.log("Device Locale");
+  // Countly.log(require('react-native'))
 
-    // Countly.log()
+  // Countly.log()
 }, 1000);

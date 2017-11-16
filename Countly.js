@@ -1,17 +1,17 @@
 import { Platform, NativeModules, AsyncStorage, Dimensions, AppState } from 'react-native';
 
+var DeviceInfo = null;
+
 try{
-  DeviceInfo = require('react-native-device-info');
-  if(!NativeModules.RNDeviceInfo){
+    DeviceInfo = require('react-native-device-info');
+    if(!NativeModules.RNDeviceInfo){
         DeviceInfo = null;
-  }
+    }
 }catch(err){
     Countly.log(err);
-  DeviceInfo = null;
 }
 
 export default Countly = {};
-var DeviceInfo = null;
 Countly.isDebug = false;
 Countly.isInit = false;
 Countly.isManualSessionHandling = false;

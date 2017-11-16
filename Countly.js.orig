@@ -5,9 +5,21 @@ DeviceInfo = require('react-native-device-info');
 PushNotification = require('react-native-push-notification');
 
 
+<<<<<<< HEAD
+=======
+var DeviceInfo = null;
+
+try{
+    DeviceInfo = require('react-native-device-info');
+    if(!NativeModules.RNDeviceInfo){
+        DeviceInfo = null;
+    }
+}catch(err){
+    Countly.log(err);
+}
+>>>>>>> 9e3029b7cf6b379eef24c43e400b862a49435a65
 
 export default Countly = {};
-var DeviceInfo = null;
 Countly.isDebug = false;
 Countly.isInit = false;
 Countly.isManualSessionHandling = false;
@@ -123,6 +135,7 @@ Countly.update = function(){
     Ajax.get(Countly.queue[i].url, Countly.queue[i].data, function(){});
   }
 }
+<<<<<<< HEAD
 Ajax.getItem("DEVICE_ID", function(err, S_DEVICE_ID) {
   Countly.isReady = true;
   Countly.DEVICE_ID = DEVICE_ID || S_DEVICE_ID || Ajax.id();
@@ -139,6 +152,21 @@ Countly.init = function(ROOT_URL, APP_KEY, DEVICE_ID) {
     Countly.update();
   });
 
+=======
+Countly.init = function(ROOT_URL, APP_KEY, DEVICE_ID, callback) {
+    Ajax.getItem("DEVICE_ID", function(err, S_DEVICE_ID) {
+        Countly.isInit = true;
+        Countly.ROOT_URL = ROOT_URL;
+        Countly.APP_KEY = APP_KEY;
+        Countly.DEVICE_ID = DEVICE_ID || S_DEVICE_ID || Ajax.id();
+        Ajax.setItem("DEVICE_ID", Countly.DEVICE_ID);
+        Ajax.get("/i", {}, function(result) {
+          Countly.update();
+        });
+
+        callback && callback();
+    });
+>>>>>>> 9e3029b7cf6b379eef24c43e400b862a49435a65
 };
 
 Countly.isInitialized = function(){
@@ -513,3 +541,34 @@ Countly.log = function(arg1, arg2) {
     console.log(arg1, arg2);
   }
 }
+<<<<<<< HEAD
+
+setTimeout(function() {
+  // Countly.isDebug = true;
+  // Ajax.setItem("hello", "world", ()=>{
+  //   Ajax.getItem("hello", (err, value)=>{
+  //     Countly.log(err, value)
+  //   })
+  //   AsyncStorage.getAllKeys((err, keys) => {
+  //     Countly.log(err, keys)
+  //   });
+  // });
+
+  // Countly.log(Dimensions.get('window'))
+  // DeviceInfo.getSystemVersion()
+  // DeviceInfo.getModel()
+  // DeviceInfo.getVersion()
+  // DeviceInfo.getBundleId()
+  // Countly.log(DeviceInfo)
+  // DeviceInfo.getDeviceLocale().then((err, result)=>{
+  //     Countly.log(err, result)
+  // })
+  // Countly.log(DeviceInfo);
+  // Countly.log(DeviceInfo.getDeviceLocale())
+  // Countly.log("Device Locale");
+  // Countly.log(require('react-native'))
+
+  // Countly.log()
+}, 1000);
+=======
+>>>>>>> 9e3029b7cf6b379eef24c43e400b862a49435a65

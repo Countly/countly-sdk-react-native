@@ -382,31 +382,3 @@ Countly.log = function(arg1, arg2){
     console.log(arg1, arg2);
   }
 }
-
-setTimeout(function() {
-  // Countly.isDebug = true;
-  // Ajax.setItem("hello", "world", ()=>{
-  //   Ajax.getItem("hello", (err, value)=>{
-  //     Countly.log(err, value)
-  //   })
-  //   AsyncStorage.getAllKeys((err, keys) => {
-  //     Countly.log(err, keys)
-  //   });
-  // });
-
-  // Countly.log(Dimensions.get('window'))
-    // DeviceInfo.getSystemVersion()
-    // DeviceInfo.getModel()
-    // DeviceInfo.getVersion()
-    // DeviceInfo.getBundleId()
-    // Countly.log(DeviceInfo)
-    // DeviceInfo.getDeviceLocale().then((err, result)=>{
-    //     Countly.log(err, result)
-    // })
-    // Countly.log(DeviceInfo);
-    // Countly.log(DeviceInfo.getDeviceLocale())
-    // Countly.log("Device Locale");
-    // Countly.log(require('react-native'))
-
-    // Countly.log()
-}, 1000);

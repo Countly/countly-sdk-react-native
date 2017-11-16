@@ -127,7 +127,7 @@ Countly.update = function(){
     Ajax.get(Countly.queue[i].url, Countly.queue[i].data, function(){});
   }
 }
-Countly.init = function(ROOT_URL, APP_KEY, DEVICE_ID) {
+Countly.init = function(ROOT_URL, APP_KEY, DEVICE_ID, callback) {
     Ajax.getItem("DEVICE_ID", function(err, S_DEVICE_ID) {
         Countly.isInit = true;
         Countly.ROOT_URL = ROOT_URL;
@@ -138,6 +138,7 @@ Countly.init = function(ROOT_URL, APP_KEY, DEVICE_ID) {
           Countly.update();
         });
 
+        callback && callback();
     });
 };
 Countly.isInitialized = function(){

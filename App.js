@@ -4,6 +4,8 @@ import { Text, Button, ScrollView, Image } from 'react-native';
 
 import Countly from './Countly.js';
 
+var PushNotification = require('react-native-push-notification');
+
 Countly.isDebug = true;
 // Countly.setHttpPostForced(true);
 export default class AwesomeProject extends React.Component {
@@ -113,14 +115,28 @@ export default class AwesomeProject extends React.Component {
     onRegisterDevice = function(){
 
         console.log("onRegister");
-        Countly.initMessaging("881000050249", Countly.TEST);
+        PushNotification.configure({
+            onRegister: function(token) {
+                Countly.onRegisterDevice(function(token){
+                    console.log("token");
+                    console.log(token);
+                    Countly.registerPush(Countly.TEST, token);
+                });
+            },
+            onNotification: function(notification) {
+                console.log('NOTIFICATION:', notification);
+            },
+            senderID: gcmSenderId,
+            permissions: {
+                alert: true,
+                badge: true,
+                sound: true
+            },
+            popInitialNotification: true,
+            requestPermissions: true
+        });
 
-        Countly.onRegisterDevice(function(token){
-            console.log("token");
-            console.log(token);
-            Countly.registerPush(Countly.TEST, token);
 
-        })
     };
 
     onSendTestTokenAndroid = function(){

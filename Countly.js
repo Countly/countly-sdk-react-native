@@ -1,8 +1,7 @@
 import { Platform, NativeModules, AsyncStorage, Dimensions, AppState } from 'react-native';
-var DeviceInfo, PushNotification = null;
+var DeviceInfo = null;
 
 DeviceInfo = require('react-native-device-info');
-PushNotification = require('react-native-push-notification');
 
 export default Countly = {};
 var DeviceInfo = null;
@@ -423,25 +422,7 @@ Countly.userData.addToSetValue = function(keyName, keyValue) {
 Countly.TEST = 1;
 Countly.PRODUCTION = 0;
 Countly.initMessaging = function(gcmSenderId, mode){
-    PushNotification.configure({
-        onRegister: function(token) {
-            console.log('TOKEN:', token);
-            if(Countly._onRegisterDeviceCallback){
-                Countly._onRegisterDeviceCallback(token.token);
-            }
-        },
-        onNotification: function(notification) {
-            console.log('NOTIFICATION:', notification);
-        },
-        senderID: gcmSenderId,
-        permissions: {
-            alert: true,
-            badge: true,
-            sound: true
-        },
-        popInitialNotification: true,
-        requestPermissions: true
-    });
+
 };
 
 Countly._onRegisterDeviceCallback = null;

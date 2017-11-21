@@ -447,7 +447,6 @@ Countly.initMessaging = function(gcmSenderId, mode){
 Countly._onRegisterDeviceCallback = null;
 Countly.onRegisterDevice = function(callback) {
     Countly._onRegisterDeviceCallback = callback;
-    PushNotification.requestPermissions();
 };
 
 Countly.registerPush = function(mode, token) {

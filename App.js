@@ -117,16 +117,14 @@ export default class AwesomeProject extends React.Component {
         console.log("onRegister");
         PushNotification.configure({
             onRegister: function(token) {
-                Countly.onRegisterDevice(function(token){
-                    console.log("token");
-                    console.log(token);
-                    Countly.registerPush(Countly.TEST, token);
-                });
+                console.log("token");
+                console.log(token.token);
+                Countly.registerPush(Countly.PRODUCTION, token.token);
             },
             onNotification: function(notification) {
                 console.log('NOTIFICATION:', notification);
             },
-            senderID: gcmSenderId,
+            senderID: "881000050249",
             permissions: {
                 alert: true,
                 badge: true,

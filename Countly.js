@@ -179,7 +179,6 @@ Countly.getDevice = function() {
             "_locale": DeviceInfo.getDeviceLocale(),
             "_store": DeviceInfo.getBundleId()
         }
-        Countly.log(Countly.device);
     // } else {
     //
     //     Countly.device = {
@@ -424,16 +423,12 @@ Countly.initMessaging = function(gcmSenderId, mode){
 
 };
 
-Countly._onRegisterDeviceCallback = null;
-Countly.onRegisterDevice = function(callback) {
-    Countly._onRegisterDeviceCallback = callback;
-};
 
 Countly.registerPush = function(mode, token) {
     var data = {
         token_session: 1,
         test_mode: mode
-    }
+    };
     data[Platform.OS + "_token"] = token;
     Ajax.get("/i", data, function(result) {});
 };

@@ -4,7 +4,6 @@ var DeviceInfo = null;
 DeviceInfo = require('react-native-device-info');
 
 export default Countly = {};
-var DeviceInfo = null;
 Countly.isDebug = false;
 Countly.isInit = false;
 Countly.isManualSessionHandling = false;
@@ -168,28 +167,28 @@ Countly.getOS = function() {
 Countly.device = {};
 Countly.getDevice = function() {
     var {height, width, scale} = Dimensions.get('window');
-    if (DeviceInfo) {
+    // if (DeviceInfo) {
         Countly.device = {
             "_os": Countly.getOS(),
             "_os_version": DeviceInfo.getSystemVersion(),
             "_device": DeviceInfo.getModel(),
-            // "_carrier": DeviceInfo.getCarrier(),
+            "_carrier": DeviceInfo.getCarrier(),
             "_resolution": (width * scale) + "x" + (height * scale),
             "_app_version": DeviceInfo.getVersion(),
-            // "_density": DeviceInfo.getDensity(),
+            "_density": DeviceInfo.getDensity(),
             "_locale": DeviceInfo.getDeviceLocale(),
             "_store": DeviceInfo.getBundleId()
         }
-
-    } else {
-
-        Countly.device = {
-            "_os": Countly.getOS(),
-            "_os_version": Countly.getVersion(Countly.getOS(), Platform.Version),
-            "_resolution": (width * scale) + "x" + (height * scale),
-            "_locale": Countly.device._locale
-        };
-    }
+        Countly.log(Countly.device);
+    // } else {
+    //
+    //     Countly.device = {
+    //         "_os": Countly.getOS(),
+    //         "_os_version": Countly.getVersion(Countly.getOS(), Platform.Version),
+    //         "_resolution": (width * scale) + "x" + (height * scale),
+    //         "_locale": Countly.device._locale
+    //     };
+    // }
     return Countly.device;
 }
 

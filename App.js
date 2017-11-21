@@ -119,7 +119,8 @@ export default class AwesomeProject extends React.Component {
             onRegister: function(token) {
                 console.log("token");
                 console.log(token.token);
-                Countly.registerPush(Countly.PRODUCTION, token.token);
+                console.log(Countly.TEST);
+                Countly.registerPush(Countly.TEST, token.token);
             },
             onNotification: function(notification) {
                 console.log('NOTIFICATION:', notification);
@@ -139,7 +140,7 @@ export default class AwesomeProject extends React.Component {
 
     onSendTestTokenAndroid = function(){
         var testToken = "coyj3YaNss4:APA91bG_9rwIQF4Ul7J2JB76J3afpcP_4TJA1hTfrSjD4lxklLLQIT82ygxLlqND9uUvFbVTosFWvM83QFGiStm_M3HQFK11yO682_5e6MEzL6qsDwWkt_IBv5PTylMhRM6cn2g0CGXs";
-        Countly.registerPush(Countly.PRODUCTION, testToken);
+        Countly.registerPush(Countly.TEST, testToken);
     }
 
     throwNewError = function(){

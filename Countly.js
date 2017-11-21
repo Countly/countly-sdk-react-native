@@ -417,7 +417,8 @@ Countly.userData.addToSetValue = function(keyName, keyValue) {
 // user data
 
 // Push Notification
-Countly.TEST = 1;
+Countly.TEST = 2;
+Countly.ADHOC = 1;
 Countly.PRODUCTION = 0;
 Countly.initMessaging = function(gcmSenderId, mode){
 

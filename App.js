@@ -4,6 +4,8 @@ import { Text, Button, ScrollView, Image } from 'react-native';
 
 import Countly from './Countly.js';
 
+var PushNotification = require('react-native-push-notification');
+
 Countly.isDebug = true;
 // Countly.setHttpPostForced(true);
 export default class AwesomeProject extends React.Component {
@@ -110,6 +112,41 @@ export default class AwesomeProject extends React.Component {
       Countly.enableParameterTamperingProtection("salt");
     };
 
+    onRegisterDevice = function(){
+
+        console.log("onRegister");
+        PushNotification.configure({
+            onRegister: function(token) {
+                console.log("token");
+                console.log(token.token);
+                console.log(Countly.TEST);
+                Countly.registerPush(Countly.TEST, token.token);
+            },
+            onNotification: function(notification) {
+                console.log('NOTIFICATION:', notification);
+            },
+            senderID: "881000050249",
+            permissions: {
+                alert: true,
+                badge: true,
+                sound: true
+            },
+            popInitialNotification: true,
+            requestPermissions: true
+        });
+
+
+    };
+
+    onSendTestTokenAndroid = function(){
+        var testToken = "coyj3YaNss4:APA91bG_9rwIQF4Ul7J2JB76J3afpcP_4TJA1hTfrSjD4lxklLLQIT82ygxLlqND9uUvFbVTosFWvM83QFGiStm_M3HQFK11yO682_5e6MEzL6qsDwWkt_IBv5PTylMhRM6cn2g0CGXs";
+        Countly.registerPush(Countly.TEST, testToken);
+    }
+
+    throwNewError = function(){
+        throw new Error({'Test':'Test'});
+    }
+
   render() {
     return (
       <ScrollView>
@@ -118,6 +155,7 @@ export default class AwesomeProject extends React.Component {
             <Button onPress = { this.init } title = "Init" color = "#5bbd72"> </Button>
             <Button onPress = { this.onStart } title = "Start" color = "#5bbd72"> </Button>
             <Button onPress = { this.onStop } title = "Stop" color = "#d95c5c"> </Button>
+            <Button onPress = { this.throwNewError } title = "Throw Error" color = "#d95c5c"> </Button>
 
             <Text style={[{textAlign: 'center'}]}>Events Start</Text>
 
@@ -146,6 +184,12 @@ export default class AwesomeProject extends React.Component {
             <Button onPress = { this.userData_setOnce } title = "UserData.setOnce" color = "#00b5ad"> </Button>
 
             <Text style={[{textAlign: 'center'}]}>User Methods End</Text>
+
+            <Text style={[{textAlign: 'center'}]}>Push Notification Start</Text>
+            <Button onPress = { this.onRegisterDevice } title = "Register Device" color = "#00b5ad"> </Button>
+            <Button onPress = { this.onSendTestTokenAndroid } title = "Test Token Android" color = "#00b5ad"> </Button>
+            <Text style={[{textAlign: 'center'}]}>Push Notification End</Text>
+
 
             <Text style={[{textAlign: 'center'}]}>Other Methods Start</Text>
             <Button onPress = { function(){Countly.recordView("HomePage")} } title = "Record View: 'HomePage'" color = "#e0e0e0"> </Button>

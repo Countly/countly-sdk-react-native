@@ -1,11 +1,9 @@
 import { Platform, NativeModules, AsyncStorage, Dimensions, AppState } from 'react-native';
-var DeviceInfo, PushNotification = null;
+var DeviceInfo = null;
 
 DeviceInfo = require('react-native-device-info');
-PushNotification = require('react-native-push-notification');
 
 export default Countly = {};
-var DeviceInfo = null;
 Countly.isDebug = false;
 Countly.isInit = false;
 Countly.isManualSessionHandling = false;
@@ -169,28 +167,27 @@ Countly.getOS = function() {
 Countly.device = {};
 Countly.getDevice = function() {
     var {height, width, scale} = Dimensions.get('window');
-    if (DeviceInfo) {
+    // if (DeviceInfo) {
         Countly.device = {
             "_os": Countly.getOS(),
             "_os_version": DeviceInfo.getSystemVersion(),
             "_device": DeviceInfo.getModel(),
-            // "_carrier": DeviceInfo.getCarrier(),
+            "_carrier": DeviceInfo.getCarrier(),
             "_resolution": (width * scale) + "x" + (height * scale),
             "_app_version": DeviceInfo.getVersion(),
-            // "_density": DeviceInfo.getDensity(),
+            "_density": DeviceInfo.getDensity(),
             "_locale": DeviceInfo.getDeviceLocale(),
             "_store": DeviceInfo.getBundleId()
         }
-
-    } else {
-
-        Countly.device = {
-            "_os": Countly.getOS(),
-            "_os_version": Countly.getVersion(Countly.getOS(), Platform.Version),
-            "_resolution": (width * scale) + "x" + (height * scale),
-            "_locale": Countly.device._locale
-        };
-    }
+    // } else {
+    //
+    //     Countly.device = {
+    //         "_os": Countly.getOS(),
+    //         "_os_version": Countly.getVersion(Countly.getOS(), Platform.Version),
+    //         "_resolution": (width * scale) + "x" + (height * scale),
+    //         "_locale": Countly.device._locale
+    //     };
+    // }
     return Countly.device;
 }
 
@@ -420,41 +417,19 @@ Countly.userData.addToSetValue = function(keyName, keyValue) {
 // user data
 
 // Push Notification
-Countly.TEST = 1;
+Countly.TEST = 2;
+Countly.ADHOC = 1;
 Countly.PRODUCTION = 0;
 Countly.initMessaging = function(gcmSenderId, mode){
-    PushNotification.configure({
-        onRegister: function(token) {
-            console.log('TOKEN:', token);
-            if(Countly._onRegisterDeviceCallback){
-                Countly._onRegisterDeviceCallback(token.token);
-            }
-        },
-        onNotification: function(notification) {
-            console.log('NOTIFICATION:', notification);
-        },
-        senderID: gcmSenderId,
-        permissions: {
-            alert: true,
-            badge: true,
-            sound: true
-        },
-        popInitialNotification: true,
-        requestPermissions: true
-    });
+
 };
 
-Countly._onRegisterDeviceCallback = null;
-Countly.onRegisterDevice = function(callback) {
-    Countly._onRegisterDeviceCallback = callback;
-    PushNotification.requestPermissions();
-};
 
 Countly.registerPush = function(mode, token) {
     var data = {
         token_session: 1,
         test_mode: mode
-    }
+    };
     data[Platform.OS + "_token"] = token;
     Ajax.get("/i", data, function(result) {});
 };

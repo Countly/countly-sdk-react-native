@@ -51,6 +51,7 @@ Ajax.get = function(url, data, callback) {
         Countly.log(responseJson);
         callback(responseJson);
     }).catch((error) => {
+        Countly.add(url, data);
         Countly.log(error);
         callback(error);
     });
@@ -80,6 +81,7 @@ Ajax.post = function(url, data, callback) {
         Countly.log(responseJson);
         callback(responseJson);
     }).catch((error) => {
+        Countly.add(url, data);
         Countly.log(error);
         callback(error);
     });
@@ -108,8 +110,12 @@ Ajax.setItem = function(key, value, callback) {
 };
 
 Countly.queue = [];
+Ajax.getItem("OFFLINE", function(offline){
+    Countly.queue = JSON.parse(offline);
+});
 Countly.add = function(url, data) {
     Countly.queue.push({url: url, data: data});
+    Ajax.setItem("OFFLINE", JSON.stringify(Countly.queue));
 };
 Countly.update = function() {
     for (var i = 0, il = Countly.queue.length; i < il; i++) {

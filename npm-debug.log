@@ -1,0 +1,114 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/home/trinisoft/.nvm/versions/node/v6.9.2/bin/node',
+1 verbose cli   '/home/trinisoft/.nvm/versions/node/v6.9.2/bin/npm',
+1 verbose cli   'publish' ]
+2 info using npm@3.10.9
+3 info using node@v6.9.2
+4 verbose publish [ '.' ]
+5 silly cache add args [ '.', null ]
+6 verbose cache add spec .
+7 silly cache add parsed spec Result {
+7 silly cache add   raw: '.',
+7 silly cache add   scope: null,
+7 silly cache add   escapedName: null,
+7 silly cache add   name: null,
+7 silly cache add   rawSpec: '.',
+7 silly cache add   spec: '/home/trinisoft/office/react-native/countly-sdk-react-native',
+7 silly cache add   type: 'directory' }
+8 verbose addLocalDirectory /home/trinisoft/.npm/countly-sdk-react-native/1.0.5/package.tgz not in flight; packing
+9 verbose correctMkdir /home/trinisoft/.npm correctMkdir not in flight; initializing
+10 info lifecycle countly-sdk-react-native@1.0.5~prepublish: countly-sdk-react-native@1.0.5
+11 silly lifecycle countly-sdk-react-native@1.0.5~prepublish: no script for prepublish, continuing
+12 verbose tar pack [ '/home/trinisoft/.npm/countly-sdk-react-native/1.0.5/package.tgz',
+12 verbose tar pack   '/home/trinisoft/office/react-native/countly-sdk-react-native' ]
+13 verbose tarball /home/trinisoft/.npm/countly-sdk-react-native/1.0.5/package.tgz
+14 verbose folder /home/trinisoft/office/react-native/countly-sdk-react-native
+15 verbose addLocalTarball adding from inside cache /home/trinisoft/.npm/countly-sdk-react-native/1.0.5/package.tgz
+16 verbose correctMkdir /home/trinisoft/.npm correctMkdir not in flight; initializing
+17 silly cache afterAdd countly-sdk-react-native@1.0.5
+18 verbose afterAdd /home/trinisoft/.npm/countly-sdk-react-native/1.0.5/package/package.json not in flight; writing
+19 verbose correctMkdir /home/trinisoft/.npm correctMkdir not in flight; initializing
+20 verbose afterAdd /home/trinisoft/.npm/countly-sdk-react-native/1.0.5/package/package.json written
+21 silly publish { name: 'countly-sdk-react-native',
+21 silly publish   repository:
+21 silly publish    { type: 'git',
+21 silly publish      url: 'git+https://github.com/Countly/countly-sdk-react-native.git' },
+21 silly publish   main: 'Countly.js',
+21 silly publish   version: '1.0.5',
+21 silly publish   description: 'Countly is an innovative, real-time, open source mobile analytics and push notifications platform.',
+21 silly publish   author:
+21 silly publish    { name: 'Trinisoft Technologies',
+21 silly publish      email: 'trinisofttechnologies@gmail.com',
+21 silly publish      url: 'http://trinisofttechnologies.com' },
+21 silly publish   nativePackage: true,
+21 silly publish   license: 'MIT',
+21 silly publish   homepage: 'https://github.com/Countly/countly-sdk-react-native',
+21 silly publish   keywords: [ 'countly' ],
+21 silly publish   dependencies: { 'react-native-device-info': 'git+https://github.com/trinisofttechnologies/react-native-device-info.git' },
+21 silly publish   readme: '\n## What\'s Countly?\n[Countly](http://count.ly) is an innovative, real-time, open source mobile analytics and push notifications platform. It collects data from mobile devices, and visualizes this information to analyze mobile application usage and end-user behavior. There are two parts of Countly: [the server that collects and analyzes data](http://github.com/countly/countly-server), and mobile SDK that sends this data. Both parts are open source with different licensing terms.\n\n* **Slack user?** [Join our Slack community](http://slack.count.ly)\n* **Questions?** [Ask in our Community forum](http://community.count.ly)\n\n## About this SDK\n\nThis repository includes the Countly React Native SDK. See [Countly React Native SDK](http://resources.count.ly/docs/react-native) documentation for installation.\n\n### Other Github resources ###\n\nThis SDK needs one of the following Countly Editions to work:\n\n* Countly Community Edition, [downloadable from Github](https://github.com/Countly/countly-server).\n* [Countly Enterprise Edition](http://count.ly/product), available for purchase.\n\nFor more information about Countly Enterprise Edition, see [comparison of different Countly Editions](https://count.ly/compare/)\n\nThere are also other Countly SDK repositories (both official and community supported) on [Countly Resources](http://resources.count.ly/v1.0/docs/downloading-sdks).\n\n## Roadmap\n\n* Push Notifications support\n\n### How can I help you with your efforts?\nGlad you asked. We need ideas, feedbacks and constructive comments. All your suggestions will be taken care with upmost importance. We are on [Twitter](http://twitter.com/gocountly) and [Facebook](http://www.facebook.com/Countly) if you would like to keep up with our fast progress!\n\nIf you liked Countly (just like we do!), [why not use one of our badges](https://count.ly/brand-assets/) and give a link back to us, so others know about this wonderful platform?\n\n![Light badge](https://count.ly/wp-content/uploads/2014/10/countly_badge_5.png)  ![Dark badge](https://count.ly/wp-content/uploads/2014/10/countly_badge_6.png)\n\n### Support\n\nHave any questions? Visit [http://community.count.ly](http://community.count.ly "Countly Community Forum").\n\n',
+21 silly publish   readmeFilename: 'README.md',
+21 silly publish   gitHead: '37c52c7b7e69d476fd9d7f1c2c06ecd43cd8076b',
+21 silly publish   bugs: { url: 'https://github.com/Countly/countly-sdk-react-native/issues' },
+21 silly publish   _id: 'countly-sdk-react-native@1.0.5',
+21 silly publish   scripts: {},
+21 silly publish   _shasum: '7a4bf40ecda18f3dcba7d8ad2ba329aba4ec2b4f',
+21 silly publish   _from: '.' }
+22 verbose getPublishConfig undefined
+23 silly mapToRegistry name countly-sdk-react-native
+24 silly mapToRegistry using default registry
+25 silly mapToRegistry registry https://registry.npmjs.org/
+26 silly mapToRegistry data Result {
+26 silly mapToRegistry   raw: 'countly-sdk-react-native',
+26 silly mapToRegistry   scope: null,
+26 silly mapToRegistry   escapedName: 'countly-sdk-react-native',
+26 silly mapToRegistry   name: 'countly-sdk-react-native',
+26 silly mapToRegistry   rawSpec: '',
+26 silly mapToRegistry   spec: 'latest',
+26 silly mapToRegistry   type: 'tag' }
+27 silly mapToRegistry uri https://registry.npmjs.org/countly-sdk-react-native
+28 verbose publish registryBase https://registry.npmjs.org/
+29 silly publish uploading /home/trinisoft/.npm/countly-sdk-react-native/1.0.5/package.tgz
+30 verbose request uri https://registry.npmjs.org/countly-sdk-react-native
+31 verbose request sending authorization for write operation
+32 info attempt registry request try #1 at 1:48:47 PM
+33 verbose request using bearer token for auth
+34 verbose request id 7e303edc5e399cfb
+35 http request PUT https://registry.npmjs.org/countly-sdk-react-native
+36 http 403 https://registry.npmjs.org/countly-sdk-react-native
+37 verbose headers { 'content-type': 'application/json',
+37 verbose headers   'cache-control': 'max-age=300',
+37 verbose headers   'content-length': '91',
+37 verbose headers   'accept-ranges': 'bytes',
+37 verbose headers   date: 'Sun, 07 Jan 2018 08:18:50 GMT',
+37 verbose headers   via: '1.1 varnish',
+37 verbose headers   connection: 'keep-alive',
+37 verbose headers   'x-served-by': 'cache-cdg8734-CDG',
+37 verbose headers   'x-cache': 'MISS',
+37 verbose headers   'x-cache-hits': '0',
+37 verbose headers   'x-timer': 'S1515313128.443732,VS0,VE1732',
+37 verbose headers   vary: 'Accept-Encoding, Accept' }
+38 verbose request invalidating /home/trinisoft/.npm/registry.npmjs.org/countly-sdk-react-native on PUT
+39 error publish Failed PUT 403
+40 verbose stack Error: You cannot publish over the previously published version 1.0.5. : countly-sdk-react-native
+40 verbose stack     at makeError (/home/trinisoft/.nvm/versions/node/v6.9.2/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:302:12)
+40 verbose stack     at CachingRegistryClient.<anonymous> (/home/trinisoft/.nvm/versions/node/v6.9.2/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:290:14)
+40 verbose stack     at Request._callback (/home/trinisoft/.nvm/versions/node/v6.9.2/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:210:14)
+40 verbose stack     at Request.self.callback (/home/trinisoft/.nvm/versions/node/v6.9.2/lib/node_modules/npm/node_modules/request/request.js:187:22)
+40 verbose stack     at emitTwo (events.js:106:13)
+40 verbose stack     at Request.emit (events.js:191:7)
+40 verbose stack     at Request.<anonymous> (/home/trinisoft/.nvm/versions/node/v6.9.2/lib/node_modules/npm/node_modules/request/request.js:1048:10)
+40 verbose stack     at emitOne (events.js:96:13)
+40 verbose stack     at Request.emit (events.js:188:7)
+40 verbose stack     at IncomingMessage.<anonymous> (/home/trinisoft/.nvm/versions/node/v6.9.2/lib/node_modules/npm/node_modules/request/request.js:969:12)
+41 verbose statusCode 403
+42 verbose pkgid countly-sdk-react-native
+43 verbose cwd /home/trinisoft/office/react-native/countly-sdk-react-native
+44 error Linux 3.19.0-25-generic
+45 error argv "/home/trinisoft/.nvm/versions/node/v6.9.2/bin/node" "/home/trinisoft/.nvm/versions/node/v6.9.2/bin/npm" "publish"
+46 error node v6.9.2
+47 error npm  v3.10.9
+48 error code E403
+49 error You cannot publish over the previously published version 1.0.5. : countly-sdk-react-native
+50 error If you need help, you may report this error at:
+50 error     <https://github.com/npm/npm/issues>
+51 verbose exit [ 1, true ]

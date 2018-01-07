@@ -9,7 +9,7 @@ Countly.isInit = false;
 Countly.isManualSessionHandling = false;
 Countly.isReady = false;
 Countly.startTime = new Date().getTime();
-Countly.sdkVersion = "1.0.5";
+Countly.sdkVersion = "1.0.6";
 Countly.sdkName = "countly-sdk-react-native";
 var Ajax = {};
 

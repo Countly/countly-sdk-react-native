@@ -9,7 +9,7 @@ Countly.isInit = false;
 Countly.isManualSessionHandling = false;
 Countly.isReady = false;
 Countly.startTime = new Date().getTime();
-Countly.sdkVersion = "1.0.4";
+Countly.sdkVersion = "1.0.5";
 Countly.sdkName = "countly-sdk-react-native";
 var Ajax = {};
 
@@ -41,7 +41,8 @@ Ajax.get = function(url, data, callback) {
     data.device_id = Countly.DEVICE_ID;
     data.app_key = Countly.APP_KEY;
     data.timestamp = Ajax.getTime();
-    
+    console.log("data.timestamp");
+    console.log(data.timestamp);
     data.sdk_name = Countly.sdkName;
     data.sdk_version = Countly.sdkVersion;
     
@@ -121,17 +122,24 @@ Ajax.setItem = function(key, value, callback) {
 Countly.queue = [];
 Ajax.getItem("OFFLINE", function(offline){
     if(offline)
-        Countly.queue = JSON.parse(offline || "[]");
+        Countly.queue = JSON.parse(offline) || [];
+    if(Countly.queue.constructor !== Array){
+        Countly.queue = [];
+    }
 });
 Countly.add = function(url, data) {
     Countly.queue.push({url: url, data: data});
     Ajax.setItem("OFFLINE", JSON.stringify(Countly.queue));
 };
 Countly.update = function() {
-    for (var i = 0, il = Countly.queue.length; i < il; i++) {
-        Ajax.get(Countly.queue[i].url, Countly.queue[i].data, function() {});
-    }
-}
+    if(Countly.isReady){
+        for (var i = 0, il = Countly.queue.length; i < il; i++) {
+            Ajax.get(Countly.queue[i].url, Countly.queue[i].data, function() {});
+        }
+        Countly.queue = [];
+        Ajax.setItem("OFFLINE", "[]");
+    };
+};
 Ajax.getItem("DEVICE_ID", function(err, S_DEVICE_ID) {
     Countly.isReady = true;
     Countly.DEVICE_ID = S_DEVICE_ID || Ajax.id();

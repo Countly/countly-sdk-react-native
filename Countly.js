@@ -308,16 +308,16 @@ Countly.recordEvent = function(events) {
 }
 
 var storedEvents = {};
-Countly.startEvent = function(eventName) {
-    storedEvents[eventName] = Ajax.getTime();
+Countly.startEvent = function(events) {
+    events.dur = Ajax.getTime();
+    storedEvents[events.key] = events;
 }
 
-Countly.endEvent = function(eventName) {
-    Countly.recordEvent({
-        key: eventName,
-        "dur": Ajax.getTime() - storedEvents[eventName] || 0
-    });
-    delete storedEvents[eventName];
+Countly.endEvent = function(events) {
+    events = storedEvents[events.key];
+    events.dur = Ajax.getTime() - events.dur || 0;
+    Countly.recordEvent(events);
+    delete storedEvents[events.key];
 }
 
 // Events

@@ -69,11 +69,11 @@ export default class AwesomeProject extends React.Component {
 
 
     startEvent = function(){
-      Countly.startEvent("timedEvent");
+      Countly.startEvent({"key": "timedEvent", "count": 1});
     };
 
     endEvent = function(){
-      Countly.endEvent("timedEvent");
+      Countly.endEvent({"key": "timedEvent", "count": 1});
     };
 
     userData_setProperty = function(){

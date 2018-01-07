@@ -9,7 +9,8 @@ Countly.isInit = false;
 Countly.isManualSessionHandling = false;
 Countly.isReady = false;
 Countly.startTime = new Date().getTime();
-
+Countly.sdkVersion = "1.0.4";
+Countly.sdkName = "countly-sdk-react-native";
 var Ajax = {};
 
 // CONST
@@ -40,6 +41,10 @@ Ajax.get = function(url, data, callback) {
     data.device_id = Countly.DEVICE_ID;
     data.app_key = Countly.APP_KEY;
     data.timestamp = Ajax.getTime();
+    
+    data.sdk_name = Countly.sdkName;
+    data.sdk_version = Countly.sdkVersion;
+    
     if (Countly.isPost) {
         Ajax.post(url, data, callback);
         return;
@@ -65,6 +70,10 @@ Ajax.post = function(url, data, callback) {
     data.device_id = Countly.DEVICE_ID;
     data.app_key = Countly.APP_KEY;
     data.timestamp = Ajax.getTime();
+
+    data.sdk_name = Countly.sdkName;
+    data.sdk_version = Countly.sdkVersion;
+    
     var url = Countly.ROOT_URL + url + "?app_key=" + Countly.APP_KEY;
     Countly.log(url, data);
     fetch(url, {
@@ -111,7 +120,8 @@ Ajax.setItem = function(key, value, callback) {
 
 Countly.queue = [];
 Ajax.getItem("OFFLINE", function(offline){
-    Countly.queue = JSON.parse(offline);
+    if(offline)
+        Countly.queue = JSON.parse(offline || "[]");
 });
 Countly.add = function(url, data) {
     Countly.queue.push({url: url, data: data});

@@ -7,15 +7,27 @@ Countly.isDebug = true;
 // Countly.setHttpPostForced(true);
 export default class AwesomeProject extends React.Component {
   init = async () => {
-    await Countly.init('https://try.count.ly', '111dcd50d5f4a43a23202330cec19c069a68bc19');
+    try {
+      await Countly.begin('https://try.count.ly', '111dcd50d5f4a43a23202330cec19c069a68bc19');
+    } catch (err) {
+      console.log('error', err);
+    }
   }
 
-  onStart = () => {
-    Countly.start();
+  onStart = async () => {
+    try {
+      await Countly.start();
+    } catch (err) {
+      console.log('error', err);
+    }
   }
 
-  onStop = () => {
-    Countly.stop();
+  onStop = async () => {
+    try {
+      await Countly.stop();
+    } catch (err) {
+      console.log('error', err);
+    }
   }
 
   onSendUserData = () => {

@@ -1,4 +1,4 @@
-import { Platform, NativeModules, AsyncStorage, Dimensions, AppState } from 'react-native'; // eslint-disable-line import/no-extraneous-dependencies 
+import { Platform, NativeModules, AsyncStorage, Dimensions, AppState } from 'react-native'; // eslint-disable-line import/no-extraneous-dependencies
 
 import DeviceInfo from 'react-native-device-info';
 
@@ -198,7 +198,12 @@ Countly.init = (ROOT_URL, APP_KEY) => (
       return null;
     }
     Countly.DEVICE_ID = DEVICE_ID || Ajax.id();
-    await Ajax.setItem('DEVICE_ID', Countly.DEVICE_ID);
+    try {
+      await Ajax.setItem('DEVICE_ID', Countly.DEVICE_ID);
+    } catch (err) {
+      Countly.log('Error while setting', 'DEVICE_ID');
+      return null;
+    }
     Ajax.get('/i', {}, (result) => {
       Countly.log('init-result', result);
       Countly.update();
@@ -207,20 +212,6 @@ Countly.init = (ROOT_URL, APP_KEY) => (
     return resolve();
   })
 );
-// if (!Countly.isReady) {
-//   return setTimeout(() => {
-//     Countly.init(ROOT_URL, APP_KEY);
-//   }, 1000);
-// }
-// Countly.isInit = true;
-// Countly.ROOT_URL = ROOT_URL;
-// Countly.APP_KEY = APP_KEY;
-// Ajax.setItem('DEVICE_ID', Countly.DEVICE_ID);
-// Ajax.get('/i', {}, (result) => {
-//   Countly.log('init-result', result);
-//   Countly.update();
-// });
-// return null;
 
 // return if SDK is initialized or not
 Countly.isInitialized = () => Countly.isInit;
@@ -288,28 +279,48 @@ if (NativeModules.ExponentUtil) {
 
 // Start Countly SDK and set the session
 Countly.sessionId = null;
-Countly.start = () => {
-  if (!Countly.isInit) {
-    return setTimeout(() => {
-      Countly.start();
-    }, 1000);
-  }
-  Countly.stop();
-  Countly.session('session_start');
-  Countly.sessionId = setInterval(() => {
-    Countly.session('session_update');
-  }, Countly.SESSION_INTERVAL * 1000);
-  return null;
-};
+Countly.start = () => (
+  new Promise(async (resolve, reject) => {
+    if (!Countly.isInit) {
+      reject(new Error('Countly is not initalized, Call begin method to initalize Counlty'));
+    }
+    Countly.stop();
+    Countly.session('session_start');
+    Countly.sessionId = setInterval(() => {
+      Countly.session('session_update');
+    }, Countly.SESSION_INTERVAL * 1000);
+    resolve('Session Started');
+  })
+);
+
+Countly.begin = (ROOT_URL, APP_KEY) => (
+  new Promise(async (resolve, reject) => {
+    try {
+      await Countly.init(ROOT_URL, APP_KEY);
+    } catch (err) {
+      return reject(new Error('Unable to initialize Countly'));
+    }
+    try {
+      await Countly.start();
+    } catch (err) {
+      return reject(new Error('Unable to start session'));
+    }
+    return resolve('Countly is initialized and session is started');
+  })
+);
+
 
 // Stop Countly SDK and end session
-Countly.stop = () => {
-  if (Countly.sessionId) {
-    Countly.session('session_stop');
-    clearInterval(Countly.sessionId);
-  }
-  Countly.sessionId = null;
-};
+Countly.stop = () => (
+  new Promise((resolve) => {
+    if (Countly.sessionId) {
+      Countly.session('session_stop');
+      clearInterval(Countly.sessionId);
+    }
+    Countly.sessionId = null;
+    resolve('Session End');
+  })
+);
 
 // Listen events when the application is in foreground or background and
 // start and stop the Countly SDK accordingly

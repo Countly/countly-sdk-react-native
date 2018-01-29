@@ -36,6 +36,19 @@ Ajax.query = (data) => {
  */
 Ajax.id = () => Math.random().toString(36).substring(7);
 
+/**
+ * @description generates uuid
+ */
+Ajax.generateUUID = () => {
+  let d = new Date().getTime();
+  const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (d + (Math.random() * 16)) % 16 | 0;
+    d = Math.floor(d / 16);
+    return (c === 'x' ? r : ((r & 0x3) | 0x8)).toString(16);
+  });
+  return uuid;
+};
+
 // return current time
 Ajax.getTime = () => new Date().getTime();
 
@@ -181,6 +194,17 @@ Ajax.getItem('DEVICE_ID', (err, S_DEVICE_ID) => {
   Countly.DEVICE_ID = S_DEVICE_ID || Ajax.id();
 });
 
+// return promise while getting DeviceId
+Ajax.getDeviceId = () => (
+  new Promise((resolve) => {
+    Ajax.getItem('DEVICE_ID', (err, S_DEVICE_ID) => {
+      Countly.isReady = true;
+      Countly.DEVICE_ID = S_DEVICE_ID || Ajax.generateUUID();
+      resolve(Countly.DEVICE_ID);
+    });
+  })
+);
+
 /**
  * @description to initialize the countly SDK
  * @param {*} ROOT_URL dashboard base address
@@ -192,7 +216,7 @@ Countly.init = (ROOT_URL, APP_KEY) => (
     Countly.APP_KEY = APP_KEY;
     let DEVICE_ID = null;
     try {
-      DEVICE_ID = await AsyncStorage.getItem('@MySuperStore:DEVICE_ID');
+      DEVICE_ID = await Ajax.getDeviceId();
     } catch (err) {
       Countly.log('Error while getting', 'DEVICE_ID');
       return null;
@@ -293,6 +317,11 @@ Countly.start = () => (
   })
 );
 
+/**
+ * @description combined function of init and start
+ * @param {*} ROOT_URL dashboard base address
+ * @param {*} APP_KEY provided after the successfull signin to the countly dashboard
+ */
 Countly.begin = (ROOT_URL, APP_KEY) => (
   new Promise(async (resolve, reject) => {
     try {

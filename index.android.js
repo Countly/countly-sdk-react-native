@@ -112,7 +112,7 @@ class AwesomeProject extends Component {
     return (
       <ScrollView>
         <Text style={[{ fontSize: 25, textAlign: 'center' }]}>Countly Cordova Demo App</Text>
-        <Image source={{ uri: 'https://count.ly/wp-content/uploads/2014/10/countly_logo_color.png' }} style={{width: 300, height: 88}} />
+        <Image source={{ uri: 'https://count.ly/wp-content/uploads/2014/10/countly_logo_color.png' }} style={{ width: 300, height: 88 }} />
         <Button onPress={this.onStart} title='Start' color='#5bbd72' />
         <Button onPress={this.onStop} title='Stop' color='#d95c5c' />
 

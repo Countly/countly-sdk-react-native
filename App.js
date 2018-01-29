@@ -7,15 +7,27 @@ Countly.isDebug = true;
 // Countly.setHttpPostForced(true);
 export default class AwesomeProject extends React.Component {
   init = async () => {
-    await Countly.init('https://try.count.ly', '111dcd50d5f4a43a23202330cec19c069a68bc19');
+    try {
+      await Countly.begin('https://try.count.ly', '111dcd50d5f4a43a23202330cec19c069a68bc19');
+    } catch (err) {
+      console.log('error', err);
+    }
   }
 
-  onStart = () => {
-    Countly.start();
+  onStart = async () => {
+    try {
+      await Countly.start();
+    } catch (err) {
+      console.log('error', err);
+    }
   }
 
-  onStop = () => {
-    Countly.stop();
+  onStop = async () => {
+    try {
+      await Countly.stop();
+    } catch (err) {
+      console.log('error', err);
+    }
   }
 
   onSendUserData = () => {
@@ -150,7 +162,7 @@ export default class AwesomeProject extends React.Component {
       <ScrollView>
         <Text style={[{ fontSize: 25, textAlign: 'center' }]}>Countly React Native Demo</Text>
         <Image source={{ uri: 'https://count.ly/wp-content/uploads/2014/10/countly_logo_color.png' }} style={{ width: 300, height: 88 }} />
-        <Button onPress={this.init} title='Init' color='#5bbd72' />
+        <Button onPress={this.init} title='Init' color='#841584' />
         <Button onPress={this.onStart} title='Start' color='#5bbd72' />
         <Button onPress={this.onStop} title='Stop' color='#d95c5c' />
         <Button onPress={this.throwNewError} title='Throw Error' color='#d95c5c' />

@@ -76,7 +76,7 @@ Ajax.get = (url, data, callback) => {
   }
   Countly.log('GET Method');
   const newURL = `${Countly.ROOT_URL}${url}?${Ajax.query(newData)}`;
-  Countly.log(newURL);
+  Countly.log('new-url', newURL);
   fetch(newURL).then(response => response.json()).then((responseJson) => {
     Countly.log(responseJson);
     callback(responseJson);
@@ -211,22 +211,20 @@ Ajax.getDeviceId = () => (
  * @param {*} APP_KEY provided after the successfull signin to the countly dashboard
  */
 Countly.init = (ROOT_URL, APP_KEY) => (
-  new Promise(async (resolve) => {
+  new Promise(async (resolve, reject) => {
     Countly.ROOT_URL = ROOT_URL;
     Countly.APP_KEY = APP_KEY;
-    let DEVICE_ID = null;
     try {
-      DEVICE_ID = await Ajax.getDeviceId();
+      await Ajax.getDeviceId();
     } catch (err) {
       Countly.log('Error while getting', 'DEVICE_ID');
-      return null;
+      return reject(new Error('Error while getting DEVICE_ID'));
     }
-    Countly.DEVICE_ID = DEVICE_ID || Ajax.id();
     try {
       await Ajax.setItem('DEVICE_ID', Countly.DEVICE_ID);
     } catch (err) {
       Countly.log('Error while setting', 'DEVICE_ID');
-      return null;
+      return reject(new Error('Error while getting DEVICE_ID'));
     }
     Ajax.get('/i', {}, (result) => {
       Countly.log('init-result', result);

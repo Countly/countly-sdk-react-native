@@ -2,9 +2,9 @@ import { AsyncStorage } from 'react-native';
 
 export const Ajax = {
   /**
- * @description returns query for URL
- * @param data contains parameter to be passed in URL
- */
+   * @description returns query for URL
+   * @param data contains parameter to be passed in URL
+   */
   query: (data) => {
     let queryString = '';
     queryString += 'test=none&';
@@ -17,11 +17,6 @@ export const Ajax = {
     });
     return queryString;
   },
-
-  /**
-   * @description returns random device id
-   */
-  id: () => Math.random().toString(36).substring(7),
 
   /**
    * @description generates uuid
@@ -39,6 +34,15 @@ export const Ajax = {
   // return current time
   getTime: () => new Date().getTime(),
 
+  // returns hour of the passed time
+  getHour: data => new Date(data).getHours(),
+
+  // returns Day of the week
+  getDay: data => new Date(data).getDay(),
+
+  // returns time zone of the user
+  getTimeZone: data => new Date(data).getTimezoneOffset(),
+
   /**
    * @description fetch data using GET method
    * @param {*} url api-end-point
@@ -46,6 +50,10 @@ export const Ajax = {
    * @param {*} callback function invoked after the fetch success or error
    */
   get: (newURL, newData, callback) => (
+    // new Promise((resolve) => {
+    //   resolve();
+    //   callback('resolve');
+    // })
     fetch(newURL).then(response => response.json()).then((responseJson) => {
       callback(responseJson);
     }).catch((error) => {

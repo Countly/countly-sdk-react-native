@@ -1,6 +1,13 @@
-import { Platform, NativeModules, AsyncStorage, Dimensions, AppState } from 'react-native';
+import { Platform, NativeModules, AsyncStorage, Alert, Dimensions, AppState, PushNotificationIOS, DeviceEventEmitter } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
+import BackgroundTimer from 'react-native-background-timer';
+import PushNotification from 'react-native-push-notification';
+import RNRestart from 'react-native-restart';
+import { setJSExceptionHandler, getJSExceptionHandler, setNativeExceptionHandler } from 'react-native-exception-handler';
 import { Ajax, userData } from './util';
+
+const sdkVersion = '1.0.6';
+const sdkName = 'countly-sdk-react-native';
 
 class Countly {
   constructor() {
@@ -11,11 +18,15 @@ class Countly {
     this.isDebug = false;
     this.isInit = false;
     this.isPost = false;
+    this.forceDeviceId = false;
     this.isManualSessionHandling = false;
     this.isViewTracking = false;
+    this.lastView = null;
+    this.lastViewStartTime = Ajax.getTime();
+    this.exceptionHandler = null;
     this.isReady = false;
     this.salt = null;
-    this.startTime = new Date().getTime();
+    this.startTime = Ajax.getTime();
     this.sessionId = null;
     this.isBackground = false;
     this.storedEvents = {};
@@ -24,8 +35,6 @@ class Countly {
     this.TEST = 2;
     this.ADHOC = 1;
     this.PRODUCTION = 0;
-    this.sdkVersion = '1.0.6';
-    this.sdkName = 'countly-sdk-react-native';
     this.SESSION_INTERVAL = 60;
     if (NativeModules.ExponentUtil) {
       NativeModules.ExponentUtil.getCurrentLocaleAsync().then((local) => {
@@ -33,7 +42,8 @@ class Countly {
       });
     }
     AppState.addEventListener('change', nextState => this.onStateChange(nextState));
-
+    PushNotification.registerNotificationActions(['Accept', 'Reject', 'Yes', 'No']);
+    DeviceEventEmitter.addListener('notificationActionReceived', action => this.handleNotificationAction(action));
     // get the queue having unprocessed requests
     Ajax.getItem = ('OFFLINE', (offline) => {
       if (offline) {
@@ -52,23 +62,37 @@ class Countly {
     });
   }
 
+  // add default parameters to the request data
+  addDefaultParameters = (data) => {
+    const newData = data;
+    const currTime = Ajax.getTime();
+    newData.device_id = this.DEVICE_ID;
+    newData.app_key = this.APP_KEY;
+    newData.timestamp = currTime;
+    newData.hour = Ajax.getHour(currTime);
+    newData.dow = Ajax.getDay(currTime);
+    newData.tz = Ajax.getTimeZone(currTime);
+    newData.sdk_name = `js-reactnative-${this.getOS()}`;
+    newData.sdk_version = sdkVersion;
+    return newData;
+  }
+
   // get method
   get = (url, data, callback) => {
     if (!this.isInit) {
       return this.add(url, data);
     }
-    const newData = data;
-    newData.device_id = this.DEVICE_ID;
-    newData.app_key = this.APP_KEY;
-    newData.timestamp = Ajax.getTime();
-    newData.sdk_name = this.sdkName;
-    newData.sdk_version = this.sdkVersion;
 
+    const newData = this.addDefaultParameters(data);
+    // this.log('inside get', newData);
+    this.checkLength(newData);
     if (this.isPost) {
+      this.setHttpPostForced(false);
       this.post(url, newData, callback);
       return null;
     }
-    // Countly.log('GET Method');
+
+    // this.log('GET Method', newData);
     const newURL = `${this.ROOT_URL}${url}?${Ajax.query(newData)}`;
     Ajax.get(newURL, newData, callback).then((response) => {
       this.log('promise resolved', response);
@@ -80,18 +104,10 @@ class Countly {
   }
 
   // post method
-  post = (url, data, callback) => {
+  post = (url, newData, callback) => {
     if (!this.isInit) {
       return null;
     }
-    // Countly.log('POST Method');
-    const newData = data;
-    newData.device_id = this.DEVICE_ID;
-    newData.app_key = this.APP_KEY;
-    newData.timestamp = Ajax.getTime();
-
-    newData.sdk_name = this.sdkName;
-    newData.sdk_version = this.sdkVersion;
 
     const newURL = `${this.ROOT_URL}${url}?app_key=${this.APP_KEY}`;
     Ajax.post(newURL, newData, callback, this.APP_KEY).then((response) => {
@@ -103,27 +119,20 @@ class Countly {
     return null;
   }
 
-  // set DeviceId initially during initialization of Countly SDK
+  // get stored DeviceId(if exist) initially during initialization of Countly SDK
   setDeviceId = () => (
     new Promise(async (resolve, reject) => {
       let DeviceId = null;
       try {
         DeviceId = await AsyncStorage.getItem('Countly:DEVICE_ID');
         this.isReady = true;
-        this.DEVICE_ID = DeviceId || Ajax.generateUUID();
-        resolve();
+        resolve(DeviceId);
       } catch (err) {
         this.log('Unable getting data', err);
         reject();
       }
     })
   );
-
-  // Just for testing purpose
-  testing = () => {
-    this.log();
-    setTimeout(() => this.log('Hi from background', { hello: 'hello' }), 1000);
-  }
 
   // Listen events when the application is in foreground or background and
   // start and stop the Countly SDK accordingly
@@ -132,15 +141,13 @@ class Countly {
       if (this.isBackground && nextState === 'active') {
         this.log('foreground');
         if (this.isBackground) {
-          this.start();
+          this.start().then(result => this.log('countly', result)).catch(err => this.log('countly error', err));
         }
         this.isBackground = false;
       }
       if (nextState === 'background') {
         this.log('background');
-        // for testing purpose
-        this.testing();
-        this.stop();
+        this.stop().then(result => this.log('Countly', result)).catch(err => this.log('Countly error', err));
         this.isBackground = true;
       }
     }
@@ -150,19 +157,63 @@ class Countly {
    * @description adds incomplete requests into queue
    */
   add = (url, data) => {
-    this.queue.push({ url, data });
-    this.log('Countly-queue-set', this.queue);
-    Ajax.setItem('OFFLINE', JSON.stringify(this.queue));
+    if (this.queue.length <= 1000) {
+      this.queue.push({ url, data });
+      this.log('Countly-queue-set', this.queue);
+      Ajax.setItem('OFFLINE', JSON.stringify(this.queue));
+    } else {
+      this.log('Maximum Queue limit exceed');
+    }
   }
+
+  // get method to be call from update method
+  updateQueueRequest = (url, data, callback) => (
+    new Promise(async (resolve, reject) => {
+      if (!this.isInit) {
+        return reject(new Error('App not initialized'));
+      }
+
+      const newData = this.addDefaultParameters(data);
+
+      this.checkLength(newData);
+      const newURL = `${this.ROOT_URL}${url}?${Ajax.query(newData)}`;
+      if (this.isPost) {
+        this.setHttpPostForced(false);
+        try {
+          await Ajax.post(newURL, newData, callback, this.APP_KEY);
+          this.queue.shift();
+          this.log('newQueueData: ', this.queue);
+          return resolve();
+        } catch (error) {
+          return reject(new Error(error));
+        }
+      }
+
+      try {
+        await Ajax.get(newURL, newData, callback);
+        this.queue.shift();
+        this.log('newQueueData: ', this.queue);
+        return resolve();
+      } catch (error) {
+        return reject(error);
+      }
+    })
+  );
 
   /**
    * @description try sending request and updates queue
    */
-  update = () => {
+  update = async () => {
+    this.log('inside update');
     if (this.isReady) {
-      for (let i = 0, il = this.queue.length; i < il; i += 1) {
-        this.log('Countly-queue-update', this.queue[i]);
-        this.get(this.queue[i].url, this.queue[i].data, () => {});
+      // for (let i = 0, il = this.queue.length; i < il; i += 1) {
+      while (this.queue.length) {
+        this.log('Countly-queue-update', this.queue[0]);
+        try {
+          await this.updateQueueRequest(this.queue[0].url, this.queue[0].data, () => {}); // eslint-disable-line no-await-in-loop, max-len
+        } catch (error) {
+          setTimeout(() => {}, 60000);
+        }
       }
       this.queue = [];
       Ajax.setItem('OFFLINE', '[]');
@@ -170,16 +221,43 @@ class Countly {
   }
 
   /**
- * @description to initialize the countly SDK
- * @param {*} ROOT_URL dashboard base address
- * @param {*} APP_KEY provided after the successfull signin to the countly dashboard
- */
-  init = (ROOT_URL, APP_KEY) => (
+   * @description process queue request
+   */
+  processQueue = () => {
+    const intervalId1 = BackgroundTimer.setInterval(() => {
+      if (this.queue.length) {
+        this.update();
+      }
+      BackgroundTimer.clearInterval(intervalId1);
+    }, 1000);
+    if (this.queue.length) {
+      const intervalId = BackgroundTimer.setInterval(() => {
+        while (this.queue.length) {
+          this.update();
+        }
+        BackgroundTimer.clearInterval(intervalId);
+      }, 60000);
+    }
+  }
+
+  /**
+   * @description to initialize the countly SDK
+   * @param {*} ROOT_URL dashboard base address
+   * @param {*} APP_KEY provided after the successfull signin to the countly dashboard
+   * @param {*} DEVICE_ID optional if user wants to set custom Device Id
+   */
+  init = (ROOT_URL, APP_KEY, DEVICE_ID = null) => (
     new Promise(async (resolve, reject) => {
       this.ROOT_URL = ROOT_URL;
       this.APP_KEY = APP_KEY;
+      let deviceId = null;
       try {
-        await this.setDeviceId();
+        deviceId = await this.setDeviceId();
+        if (deviceId) {
+          this.DEVICE_ID = deviceId;
+        } else {
+          this.DEVICE_ID = DEVICE_ID || Ajax.generateUUID();
+        }
       } catch (err) {
         this.log('Error while getting', 'DEVICE_ID');
         return reject(new Error('Error while getting DEVICE_ID'));
@@ -190,11 +268,13 @@ class Countly {
         this.log('Error while setting', 'DEVICE_ID');
         return reject(new Error('Error while setting DEVICE_ID'));
       }
-      this.get('/i', {}, (result) => {
-        this.log('init-result', result);
-        this.update();
-      });
+      // this.get('/i', {}, (result) => {
+      //   this.log('init-result', result);
+      //   // this.update();
+      // });
       this.isInit = true;
+      // this.update();
+      this.processQueue();
       return resolve();
     })
   )
@@ -271,14 +351,15 @@ class Countly {
   )
 
   /**
- * @description combined function of init and start
- * @param {*} ROOT_URL dashboard base address
- * @param {*} APP_KEY provided after the successfull signin to the countly dashboard
- */
-  begin = (ROOT_URL, APP_KEY) => (
+   * @description combined function of init and start
+   * @param {*} ROOT_URL dashboard base address
+   * @param {*} APP_KEY provided after the successfull signin to the countly dashboard
+   * @param {*} DEVICE_ID optional if user wants to set custom Device Id
+   */
+  begin = (ROOT_URL, APP_KEY, DEVICE_ID = null) => (
     new Promise(async (resolve, reject) => {
       try {
-        await this.init(ROOT_URL, APP_KEY);
+        await this.init(ROOT_URL, APP_KEY, DEVICE_ID);
       } catch (err) {
         return reject(new Error('Unable to initialize Countly'));
       }
@@ -321,12 +402,21 @@ class Countly {
     }, (result) => { this.log('setOptionParam', result); });
   }
 
+  // set Location
   setLocation = (latitude, longitude) => {
     this.get('/i', {
       location: `${latitude},${longitude}`,
     }, (result) => { this.log('setLocation', result); });
   }
 
+  // returns length of data, passed in url
+  checkLength = (data) => {
+    if (data.length > 2000) {
+      this.setHttpPostForced(true);
+    }
+  }
+
+  // set http request type to post
   setHttpPostForced = (isPost) => {
     this.isPost = isPost;
   }
@@ -347,14 +437,16 @@ class Countly {
   }
 
   startEvent = (events) => {
-    const eventsData = events;
+    const eventsData = { key: events };
     eventsData.dur = Ajax.getTime();
     this.storedEvents[eventsData.key] = eventsData;
+    this.log('storedData: ', this.storedEvents);
   }
 
   endEvent = (events) => {
-    const eventsData = this.storedEvents[events.key];
+    const eventsData = this.storedEvents[events];
     eventsData.dur = Ajax.getTime() - eventsData.dur || 0;
+    this.log('endEvent-TimedEvent: ', eventsData);
     this.recordEvent(eventsData);
     delete this.storedEvents[eventsData.key];
   }
@@ -367,109 +459,164 @@ class Countly {
   }
 
   // Push Notification
-  initMessaging = (gcmSenderId, mode) => { this.log(gcmSenderId, mode); }
+  initMessaging = (gcmSenderId, mode) => {
+    PushNotification.configure({
+      onRegister: (token) => {
+        this.registerPush(mode, token.token);
+      },
+      onNotification: (notification) => {
+        this.log('NOTIFICATION:', notification);
+        PushNotification.localNotification({
+          /* Android Only Properties */
+          id: notification.id,
+          /* iOS and Android properties */
+          title: notification.title,
+          message: notification.message, // (required)
+          actions: '["Yes", "No", "Reject"]', // (Android only) See the doc for notification actions to know more
+        });
+        notification.finish(PushNotificationIOS.FetchResult.NoData);
+        this.openPush(notification.id);
+      },
+      senderID: gcmSenderId,
+      permissions: {
+        alert: true,
+        badge: true,
+        sound: true,
+      },
+      popInitialNotification: true,
+      requestPermissions: true,
+    });
+  }
 
   registerPush = (mode, token) => {
     const data = {
       token_session: 1,
       test_mode: mode,
     };
-    data[`${Platform.OS}token`] = token;
+    data[`${Platform.OS}_token`] = token;
     this.get('/i', data, (result) => { this.log('registerPush', result); });
   }
 
   openPush = (pushNumber) => {
-    this.get('/i', {
-      key: '[CLY]_push_open',
-      count: 1,
-      segmentation: {
-        i: pushNumber,
-      },
-    }, (result) => { this.log('openPush', result); });
+    const eventData = { key: '[CLY]_push_open', count: 1, segmentation: { i: pushNumber } };
+    this.recordEvent(eventData);
   }
 
   actionPush = (pushNumber) => {
-    this.get('/i', {
-      key: '[CLY]_push_action',
-      count: 1,
-      segmentation: {
-        i: pushNumber,
-      },
-    }, (result) => { this.log('actionPush', result); });
+    const eventData = { key: '[CLY]_push_action', count: 1, segmentation: { i: pushNumber } };
+    this.recordEvent(eventData);
   }
 
   sentPush = (pushNumber) => {
-    this.get('/i', {
-      key: '[CLY]_push_sent',
-      count: 1,
-      segmentation: {
-        i: pushNumber,
-      },
-    }, (result) => { this.log('sentPush', result); });
+    const eventData = { key: '[CLY]_push_sent', count: 1, segmentation: { i: pushNumber } };
+    this.recordEvent(eventData);
+  }
+
+  // handle Push Notification actions
+  handleNotificationAction = (action) => {
+    this.log('Notification action received: ', action);
+    const info = JSON.parse(action.dataJSON);
+    if (info.action === 'Yes') {
+      this.log('Yet to implement');
+    } else if (info.action === 'No') {
+      this.log('Yet to implement');
+    } else if (info.action === 'Reject') {
+      PushNotification.cancelLocalNotifications({ id: info.id });
+    }
+    this.actionPush(info.id);
   }
   // Push Notification
 
   // crash report
   addCrashLog = (crashLog) => {
     const crash = {
-      // device metrics
-      _os: 'Android',
-      _os_version: '4.1',
-      _manufacture: 'Samsung', // may not be provided for ios or be constant, like Apple
-      _device: 'Galaxy S4', // model for Android, iPhone1,1 etc for iOS
-      _resolution: '1900x1080',
-      _app_version: '2.1',
-      _cpu: 'armv7', // type of cpu used on device (for ios will be based on device)
-      _opengl: '2.1', // version of open gl supported
-
-      // state of device
-      _ram_current: 1024, // in megabytes
-      _ram_total: 4096,
-      _disk_current: 3000, // in megabytes
-      _disk_total: 10240,
-      _bat: 99, // battery level from 0 to 100
-      // or provide "_bat_current" and "_bat_total" if other scale
-      _orientation: 'portrait', // in which device was held, landscape, portrait, etc
-
-      // bools
-      _root: false, // true if device is rooted/jailbroken, false or not provided if not
-      // true if device is connected to the internet (WiFi or 3G),
-      // false or not provided if not connected
+      ...this.getDevice(),
+      ...crashLog,
       _online: true,
-      _muted: false, // true if volume is off, device is in muted state
-      _background: false, // true if app was in background when it crashed
-
-      // error info
-      _name: 'Null Pointer exception', // optional if provided by OS/Platform, else will use first line of stack
-      _error: 'Some error stack here', // error stack, can provide multiple separated by blank new line
-      _nonfatal: false, // true if handled exception, false or not provided if unhandled crash
-      _logs: 'logs provided here', // some additional logs provided, if any
-      // running time since app start in seconds
+      _background: this.isBackground,
       _run: (new Date().getTime() - this.startTime) / 1000,
 
       // custom key/values provided by developers
-      _custom: {
-        facebook_sdk: '3.5',
-        admob: '6.5',
-      },
+      // _custom: { ...crashLog },
     };
-    this.log(crashLog, crash);
+    this.get('/i', { crash }, (result) => { this.log('addCrashLog', result); });
+    this.stop();
+    Alert.alert(
+      'Application Error',
+      'Application will be restarted',
+      [
+        { text: 'Restart', onPress: () => this.restartApp() },
+      ],
+      { cancelable: false },
+    );
   }
 
-  enableCrashReporting = () => {}
+  crashReportingHandler = (e, isFatal) => {
+    const crashLog = { _error: e.message, nonFatal: !isFatal, name: 'Error' };
+    this.addCrashLog(crashLog);
+  }
+
+  enableCrashReporting = (enable = false) => {
+    if (enable) {
+      setJSExceptionHandler(this.crashReportingHandler, true);
+      setNativeExceptionHandler((errorString) => {
+        const crashLog = { error: errorString, name: 'Fatal Error', nonFatal: false };
+        this.addCrashLog(crashLog);
+      });
+    }
+  }
+
+  restartApp = () => RNRestart.Restart();
+
+  getExceptionHandler = () => getJSExceptionHandler();
+
   setCustomCrashSegments = () => {}
 
   logException = () => {}
-
   // crash report
 
-  recordView = (viewName) => {
+  // view handling
+  recordViewDuration = (lastViewStartTime, lastView) => {
     this.recordEvent({
       key: '[CLY]_view',
+      count: 1,
+      dur: Ajax.reportViewDuration(lastViewStartTime),
       segmentation: {
-        name: viewName,
+        name: lastView,
         segment: this.getOS(),
-        visit: 1,
+      },
+    });
+  }
+
+  recordView = (viewName) => {
+    const currTime = Ajax.getTime();
+    const segmentData = { name: viewName, segment: this.getOS(), visit: 1 };
+    if (this.lastView) {
+      this.recordViewDuration(this.lastViewStartTime, this.lastView);
+    } else {
+      segmentData.start = 1;
+    }
+    this.lastViewStartTime = currTime;
+    this.lastView = viewName;
+    if (viewName) {
+      this.recordEvent({
+        key: '[CLY]_view',
+        count: 1,
+        segmentation: segmentData,
+      });
+    }
+  }
+
+  recordViewActions = (actionType, touchCoordinate) => {
+    this.recordEvent({
+      key: '[CLY]_action',
+      count: 1,
+      segmentation: {
+        type: actionType,
+        x: touchCoordinate.x,
+        y: touchCoordinate.y,
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height,
       },
     });
   }
@@ -477,7 +624,11 @@ class Countly {
   setViewTracking = (isViewTracking) => {
     this.isViewTracking = isViewTracking;
   }
+  // view handling
 
+  /**
+   * @description return deviceId
+   */
   getDeviceID = () => this.DEVICE_ID;
 
   log = (arg1, arg2) => {

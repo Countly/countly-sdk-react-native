@@ -4,6 +4,7 @@ import BackgroundTimer from 'react-native-background-timer';
 import PushNotification from 'react-native-push-notification';
 import RNRestart from 'react-native-restart';
 import { setJSExceptionHandler, getJSExceptionHandler, setNativeExceptionHandler } from 'react-native-exception-handler';
+import StarRating from './Countly.Rating';
 import { Ajax, userData } from './util';
 
 const sdkVersion = '1.0.6';
@@ -36,6 +37,10 @@ class Countly {
     this.ADHOC = 1;
     this.PRODUCTION = 0;
     this.SESSION_INTERVAL = 60;
+    this.isStarRatingVisible = false;
+    this.StarRating = StarRating;
+    this.starRatingMessage = 'How would you rate the app?';
+    this.starRatingDismissButtonTitle = 'Dismiss';
     if (NativeModules.ExponentUtil) {
       NativeModules.ExponentUtil.getCurrentLocaleAsync().then((local) => {
         this.device._locale = local;
@@ -579,7 +584,6 @@ class Countly {
   recordViewDuration = (lastViewStartTime, lastView) => {
     this.recordEvent({
       key: '[CLY]_view',
-      count: 1,
       dur: Ajax.reportViewDuration(lastViewStartTime),
       segmentation: {
         name: lastView,
@@ -601,7 +605,6 @@ class Countly {
     if (viewName) {
       this.recordEvent({
         key: '[CLY]_view',
-        count: 1,
         segmentation: segmentData,
       });
     }
@@ -610,7 +613,6 @@ class Countly {
   recordViewActions = (actionType, touchCoordinate) => {
     this.recordEvent({
       key: '[CLY]_action',
-      count: 1,
       segmentation: {
         type: actionType,
         x: touchCoordinate.x,
@@ -630,6 +632,19 @@ class Countly {
    * @description return deviceId
    */
   getDeviceID = () => this.DEVICE_ID;
+
+  /**
+   * @description starRating Event
+   */
+  starRating = (rating) => {
+    const eventData = {
+      key: '[CLY]_star_rating',
+      platform: this.getOS(),
+      app_version: DeviceInfo.getVersion(),
+      rating,
+    };
+    this.recordEvent(eventData);
+  }
 
   log = (arg1, arg2) => {
     if (this.isDebug) {

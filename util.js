@@ -1,10 +1,11 @@
 import { AsyncStorage } from 'react-native';
+import Countly from './Countly';
 
 export const Ajax = {
   /**
- * @description returns query for URL
- * @param data contains parameter to be passed in URL
- */
+   * @description returns query for URL
+   * @param data contains parameter to be passed in URL
+   */
   query: (data) => {
     let queryString = '';
     queryString += 'test=none&';
@@ -17,11 +18,6 @@ export const Ajax = {
     });
     return queryString;
   },
-
-  /**
-   * @description returns random device id
-   */
-  id: () => Math.random().toString(36).substring(7),
 
   /**
    * @description generates uuid
@@ -38,6 +34,22 @@ export const Ajax = {
 
   // return current time
   getTime: () => new Date().getTime(),
+
+  // returns hour of the passed time
+  getHour: data => new Date(data).getHours(),
+
+  // returns Day of the week
+  getDay: data => new Date(data).getDay(),
+
+  // returns time zone of the user
+  getTimeZone: data => new Date(data).getTimezoneOffset(),
+
+  // returns time difference from current-time and parameter-time
+  reportViewDuration: (date) => {
+    const now = new Date().getTime();
+    const diff = now - date;
+    return diff;
+  },
 
   /**
    * @description fetch data using GET method
@@ -117,11 +129,11 @@ export const userData = {
   setProperty: (keyName, keyValue) => {
     const update = {};
     update[keyName] = keyValue;
-    Ajax.get('/i', {
+    Countly.get('/i', {
       user_details: {
         custom: update,
       },
-    }, (result) => { this.log('userDataProperty', result); });
+    }, (result) => { Countly.log('userDataProperty', result); });
   },
 
   increment: (keyName) => {
@@ -129,11 +141,11 @@ export const userData = {
     update[keyName] = {
       $inc: 1,
     };
-    Ajax.get('/i', {
+    Countly.get('/i', {
       user_details: {
         custom: update,
       },
-    }, (result) => { this.log('userData.increment', result); });
+    }, (result) => { Countly.log('userData.increment', result); });
   },
 
   incrementBy: (keyName, keyValue) => {
@@ -141,11 +153,11 @@ export const userData = {
     update[keyName] = {
       $inc: keyValue,
     };
-    Ajax.get('/i', {
+    Countly.get('/i', {
       user_details: {
         custom: update,
       },
-    }, (result) => { this.log('userData.incrementBy', result); });
+    }, (result) => { Countly.log('userData.incrementBy', result); });
   },
 
   multiply: (keyName, keyValue) => {
@@ -153,11 +165,11 @@ export const userData = {
     update[keyName] = {
       $mul: keyValue,
     };
-    Ajax.get('/i', {
+    Countly.get('/i', {
       user_details: {
         custom: update,
       },
-    }, (result) => { this.log('userData.multiply', result); });
+    }, (result) => { Countly.log('userData.multiply', result); });
   },
 
   saveMax: (keyName, keyValue) => {
@@ -165,11 +177,11 @@ export const userData = {
     update[keyName] = {
       $max: keyValue,
     };
-    Ajax.get('/i', {
+    Countly.get('/i', {
       user_details: {
         custom: update,
       },
-    }, (result) => { this.log('userData.saveMax', result); });
+    }, (result) => { Countly.log('userData.saveMax', result); });
   },
 
   saveMin: (keyName, keyValue) => {
@@ -177,11 +189,11 @@ export const userData = {
     update[keyName] = {
       $min: keyValue,
     };
-    Ajax.get('/i', {
+    Countly.get('/i', {
       user_details: {
         custom: update,
       },
-    }, (result) => { this.log('userData.saveMin', result); });
+    }, (result) => { Countly.log('userData.saveMin', result); });
   },
 
   setOnce: (keyName, keyValue) => {
@@ -189,11 +201,11 @@ export const userData = {
     update[keyName] = {
       $setOnce: keyValue,
     };
-    Ajax.get('/i', {
+    Countly.get('/i', {
       user_details: {
         custom: update,
       },
-    }, (result) => { this.log('userData.setOnce', result); });
+    }, (result) => { Countly.log('userData.setOnce', result); });
   },
 
   pullValue: (keyName, keyValue) => {
@@ -201,11 +213,11 @@ export const userData = {
     update[keyName] = {
       $pull: keyValue,
     };
-    Ajax.get('/i', {
+    Countly.get('/i', {
       user_details: {
         custom: update,
       },
-    }, (result) => { this.log('userData.pullValue', result); });
+    }, (result) => { Countly.log('userData.pullValue', result); });
   },
 
   pushValue: (keyName, keyValue) => {
@@ -213,11 +225,11 @@ export const userData = {
     update[keyName] = {
       $push: keyValue,
     };
-    Ajax.get('/i', {
+    Countly.get('/i', {
       user_details: {
         custom: update,
       },
-    }, (result) => { this.log('userData.pushValue', result); });
+    }, (result) => { Countly.log('userData.pushValue', result); });
   },
 
   // Set the newValue of the userData with specific key
@@ -226,10 +238,10 @@ export const userData = {
     update[keyName] = {
       $addToSet: keyValue,
     };
-    Ajax.get('/i', {
+    Countly.get('/i', {
       user_details: {
         custom: update,
       },
-    }, (result) => { this.log('userData.addToSetValue', result); });
+    }, (result) => { Countly.log('userData.addToSetValue', result); });
   },
 };

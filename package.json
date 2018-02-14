@@ -15,7 +15,12 @@
     "countly"
   ],
   "dependencies": {
-    "react-native-device-info": "https://github.com/trinisofttechnologies/react-native-device-info.git"
+    "react-native-background-timer": "^2.0.0",
+    "react-native-device-info": "https://github.com/trinisofttechnologies/react-native-device-info.git",
+    "react-native-exception-handler": "^2.7.1",
+    "react-native-modal": "^5.0.0",
+    "react-native-push-notification": "^3.0.2",
+    "react-native-restart": "0.0.6"
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",

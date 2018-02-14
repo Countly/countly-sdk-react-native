@@ -38,9 +38,6 @@ class Countly {
     this.PRODUCTION = 0;
     this.SESSION_INTERVAL = 60;
     this.isStarRatingVisible = false;
-    this.StarRating = StarRating;
-    this.starRatingMessage = 'How would you rate the app?';
-    this.starRatingDismissButtonTitle = 'Dismiss';
     if (NativeModules.ExponentUtil) {
       NativeModules.ExponentUtil.getCurrentLocaleAsync().then((local) => {
         this.device._locale = local;
@@ -561,9 +558,9 @@ class Countly {
     this.addCrashLog(crashLog);
   }
 
-  enableCrashReporting = (enable = false) => {
+  enableCrashReporting = (enable = false, enableInDevMode = false) => {
     if (enable) {
-      setJSExceptionHandler(this.crashReportingHandler, true);
+      setJSExceptionHandler(this.crashReportingHandler, enableInDevMode);
       setNativeExceptionHandler((errorString) => {
         const crashLog = { error: errorString, name: 'Fatal Error', nonFatal: false };
         this.addCrashLog(crashLog);
@@ -574,10 +571,6 @@ class Countly {
   restartApp = () => RNRestart.Restart();
 
   getExceptionHandler = () => getJSExceptionHandler();
-
-  setCustomCrashSegments = () => {}
-
-  logException = () => {}
   // crash report
 
   // view handling

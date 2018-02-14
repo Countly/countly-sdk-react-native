@@ -92,12 +92,14 @@ export default class StarRating extends Component {
 
 StarRating.propTypes = {
   isVisible: PropTypes.bool.isRequired,
-  message: PropTypes.string.isRequired,
-  dismissButtonTitle: PropTypes.string.isRequired,
+  message: PropTypes.string,
+  dismissButtonTitle: PropTypes.string,
   hideStar: PropTypes.func.isRequired,
   noOfStars: PropTypes.number,
 };
 
 StarRating.defaultProps = {
   noOfStars: 5,
+  message: 'How would you rate the app?',
+  dismissButtonTitle: 'Dismiss',
 };

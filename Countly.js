@@ -4,7 +4,6 @@ import BackgroundTimer from 'react-native-background-timer';
 import PushNotification from 'react-native-push-notification';
 import RNRestart from 'react-native-restart';
 import { setJSExceptionHandler, getJSExceptionHandler, setNativeExceptionHandler } from 'react-native-exception-handler';
-import StarRating from './Countly.Rating';
 import { Ajax, userData } from './util';
 
 const sdkVersion = '1.0.6';

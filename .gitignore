@@ -2,3 +2,4 @@ android/.git
 android/.idea
 ios/.git
 node_modules
+package-lock.json

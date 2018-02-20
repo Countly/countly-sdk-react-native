@@ -16,7 +16,7 @@
   ],
   "dependencies": {
     "react-native-background-timer": "^2.0.0",
-    "react-native-device-info": "https://github.com/trinisofttechnologies/react-native-device-info.git",
+    "react-native-device-info": "^0.15.3",
     "react-native-exception-handler": "^2.7.1",
     "react-native-modal": "^5.0.0",
     "react-native-push-notification": "^3.0.2",

@@ -6,6 +6,9 @@ import RNRestart from 'react-native-restart';
 import { setJSExceptionHandler, getJSExceptionHandler, setNativeExceptionHandler } from 'react-native-exception-handler';
 import { Ajax, userData } from './util';
 
+export { default as StarRating } from './Countly.Rating';
+
+
 const sdkVersion = '1.0.6';
 const sdkName = 'countly-sdk-react-native';
 
@@ -24,6 +27,16 @@ class Countly {
     this.lastView = null;
     this.lastViewStartTime = Ajax.getTime();
     this.exceptionHandler = null;
+    this.defaultAlert = {
+      enable: false,
+      title: 'Application Error',
+      message: 'Application will be restarted',
+      buttonTitle: 'Restart',
+      onClick: () => this.restartApp(),
+    };
+
+    this.customCrashLog = null;
+    this.crashLogData = null;
     this.isReady = false;
     this.salt = null;
     this.startTime = Ajax.getTime();
@@ -321,10 +334,15 @@ class Countly {
       _carrier: DeviceInfo.getCarrier(),
       _resolution: `${width * scale}x${height * scale}`,
       _app_version: DeviceInfo.getVersion(),
-      _density: DeviceInfo.getDensity(),
       _locale: DeviceInfo.getDeviceLocale(),
       _store: DeviceInfo.getBundleId(),
+      _ram_total: DeviceInfo.getTotalMemory(),
+      _disk_total: DeviceInfo.getTotalDiskCapacity() / (1024 * 1024),
+      _disk_current: DeviceInfo.getFreeDiskStorage() / (1024 * 1024),
     };
+    if (Platform.OS.match('android')) {
+      this.device._ram_current = DeviceInfo.getMaxMemory();
+    }
     return this.device;
   }
 
@@ -529,10 +547,10 @@ class Countly {
   // Push Notification
 
   // crash report
-  addCrashLog = (crashLog) => {
+  addCrashLog = (crashLog = null) => {
     const crash = {
       ...this.getDevice(),
-      ...crashLog,
+      ...this.crashLogData,
       _online: true,
       _background: this.isBackground,
       _run: (new Date().getTime() - this.startTime) / 1000,
@@ -540,21 +558,32 @@ class Countly {
       // custom key/values provided by developers
       // _custom: { ...crashLog },
     };
+    if (crashLog) {
+      // custom key/values provided by developers
+      crash._custom = { ...crashLog };
+    }
     this.get('/i', { crash }, (result) => { this.log('addCrashLog', result); });
     this.stop();
-    Alert.alert(
-      'Application Error',
-      'Application will be restarted',
-      [
-        { text: 'Restart', onPress: () => this.restartApp() },
-      ],
-      { cancelable: false },
-    );
+    if (this.defaultAlert.enable) {
+      Alert.alert(
+        this.defaultAlert.title,
+        this.defaultAlert.message,
+        [
+          { text: this.defaultAlert.buttonTitle, onPress: this.defaultAlert.onClick },
+        ],
+        { cancelable: false },
+      );
+    }
   }
 
   crashReportingHandler = (e, isFatal) => {
     const crashLog = { _error: e.message, nonFatal: !isFatal, name: 'Error' };
-    this.addCrashLog(crashLog);
+    this.crashLogData = crashLog;
+    if (this.customCrashLog && typeof this.customCrashLog === 'function') {
+      this.customCrashLog();
+    } else {
+      this.addCrashLog();
+    }
   }
 
   enableCrashReporting = (enable = false, enableInDevMode = false) => {

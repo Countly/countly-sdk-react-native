@@ -5,7 +5,7 @@
     "url": "https://github.com/Countly/countly-sdk-react-native.git"
   },
   "main": "Countly.js",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Countly is an innovative, real-time, open source mobile analytics and push notifications platform.",
   "author": "Trinisoft Technologies <trinisofttechnologies@gmail.com> (http://trinisofttechnologies.com)",
   "nativePackage": true,

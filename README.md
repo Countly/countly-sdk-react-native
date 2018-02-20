@@ -23,6 +23,9 @@ There are also other Countly SDK repositories (both official and community suppo
 ## Roadmap ##
 
 * Push Notifications support
+* DeviceID merging ([cross device reporting](https://resources.count.ly/docs/cross-device-reporting))
+* Certificate pinning (SSL public key pinning)
+* Parameter tampering
 
 ## How can I help you with your efforts? ##
 

@@ -15,6 +15,7 @@
     "countly"
   ],
   "dependencies": {
+    "crypto-js": "^3.1.9-1",
     "react-native-background-timer": "^2.0.0",
     "react-native-device-info": "^0.15.3",
     "react-native-exception-handler": "^2.7.1",

@@ -1,12 +1,15 @@
 import { AsyncStorage } from 'react-native';
+import SHA256 from 'crypto-js/sha256';
 import Countly from './Countly';
+
+export const createHash = data => SHA256(data).toString().toUpperCase();
 
 export const Ajax = {
   /**
    * @description returns query for URL
    * @param data contains parameter to be passed in URL
    */
-  query: (data) => {
+  query: (data, secretSalt = null) => {
     let queryString = '';
     queryString += 'test=none&';
     Object.keys(data).forEach((key) => {
@@ -16,6 +19,9 @@ export const Ajax = {
         queryString += `${key}=${encodeURIComponent(data[key])}&`;
       }
     });
+    if (secretSalt) {
+      queryString += `&checksum256=${encodeURIComponent(createHash(`${queryString}${secretSalt}`))}`;
+    }
     return queryString;
   },
 
@@ -71,17 +77,14 @@ export const Ajax = {
    * @param {*} data parameter to be send
    * @param {*} callback function called after the fetch success or error
    */
-  post: (newURL, newData, callback, APP_KEY) => (
+  post: (newURL, newData, callback) => (
     fetch(newURL, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        app_key: APP_KEY,
-        requests: JSON.stringify([newData]),
-      }),
+      body: JSON.stringify({ ...newData }),
     }).then((responseJson) => {
       callback(responseJson);
     }).catch((error) => {

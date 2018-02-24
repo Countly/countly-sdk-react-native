@@ -4,7 +4,7 @@ import BackgroundTimer from 'react-native-background-timer';
 import PushNotification from 'react-native-push-notification';
 import RNRestart from 'react-native-restart';
 import { setJSExceptionHandler, getJSExceptionHandler, setNativeExceptionHandler } from 'react-native-exception-handler';
-import { Ajax, userData } from './util';
+import { Ajax, userData, createHash } from './util';
 
 export { default as StarRating } from './Countly.Rating';
 
@@ -44,6 +44,7 @@ class Countly {
     this.isBackground = false;
     this.storedEvents = {};
     this.userData = userData;
+    this.secretSalt = null;
     this.DEVICE_ID = null;
     this.TEST = 2;
     this.ADHOC = 1;
@@ -81,7 +82,6 @@ class Countly {
     const newData = data;
     const currTime = Ajax.getTime();
     newData.device_id = this.DEVICE_ID;
-    newData.app_key = this.APP_KEY;
     newData.timestamp = currTime;
     newData.hour = Ajax.getHour(currTime);
     newData.dow = Ajax.getDay(currTime);
@@ -98,6 +98,7 @@ class Countly {
     }
 
     const newData = this.addDefaultParameters(data);
+    newData.app_key = this.APP_KEY;
     // this.log('inside get', newData);
     this.checkLength(newData);
     if (this.isPost) {
@@ -107,7 +108,13 @@ class Countly {
     }
 
     // this.log('GET Method', newData);
-    const newURL = `${this.ROOT_URL}${url}?${Ajax.query(newData)}`;
+    let newURL = null;
+    if (this.secretSalt) {
+      newURL = `${this.ROOT_URL}${url}?${Ajax.query(newData, this.secretSalt)}`;
+    } else {
+      newURL = `${this.ROOT_URL}${url}?${Ajax.query(newData)}`;
+    }
+
     Ajax.get(newURL, newData, callback).then((response) => {
       this.log('promise resolved', response);
     }).catch((error) => {
@@ -123,8 +130,15 @@ class Countly {
       return null;
     }
 
-    const newURL = `${this.ROOT_URL}${url}?app_key=${this.APP_KEY}`;
-    Ajax.post(newURL, newData, callback, this.APP_KEY).then((response) => {
+    let newURL = null;
+    if (this.secretSalt) {
+      const hash = createHash(`${JSON.stringify({ ...newData })}${this.secretSalt}`);
+      newURL = `${this.ROOT_URL}${url}?app_key=${this.APP_KEY}&device_id=${this.DEVICE_ID}&checksum256=${hash}`;
+    } else {
+      newURL = `${this.ROOT_URL}${url}?app_key=${this.APP_KEY}&device_id=${this.DEVICE_ID}`;
+    }
+
+    Ajax.post(newURL, newData, callback).then((response) => {
       this.log('promise resolved', response);
     }).catch((error) => {
       this.add(newURL, newData);

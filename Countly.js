@@ -195,20 +195,21 @@ class Countly {
   }
 
   // get method to be call from update method
-  updateQueueRequest = (url, data, callback) => (
+  updateQueueRequest = (url, data) => (
     new Promise(async (resolve, reject) => {
       if (!this.isInit) {
         return reject(new Error('App not initialized'));
       }
 
       const newData = this.addDefaultParameters(data);
+      newData.app_key = this.APP_KEY;
 
       this.checkLength(newData);
       const newURL = `${this.ROOT_URL}${url}?${Ajax.query(newData)}`;
       if (this.isPost) {
         this.setHttpPostForced(false);
         try {
-          await Ajax.post(newURL, newData, callback, this.APP_KEY);
+          await Ajax.post(newURL, newData, result => this.log('inside update queue', result));
           this.queue.shift();
           this.log('newQueueData: ', this.queue);
           return resolve();
@@ -218,7 +219,7 @@ class Countly {
       }
 
       try {
-        await Ajax.get(newURL, newData, callback);
+        await Ajax.get(newURL, newData, result => this.log('inside update queue', result));
         this.queue.shift();
         this.log('newQueueData: ', this.queue);
         return resolve();
@@ -238,7 +239,7 @@ class Countly {
       while (this.queue.length) {
         this.log('Countly-queue-update', this.queue[0]);
         try {
-          await this.updateQueueRequest(this.queue[0].url, this.queue[0].data, () => {}); // eslint-disable-line no-await-in-loop, max-len
+          await this.updateQueueRequest(this.queue[0].url, this.queue[0].data); // eslint-disable-line no-await-in-loop, max-len
         } catch (error) {
           setTimeout(() => {}, 60000);
         }

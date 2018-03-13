@@ -2,12 +2,12 @@ import { Platform, NativeModules, AsyncStorage, Alert, Dimensions, AppState, Pus
 import DeviceInfo from 'react-native-device-info';
 import BackgroundTimer from 'react-native-background-timer';
 import PushNotification from 'react-native-push-notification';
+import NotificationActions from 'react-native-ios-notification-actions';
 import RNRestart from 'react-native-restart';
 import { setJSExceptionHandler, getJSExceptionHandler, setNativeExceptionHandler } from 'react-native-exception-handler';
 import { Ajax, userData, createHash } from './util';
 
 export { default as StarRating } from './Countly.Rating';
-
 
 const sdkVersion = '1.0.6';
 const sdkName = 'countly-sdk-react-native';
@@ -34,7 +34,6 @@ class Countly {
       buttonTitle: 'Restart',
       onClick: () => this.restartApp(),
     };
-
     this.customCrashLog = null;
     this.crashLogData = null;
     this.isReady = false;
@@ -45,6 +44,12 @@ class Countly {
     this.storedEvents = {};
     this.userData = userData;
     this.secretSalt = null;
+    this.isToken = false;
+    this.deepLinkData = null;
+    this.deepLinkHandler = {
+      handler1: null,
+      handler2: null,
+    };
     this.DEVICE_ID = null;
     this.TEST = 2;
     this.ADHOC = 1;
@@ -99,6 +104,7 @@ class Countly {
 
     const newData = this.addDefaultParameters(data);
     newData.app_key = this.APP_KEY;
+    
     // this.log('inside get', newData);
     this.checkLength(newData);
     if (this.isPost) {
@@ -205,7 +211,14 @@ class Countly {
       newData.app_key = this.APP_KEY;
 
       this.checkLength(newData);
-      const newURL = `${this.ROOT_URL}${url}?${Ajax.query(newData)}`;
+      let newURL = null;
+      if (this.secretSalt) {
+        newURL = `${this.ROOT_URL}${url}?${Ajax.query(newData, this.secretSalt)}`;
+      } else {
+        newURL = `${this.ROOT_URL}${url}?${Ajax.query(newData)}`;
+      }
+      console.log(newURL);
+      // const newURL = `${this.ROOT_URL}${url}?${Ajax.query(newData, this.secretSalt)}`;
       if (this.isPost) {
         this.setHttpPostForced(false);
         try {
@@ -465,6 +478,7 @@ class Countly {
     if (events) {
       eventsData.count = eventsData.count || 1;
     }
+
     this.get('/i', {
       events: [eventsData],
     }, (result) => { this.log('recordEvent', result); });
@@ -473,6 +487,7 @@ class Countly {
   startEvent = (events) => {
     const eventsData = { key: events };
     eventsData.dur = Ajax.getTime();
+
     this.storedEvents[eventsData.key] = eventsData;
     this.log('storedData: ', this.storedEvents);
   }
@@ -494,20 +509,36 @@ class Countly {
 
   // Push Notification
   initMessaging = (gcmSenderId, mode) => {
+
+
     PushNotification.configure({
       onRegister: (token) => {
+
+        NotificationActions.validateToken(true);
+
         this.registerPush(mode, token.token);
       },
       onNotification: (notification) => {
-        this.log('NOTIFICATION:', notification);
-        PushNotification.localNotification({
-          /* Android Only Properties */
-          id: notification.id,
-          /* iOS and Android properties */
-          title: notification.title,
-          message: notification.message, // (required)
-          actions: '["Yes", "No", "Reject"]', // (Android only) See the doc for notification actions to know more
-        });
+
+        if (Platform.OS.match('android')) {
+          this.deepLinkData = JSON.parse(notification['c.b']);
+          const buttons = this.deepLinkData.map(data => `${data.t}`);
+          PushNotification.registerNotificationActions(buttons);
+          let imageUrl = null;
+          if (notification.imageUrl) {
+            imageUrl = notification.imageUrl;
+          }
+          PushNotification.localNotification({
+            /* Android Only Properties */
+            id: notification.id,
+            /* iOS and Android properties */
+            title: notification.title,
+            message: notification.message, // (required)
+            // imageUrl
+            imageUrl,
+            actions: `${JSON.stringify(buttons)}`, // (Android only) See the doc for notification actions to know more
+          });
+        }
         notification.finish(PushNotificationIOS.FetchResult.NoData);
         this.openPush(notification.id);
       },
@@ -523,12 +554,15 @@ class Countly {
   }
 
   registerPush = (mode, token) => {
-    const data = {
-      token_session: 1,
-      test_mode: mode,
-    };
-    data[`${Platform.OS}_token`] = token;
-    this.get('/i', data, (result) => { this.log('registerPush', result); });
+    if (!this.isToken) {
+      this.isToken = true;
+      const data = {
+        token_session: 1,
+        test_mode: mode,
+      };
+      data[`${Platform.OS}_token`] = token;
+      this.get('/i', data, (result) => { this.log('registerPush', result); });
+    }
   }
 
   openPush = (pushNumber) => {
@@ -548,16 +582,21 @@ class Countly {
 
   // handle Push Notification actions
   handleNotificationAction = (action) => {
-    this.log('Notification action received: ', action);
-    const info = JSON.parse(action.dataJSON);
-    if (info.action === 'Yes') {
-      this.log('Yet to implement');
-    } else if (info.action === 'No') {
-      this.log('Yet to implement');
-    } else if (info.action === 'Reject') {
-      PushNotification.cancelLocalNotifications({ id: info.id });
+    
+    if (Platform.OS.match('android')) {
+      const info = JSON.parse(action.dataJSON);
+      if (this.deepLinkData[0].t && info.action === this.deepLinkData[0].t) {
+        this.log(this.deepLinkData[0]);
+        this.deepLinkHandler.handler1(this.deepLinkData[0]);
+      } else if (this.deepLinkData[1].t && info.action === this.deepLinkData[1].t) {
+        this.log(this.deepLinkData[1]);
+        this.deepLinkHandler.handler2(this.deepLinkData[1]);
+        PushNotification.cancelLocalNotifications({ id: info.id });
+      }
+      this.actionPush(info.id);  
+    } else {
+      this.actionPush(action.identifier);
     }
-    this.actionPush(info.id);
   }
   // Push Notification
 
@@ -569,9 +608,6 @@ class Countly {
       _online: true,
       _background: this.isBackground,
       _run: (new Date().getTime() - this.startTime) / 1000,
-
-      // custom key/values provided by developers
-      // _custom: { ...crashLog },
     };
     if (crashLog) {
       // custom key/values provided by developers
@@ -593,6 +629,7 @@ class Countly {
 
   crashReportingHandler = (e, isFatal) => {
     const crashLog = { _error: e.message, nonFatal: !isFatal, name: 'Error' };
+
     this.crashLogData = crashLog;
     if (this.customCrashLog && typeof this.customCrashLog === 'function') {
       this.customCrashLog();

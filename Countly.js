@@ -217,7 +217,7 @@ class Countly {
       } else {
         newURL = `${this.ROOT_URL}${url}?${Ajax.query(newData)}`;
       }
-      console.log(newURL);
+
       // const newURL = `${this.ROOT_URL}${url}?${Ajax.query(newData, this.secretSalt)}`;
       if (this.isPost) {
         this.setHttpPostForced(false);

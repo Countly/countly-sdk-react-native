@@ -525,8 +525,8 @@ class Countly {
           const buttons = this.deepLinkData.map(data => `${data.t}`);
           PushNotification.registerNotificationActions(buttons);
           let imageUrl = null;
-          if (notification.imageUrl) {
-            imageUrl = notification.imageUrl;
+          if (notification['c.m']) {
+            imageUrl = notification['c.m'];
           }
           PushNotification.localNotification({
             /* Android Only Properties */

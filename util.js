@@ -1,5 +1,6 @@
 import { AsyncStorage } from 'react-native';
 import SHA256 from 'crypto-js/sha256';
+import pinch from 'react-native-pinch';
 import Countly from './Countly';
 
 export const createHash = data => SHA256(data).toString().toUpperCase();
@@ -126,6 +127,30 @@ export const Ajax = {
       // Countly.log('Error while storing', key, value);
     }
   },
+
+  /**
+   * @description fetch data using certificate pinning
+   * @param {*} key key for the data to be store
+   * @param {*} value value of the data
+   * @param {*} callback function execute after the object is successfully saved
+   */
+  sslCertificateRequest: (newURL, newData, certificateName,callback) => (
+    pinch.fetch(newURL, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ ...newData }),
+      sslPinning: {
+        cert: certificateName, // cert file name without the `.cer`
+      }
+    }).then((responseJson) => {
+      callback(responseJson);
+    }).catch((error) => {
+      callback(error);
+    })
+  ),
 };
 
 export const userData = {

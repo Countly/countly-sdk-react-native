@@ -6,6 +6,7 @@ import NotificationActions from 'react-native-ios-notification-actions';
 import RNRestart from 'react-native-restart';
 import { setJSExceptionHandler, getJSExceptionHandler, setNativeExceptionHandler } from 'react-native-exception-handler';
 import { Ajax, userData, createHash } from './util';
+import pinch from 'react-native-pinch';``
 
 export { default as StarRating } from './Countly.Rating';
 
@@ -50,6 +51,8 @@ class Countly {
       handler1: null,
       handler2: null,
     };
+    this.onServer = false;
+    this.cerFileName = "testing1";
     this.DEVICE_ID = null;
     this.TEST = 2;
     this.ADHOC = 1;
@@ -105,15 +108,19 @@ class Countly {
     const newData = this.addDefaultParameters(data);
     newData.app_key = this.APP_KEY;
     
-    // this.log('inside get', newData);
-    this.checkLength(newData);
+    // Checking If cerFileName config Flag is exist or not
+    if (this.cerFileName) {
+      this.setHttpPostForced(true);
+    } else {
+      this.checkLength(newData);
+    }
+
     if (this.isPost) {
       this.setHttpPostForced(false);
       this.post(url, newData, callback);
       return null;
     }
 
-    // this.log('GET Method', newData);
     let newURL = null;
     if (this.secretSalt) {
       newURL = `${this.ROOT_URL}${url}?${Ajax.query(newData, this.secretSalt)}`;
@@ -142,6 +149,17 @@ class Countly {
       newURL = `${this.ROOT_URL}${url}?app_key=${this.APP_KEY}&device_id=${this.DEVICE_ID}&checksum256=${hash}`;
     } else {
       newURL = `${this.ROOT_URL}${url}?app_key=${this.APP_KEY}&device_id=${this.DEVICE_ID}`;
+    }
+
+    // checking If config filename is exist or not
+    if (this.cerFileName) {
+      Ajax.sslCertificateRequest(newURL, newData, this.cerFileName, result => this.log('inside cerFile post request', result)).then((response) => {
+        this.log('promise resolved', response);
+      }).catch((error) => {
+        this.add(newURL, newData);
+        this.log('Promise reject', error);
+      });
+      return null;
     }
 
     Ajax.post(newURL, newData, callback).then((response) => {
@@ -216,6 +234,18 @@ class Countly {
         newURL = `${this.ROOT_URL}${url}?${Ajax.query(newData, this.secretSalt)}`;
       } else {
         newURL = `${this.ROOT_URL}${url}?${Ajax.query(newData)}`;
+      }
+
+      // checking for the cerFilename exist or not for queue request
+      if (this.cerFileName) {
+        try {
+          await Ajax.sslCertificateRequest(newURL, newData, this.cerFileName, result => this.log('inside update queue post', result));
+          this.queue.shift();
+          this.log('newQueueData: ', this.queue);
+          return resolve();
+        } catch(error) {
+          return reject(new Error(error));
+        }
       }
 
       // const newURL = `${this.ROOT_URL}${url}?${Ajax.query(newData, this.secretSalt)}`;
@@ -358,6 +388,7 @@ class Countly {
     this.device = {
       _os: this.getOS(),
       _os_version: DeviceInfo.getSystemVersion(),
+      _manufacture: DeviceInfo.getBrand(),
       _device: DeviceInfo.getModel(),
       _carrier: DeviceInfo.getCarrier(),
       _resolution: `${width * scale}x${height * scale}`,
@@ -440,6 +471,20 @@ class Countly {
     this.get('/i', changeDevice, (result) => { this.log('changeDeviceId', result); });
     Ajax.setItem('DEVICE_ID', this.DEVICE_ID);
   }
+
+  /**
+   * @description setNewDeviceId:onServer method implementation
+   * @param {*} ROOT_URL dashboard base address
+   */
+  setNewDeviceId = (deviceId) => (
+    new Promise((resolve, reject) => {
+      if (this.onServer) {
+        this.changeDeviceId(deviceId);
+        return resolve('DeviceId changed successfully onServer');
+      }
+      return reject(new Error('Unable to change DeviceId onServer is not set'));
+    })
+  )
 
   setOptionalParametersForInitialization = (countryCode, city, location) => {
     this.get('/i', {

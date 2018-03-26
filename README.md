@@ -20,11 +20,6 @@ For more information about Countly Enterprise Edition, see [comparison of differ
 
 There are also other Countly SDK repositories (both official and community supported) on [Countly Resources](http://resources.count.ly/v1.0/docs/downloading-sdks).
 
-## Roadmap ##
-
-* DeviceID merging ([cross device reporting](https://resources.count.ly/docs/cross-device-reporting))
-* Certificate pinning (SSL public key pinning)
-
 ## How can I help you with your efforts? ##
 
 Glad you asked. We need ideas, feedbacks and constructive comments. All your suggestions will be taken care with upmost importance. We are on [Twitter](http://twitter.com/gocountly) and [Facebook](http://www.facebook.com/Countly) if you would like to keep up with our fast progress!

@@ -52,7 +52,7 @@ class Countly {
       handler2: null,
     };
     this.onServer = false;
-    this.cerFileName = "testing1";
+    this.cerFileName = null;
     this.DEVICE_ID = null;
     this.TEST = 2;
     this.ADHOC = 1;

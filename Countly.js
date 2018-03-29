@@ -51,7 +51,6 @@ class Countly {
       handler1: null,
       handler2: null,
     };
-    this.onServer = false;
     this.cerFileName = null;
     this.DEVICE_ID = null;
     this.TEST = 2;
@@ -109,14 +108,15 @@ class Countly {
     newData.app_key = this.APP_KEY;
     
     // Checking If cerFileName config Flag is exist or not
+    let isLengthExceedGetLimit = false;
+    let isCerFileName = false;
     if (this.cerFileName) {
-      this.setHttpPostForced(true);
+      isCerFileName = true;
     } else {
-      this.checkLength(newData);
+      isLengthExceedGetLimit = this.checkLength(newData);
     }
 
-    if (this.isPost) {
-      this.setHttpPostForced(false);
+    if (this.isPost || isLengthExceedGetLimit || isCerFileName) {
       this.post(url, newData, callback);
       return null;
     }
@@ -151,7 +151,7 @@ class Countly {
       newURL = `${this.ROOT_URL}${url}?app_key=${this.APP_KEY}&device_id=${this.DEVICE_ID}`;
     }
 
-    // checking If config filename is exist or not
+    // checking If config cerfilename is exist or not
     if (this.cerFileName) {
       Ajax.sslCertificateRequest(newURL, newData, this.cerFileName, result => this.log('inside cerFile post request', result)).then((response) => {
         this.log('promise resolved', response);
@@ -228,7 +228,7 @@ class Countly {
       const newData = this.addDefaultParameters(data);
       newData.app_key = this.APP_KEY;
 
-      this.checkLength(newData);
+      let isLengthExceedGetLimit = this.checkLength(newData);
       let newURL = null;
       if (this.secretSalt) {
         newURL = `${this.ROOT_URL}${url}?${Ajax.query(newData, this.secretSalt)}`;
@@ -249,8 +249,7 @@ class Countly {
       }
 
       // const newURL = `${this.ROOT_URL}${url}?${Ajax.query(newData, this.secretSalt)}`;
-      if (this.isPost) {
-        this.setHttpPostForced(false);
+      if (this.isPost || isLengthExceedGetLimit) {
         try {
           await Ajax.post(newURL, newData, result => this.log('inside update queue', result));
           this.queue.shift();
@@ -267,7 +266,7 @@ class Countly {
         this.log('newQueueData: ', this.queue);
         return resolve();
       } catch (error) {
-        return reject(error);
+        return reject(new Error(error));
       }
     })
   );
@@ -463,24 +462,72 @@ class Countly {
   )
 
   // Change the DeviceId
-  changeDeviceId = (newDeviceId) => {
-    const changeDevice = {
-      old_device_id: this.DEVICE_ID,
-    };
-    this.DEVICE_ID = newDeviceId;
-    this.get('/i', changeDevice, (result) => { this.log('changeDeviceId', result); });
-    Ajax.setItem('DEVICE_ID', this.DEVICE_ID);
-  }
+  changeDeviceId = (newDeviceId) => (
+    new Promise(async (resolve, reject) => {
+      const changeDevice = {
+        old_device_id: this.DEVICE_ID,
+      };
+      if (!this.isInit) {
+        return reject(new Error('App not initialized'));
+      }
+      this.DEVICE_ID = newDeviceId;
+      const url = '/i';
+
+      const newData = this.addDefaultParameters(changeDevice);
+      newData.app_key = this.APP_KEY;
+
+      let isLengthExceedGetLimit = this.checkLength(newData);
+      let newURL = null;
+      if (this.secretSalt) {
+        newURL = `${this.ROOT_URL}${url}?${Ajax.query(newData, this.secretSalt)}`;
+      } else {
+        newURL = `${this.ROOT_URL}${url}?${Ajax.query(newData)}`;
+      }
+
+      // checking for the cerFilename exist or not for queue request
+      if (this.cerFileName) {
+        try {
+          await Ajax.sslCertificateRequest(newURL, newData, this.cerFileName, result => this.log('inside Change DeviceId', result));
+        } catch(error) {
+          this.DEVICE_ID = changeDevice.old_device_id;
+          return reject(new Error(`Your DeviceId remains same: ${this.DEVICE_ID}, error: ${error}`));
+        }
+      }
+
+      // const newURL = `${this.ROOT_URL}${url}?${Ajax.query(newData, this.secretSalt)}`;
+      if (this.isPost || isLengthExceedGetLimit) {
+        try {
+          await Ajax.post(newURL, newData, result => this.log('inside Change DeviceId', result));
+        } catch (error) {
+          this.DEVICE_ID = changeDevice.old_device_id;
+          return reject(new Error(`Your DeviceId remains same: ${this.DEVICE_ID}, error: ${error}`));
+        }
+      }
+
+      try {
+        await Ajax.get(newURL, newData, result => this.log('inside Change DeviceId', result));
+      } catch (error) {
+        this.DEVICE_ID = changeDevice.old_device_id;
+        return reject(new Error(`Your DeviceId remains same: ${this.DEVICE_ID}, error: ${error}`));
+      }
+      Ajax.setItem('DEVICE_ID', this.DEVICE_ID);
+      return resolve('Device Id changed successfully');
+    })
+  )
 
   /**
    * @description setNewDeviceId:onServer method implementation
    * @param {*} ROOT_URL dashboard base address
    */
-  setNewDeviceId = (deviceId) => (
-    new Promise((resolve, reject) => {
-      if (this.onServer) {
-        this.changeDeviceId(deviceId);
-        return resolve('DeviceId changed successfully onServer');
+  setNewDeviceId = (onServer = false, deviceId) => (
+    new Promise(async (resolve, reject) => {
+      if (onServer) {
+        try {
+          const result = await this.changeDeviceId(deviceId);
+          return resolve('DeviceId changed successfully onServer: ', result);
+        } catch(error) {
+          return reject(new Error(`Unable to change DeviceId ${error}`));
+        }
       }
       return reject(new Error('Unable to change DeviceId onServer is not set'));
     })
@@ -504,8 +551,9 @@ class Countly {
   // returns length of data, passed in url
   checkLength = (data) => {
     if (data.length > 2000) {
-      this.setHttpPostForced(true);
+      return true;
     }
+    return false;
   }
 
   // set http request type to post

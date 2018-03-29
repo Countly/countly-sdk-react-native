@@ -50,10 +50,6 @@ export default class App extends Component {
     }
   }
 
-  causeNativeError = ()=>{
-    RnTestExceptionHandler.raiseTestNativeError();
-  }
-
   componentDidMount() {
     Countly.isDebug = true;
     Countly.initMessaging('GCM_ID', Countly.TEST);

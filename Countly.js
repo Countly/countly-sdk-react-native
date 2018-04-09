@@ -1,7 +1,6 @@
 import { Platform, NativeModules, AsyncStorage, Alert, Dimensions, AppState, PushNotificationIOS, DeviceEventEmitter } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import BackgroundTimer from 'react-native-background-timer';
-import PushNotification from 'react-native-push-notification';
 import NotificationActions from 'react-native-ios-notification-actions';
 import RNRestart from 'react-native-restart';
 import { setJSExceptionHandler, getJSExceptionHandler, setNativeExceptionHandler } from 'react-native-exception-handler';
@@ -12,6 +11,7 @@ export { default as StarRating } from './Countly.Rating';
 
 const sdkVersion = '1.0.6';
 const sdkName = 'countly-sdk-react-native';
+let PushNotification = null;
 
 class Countly {
   constructor() {
@@ -64,7 +64,6 @@ class Countly {
       });
     }
     AppState.addEventListener('change', nextState => this.onStateChange(nextState));
-    PushNotification.registerNotificationActions(['Accept', 'Reject', 'Yes', 'No']);
     DeviceEventEmitter.addListener('notificationActionReceived', action => this.handleNotificationAction(action));
     // get the queue having unprocessed requests
     Ajax.getItem = ('OFFLINE', (offline) => {
@@ -522,9 +521,22 @@ class Countly {
   setNewDeviceId = (onServer = false, deviceId) => (
     new Promise(async (resolve, reject) => {
       if (onServer) {
+        if (this.DEVICE_ID === deviceId) {
+          return resolve('New DeviceId is same as old deviceId');
+        }
         try {
           const result = await this.changeDeviceId(deviceId);
           return resolve('DeviceId changed successfully onServer: ', result);
+        } catch(error) {
+          return reject(new Error(`Unable to change DeviceId ${error}`));
+        }
+      } else if(onServer === false) {
+        try {
+          const result = await Ajax.setItem('DEVICE_ID', deviceId, (result) => {this.log(result)});
+          this.DEVICE_ID = deviceId;
+          this.storedEvents = {};
+          await this.start();
+          return resolve(`DeviceId will be change for the next session`, result);
         } catch(error) {
           return reject(new Error(`Unable to change DeviceId ${error}`));
         }
@@ -603,6 +615,8 @@ class Countly {
   // Push Notification
   initMessaging = (gcmSenderId, mode) => {
 
+    // dynamically importing PushNotification
+    PushNotification = require('react-native-push-notification');
 
     PushNotification.configure({
       onRegister: (token) => {

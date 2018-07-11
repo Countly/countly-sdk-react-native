@@ -38,7 +38,6 @@ class Countly {
     this.customCrashLog = null;
     this.crashLogData = null;
     this.isReady = false;
-    this.salt = null;
     this.startTime = Ajax.getTime();
     this.sessionId = null;
     this.isBackground = false;
@@ -574,7 +573,7 @@ class Countly {
   }
 
   enableParameterTamperingProtection = (salt) => {
-    this.salt = salt;
+    this.secretSalt = salt;
   }
 
   // Events

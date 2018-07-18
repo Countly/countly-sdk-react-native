@@ -530,8 +530,9 @@ class Countly {
         } catch(error) {
           return reject(new Error(`Unable to change DeviceId ${error}`));
         }
-      } else {  // merge locally stop session and start new session
+      } else {  // merge locally, stop session and start new session
         try {
+          await this.stop();
           const result = await Ajax.setItem('DEVICE_ID', deviceId, (result) => {this.log(result)});
           this.DEVICE_ID = deviceId;
           this.storedEvents = {};
@@ -541,7 +542,6 @@ class Countly {
           return reject(new Error(`Unable to change DeviceId ${error}`));
         }
       }
-      return reject(new Error('Unable to change DeviceId onServer is not set'));
     })
   )
 

@@ -566,7 +566,9 @@ class Countly {
       onNotification: (notification) => {
 
         if (Platform.OS.match('android')) {
-          this.deepLinkData = JSON.parse(notification['c.b']);
+          if (notification['c.b']) {
+              this.deepLinkData = JSON.parse(`${notification['c.b']}`);
+          }
           const buttons = this.deepLinkData.map(data => `${data.t}`);
           PushNotification.registerNotificationActions(buttons);
           let imageUrl = null;

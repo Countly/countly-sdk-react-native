@@ -514,10 +514,11 @@ class Countly {
   )
 
   /**
-   * @description setNewDeviceId:onServer method implementation
-   * @param {*} ROOT_URL dashboard base address
-   */
-  setNewDeviceId = (onServer = false, deviceId) => (
+    * Change current user/device id
+    * @param {string} newId - new user/device ID to use
+    * @param {boolean} onServer - if true, move data from old ID to new ID on server
+    **/
+  setNewDeviceId = (deviceId, onServer = false) => (
     new Promise(async (resolve, reject) => {
       if (onServer) {
         if (this.DEVICE_ID === deviceId) {
@@ -529,8 +530,9 @@ class Countly {
         } catch(error) {
           return reject(new Error(`Unable to change DeviceId ${error}`));
         }
-      } else if(onServer === false) {
+      } else {  // merge locally, stop session and start new session
         try {
+          await this.stop();
           const result = await Ajax.setItem('DEVICE_ID', deviceId, (result) => {this.log(result)});
           this.DEVICE_ID = deviceId;
           this.storedEvents = {};
@@ -540,7 +542,6 @@ class Countly {
           return reject(new Error(`Unable to change DeviceId ${error}`));
         }
       }
-      return reject(new Error('Unable to change DeviceId onServer is not set'));
     })
   )
 

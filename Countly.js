@@ -749,6 +749,10 @@ class Countly {
          });
      }
    });
+  
+   const channel = new firebase.notifications.Android.Channel('countlyPushNotificationChannel', 'countly Channel', firebase.notifications.Android.Importance.Max)
+     .setDescription('countly Channel');
+   firebase.notifications().android.createChannel(channel);
 
    this.notificationDisplayedListener = firebase.notifications().onNotificationDisplayed((notification: Notification) => {
 

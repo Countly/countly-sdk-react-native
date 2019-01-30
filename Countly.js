@@ -1,4 +1,4 @@
- import {
+import {
  Platform,
  NativeModules,
  AsyncStorage,
@@ -7,29 +7,25 @@
  AppState,
  PushNotificationIOS,
  DeviceEventEmitter
-} from "react-native";
-import type { RemoteMessage } from 'react-native-firebase';
-import firebase from 'react-native-firebase';
-import DeviceInfo from "react-native-device-info";
-import BackgroundTimer from "react-native-background-timer";
-import NotificationActions from "react-native-ios-notification-actions";
-import RNRestart from "react-native-restart";
-import {
+ } from "react-native";
+
+ import DeviceInfo from "react-native-device-info";
+ import BackgroundTimer from "react-native-background-timer";
+ import NotificationActions from "react-native-ios-notification-actions";
+ import RNRestart from "react-native-restart";
+ import {
  setJSExceptionHandler,
  getJSExceptionHandler,
  setNativeExceptionHandler
-} from "react-native-exception-handler";
-import { Ajax, userData, createHash } from "./util";
-import pinch from "react-native-pinch";
-``;
-
-export { default as StarRating } from "./Countly.Rating";
-
-const sdkVersion = "1.0.6";
-const sdkName = "countly-sdk-react-native";
-let PushNotification = null;
-
-class Countly {
+ } from "react-native-exception-handler";
+ import { Ajax, userData, createHash } from "./util";
+ import pinch from "react-native-pinch";
+ ``;
+  export { default as StarRating } from "./Countly.Rating";
+  const sdkVersion = "1.0.6";
+ const sdkName = "countly-sdk-react-native";
+ let PushNotification = null;
+  class Countly {
  constructor() {
    this.ROOT_URL = null;
    this.APP_KEY = null;
@@ -52,6 +48,7 @@ class Countly {
      onClick: () => this.restartApp()
    };
    this.mode;
+   this.NOTIFICATION_CHANNEL_ID;
    this.customCrashLog = null;
    this.crashLogData = null;
    this.isReady = false;
@@ -63,8 +60,7 @@ class Countly {
    this.secretSalt = null;
    this.isToken = false;
    this.deepLinkData = null;
-  
-   this.deepLinkHandler = {
+    this.deepLinkHandler = {
      handler1: null,
      handler2: null
    };
@@ -97,16 +93,14 @@ class Countly {
        this.queue = [];
      }
    });
-
-   // return deviceId as soon as the Countly is instatiated
+    // return deviceId as soon as the Countly is instatiated
    Ajax.getItem = ("DEVICE_ID",
    (err, S_DEVICE_ID) => {
      this.isReady = true;
      this.DEVICE_ID = S_DEVICE_ID || Ajax.generateUUID();
    });
  }
-
- // add default parameters to the request data
+  // add default parameters to the request data
  addDefaultParameters = data => {
    const newData = data;
    const currTime = Ajax.getTime();
@@ -119,17 +113,14 @@ class Countly {
    newData.sdk_version = sdkVersion;
    return newData;
  };
-
- // get method
+  // get method
  get = (url, data, callback) => {
    if (!this.isInit) {
      return this.add(url, data);
    }
-
-   const newData = this.addDefaultParameters(data);
+    const newData = this.addDefaultParameters(data);
    newData.app_key = this.APP_KEY;
-
-   // Checking If cerFileName config Flag is exist or not
+    // Checking If cerFileName config Flag is exist or not
    let isLengthExceedGetLimit = false;
    let isCerFileName = false;
    if (this.cerFileName) {
@@ -137,20 +128,17 @@ class Countly {
    } else {
      isLengthExceedGetLimit = this.checkLength(newData);
    }
-
-   if (this.isPost || isLengthExceedGetLimit || isCerFileName) {
+    if (this.isPost || isLengthExceedGetLimit || isCerFileName) {
      this.post(url, newData, callback);
      return null;
    }
-
-   let newURL = null;
+    let newURL = null;
    if (this.secretSalt) {
      newURL = `${this.ROOT_URL}${url}?${Ajax.query(newData, this.secretSalt)}`;
    } else {
      newURL = `${this.ROOT_URL}${url}?${Ajax.query(newData)}`;
    }
-
-   Ajax.get(newURL, newData, callback)
+    Ajax.get(newURL, newData, callback)
      .then(response => {
        this.log("promise resolved", response);
      })
@@ -160,14 +148,12 @@ class Countly {
      });
    return null;
  };
-
- // post method
+  // post method
  post = (url, newData, callback) => {
    if (!this.isInit) {
      return null;
    }
-
-   let newURL = null;
+    let newURL = null;
    if (this.secretSalt) {
      const hash = createHash(
        `${JSON.stringify({ ...newData })}${this.secretSalt}`
@@ -180,8 +166,7 @@ class Countly {
        this.DEVICE_ID
      }`;
    }
-
-   // checking If config cerfilename is exist or not
+    // checking If config cerfilename is exist or not
    if (this.cerFileName) {
      Ajax.sslCertificateRequest(newURL, newData, this.cerFileName, result =>
        this.log("inside cerFile post request", result)
@@ -195,8 +180,7 @@ class Countly {
        });
      return null;
    }
-
-   Ajax.post(newURL, newData, callback)
+    Ajax.post(newURL, newData, callback)
      .then(response => {
        this.log("promise resolved", response);
      })
@@ -206,8 +190,7 @@ class Countly {
      });
    return null;
  };
-
- // get stored DeviceId(if exist) initially during initialization of Countly SDK
+  // get stored DeviceId(if exist) initially during initialization of Countly SDK
  setDeviceId = () =>
    new Promise(async (resolve, reject) => {
      let DeviceId = null;
@@ -220,8 +203,7 @@ class Countly {
        reject();
      }
    });
-
- // Listen events when the application is in foreground or background and
+  // Listen events when the application is in foreground or background and
  // start and stop the Countly SDK accordingly
  onStateChange = nextState => {
    if (!this.isManualSessionHandling) {
@@ -243,8 +225,7 @@ class Countly {
      }
    }
  };
-
- /**
+  /**
   * @description adds incomplete requests into queue
   */
  add = (url, data) => {
@@ -256,18 +237,15 @@ class Countly {
      this.log("Maximum Queue limit exceed");
    }
  };
-
- // get method to be call from update method
+  // get method to be call from update method
  updateQueueRequest = (url, data) =>
    new Promise(async (resolve, reject) => {
      if (!this.isInit) {
        return reject(new Error("App not initialized"));
      }
-
-     const newData = this.addDefaultParameters(data);
+      const newData = this.addDefaultParameters(data);
      newData.app_key = this.APP_KEY;
-
-     let isLengthExceedGetLimit = this.checkLength(newData);
+      let isLengthExceedGetLimit = this.checkLength(newData);
      let newURL = null;
      if (this.secretSalt) {
        newURL = `${this.ROOT_URL}${url}?${Ajax.query(
@@ -277,8 +255,7 @@ class Countly {
      } else {
        newURL = `${this.ROOT_URL}${url}?${Ajax.query(newData)}`;
      }
-
-     // checking for the cerFilename exist or not for queue request
+      // checking for the cerFilename exist or not for queue request
      if (this.cerFileName) {
        try {
          await Ajax.sslCertificateRequest(
@@ -294,8 +271,7 @@ class Countly {
          return reject(new Error(error));
        }
      }
-
-     // const newURL = `${this.ROOT_URL}${url}?${Ajax.query(newData, this.secretSalt)}`;
+      // const newURL = `${this.ROOT_URL}${url}?${Ajax.query(newData, this.secretSalt)}`;
      if (this.isPost || isLengthExceedGetLimit) {
        try {
          await Ajax.post(newURL, newData, result =>
@@ -308,8 +284,7 @@ class Countly {
          return reject(new Error(error));
        }
      }
-
-     try {
+      try {
        await Ajax.get(newURL, newData, result =>
          this.log("inside update queue", result)
        );
@@ -320,8 +295,7 @@ class Countly {
        return reject(new Error(error));
      }
    });
-
- /**
+  /**
   * @description try sending request and updates queue
   */
  update = async () => {
@@ -340,8 +314,7 @@ class Countly {
      Ajax.setItem("OFFLINE", "[]");
    }
  };
-
- /**
+  /**
   * @description process queue request
   */
  processQueue = () => {
@@ -360,8 +333,7 @@ class Countly {
      }, 60000);
    }
  };
-
- /**
+  /**
   * @description to initialize the countly SDK
   * @param {*} ROOT_URL dashboard base address
   * @param {*} APP_KEY provided after the successfull signin to the countly dashboard
@@ -398,13 +370,10 @@ class Countly {
      this.processQueue();
      return resolve();
    });
-
- // return if SDK is initialized or not
+  // return if SDK is initialized or not
  isInitialized = () => this.isInit;
-
- hasBeenCalledOnStart = () => {};
-
- // start session and save deviceData return from Countly.getDevice() function
+  hasBeenCalledOnStart = () => {};
+  // start session and save deviceData return from Countly.getDevice() function
  session = status => {
    const session = {
      session_duration: this.SESSION_INTERVAL,
@@ -420,8 +389,7 @@ class Countly {
      this.log("session-result", result);
    });
  };
-
- // return Device OS
+  // return Device OS
  getOS = () => {
    if (Platform.OS.match("android")) {
      return "Android";
@@ -431,8 +399,7 @@ class Countly {
    }
    return Platform.OS;
  };
-
- // returns Device data on which the application with Countly SDK is running
+  // returns Device data on which the application with Countly SDK is running
  getDevice = () => {
    const { height, width, scale } = Dimensions.get("window");
    this.device = {
@@ -454,16 +421,14 @@ class Countly {
    }
    return this.device;
  };
-
- // returns version of OS
+  // returns version of OS
  getVersion = (os, version) => {
    if (os === "Android") {
      return version;
    }
    return version;
  };
-
- // starts Countly SDK
+  // starts Countly SDK
  start = () =>
    new Promise(async (resolve, reject) => {
      if (!this.isInit) {
@@ -480,8 +445,7 @@ class Countly {
      }, this.SESSION_INTERVAL * 1000);
      resolve("Session Started");
    });
-
- /**
+  /**
   * @description combined function of init and start
   * @param {*} ROOT_URL dashboard base address
   * @param {*} APP_KEY provided after the successfull signin to the countly dashboard
@@ -501,8 +465,7 @@ class Countly {
      }
      return resolve("Countly is initialized and session is started");
    });
-
- // Stop Countly SDK and end session
+  // Stop Countly SDK and end session
  stop = () =>
    new Promise(resolve => {
      if (this.sessionId) {
@@ -512,8 +475,7 @@ class Countly {
      this.sessionId = null;
      resolve("Session End");
    });
-
- // Change the DeviceId
+  // Change the DeviceId
  changeDeviceId = newDeviceId =>
    new Promise(async (resolve, reject) => {
      const changeDevice = {
@@ -524,11 +486,9 @@ class Countly {
      }
      this.DEVICE_ID = newDeviceId;
      const url = "/i";
-
-     const newData = this.addDefaultParameters(changeDevice);
+      const newData = this.addDefaultParameters(changeDevice);
      newData.app_key = this.APP_KEY;
-
-     let isLengthExceedGetLimit = this.checkLength(newData);
+      let isLengthExceedGetLimit = this.checkLength(newData);
      let newURL = null;
      if (this.secretSalt) {
        newURL = `${this.ROOT_URL}${url}?${Ajax.query(
@@ -538,8 +498,7 @@ class Countly {
      } else {
        newURL = `${this.ROOT_URL}${url}?${Ajax.query(newData)}`;
      }
-
-     // checking for the cerFilename exist or not for queue request
+      // checking for the cerFilename exist or not for queue request
      if (this.cerFileName) {
        try {
          await Ajax.sslCertificateRequest(
@@ -557,8 +516,7 @@ class Countly {
          );
        }
      }
-
-     // const newURL = `${this.ROOT_URL}${url}?${Ajax.query(newData, this.secretSalt)}`;
+      // const newURL = `${this.ROOT_URL}${url}?${Ajax.query(newData, this.secretSalt)}`;
      if (this.isPost || isLengthExceedGetLimit) {
        try {
          await Ajax.post(newURL, newData, result =>
@@ -573,8 +531,7 @@ class Countly {
          );
        }
      }
-
-     try {
+      try {
        await Ajax.get(newURL, newData, result =>
          this.log("inside Change DeviceId", result)
        );
@@ -589,8 +546,7 @@ class Countly {
      Ajax.setItem("DEVICE_ID", this.DEVICE_ID);
      return resolve("Device Id changed successfully");
    });
-
- /**
+  /**
   * Change current user/device id
   * @param {string} newId - new user/device ID to use
   * @param {boolean} onServer - if true, move data from old ID to new ID on server
@@ -626,8 +582,7 @@ class Countly {
        }
      }
    });
-
- setOptionalParametersForInitialization = (countryCode, city, location) => {
+  setOptionalParametersForInitialization = (countryCode, city, location) => {
    this.get(
      "/i",
      {
@@ -640,8 +595,7 @@ class Countly {
      }
    );
  };
-
- // set Location
+  // set Location
  setLocation = (latitude, longitude) => {
    this.get(
      "/i",
@@ -653,32 +607,27 @@ class Countly {
      }
    );
  };
-
- // returns length of data, passed in url
+  // returns length of data, passed in url
  checkLength = data => {
    if (data.length > 2000) {
      return true;
    }
    return false;
  };
-
- // set http request type to post
+  // set http request type to post
  setHttpPostForced = isPost => {
    this.isPost = isPost;
  };
-
- enableParameterTamperingProtection = salt => {
+  enableParameterTamperingProtection = salt => {
    this.secretSalt = salt;
  };
-
- // Events
+  // Events
  recordEvent = events => {
    const eventsData = events;
    if (events) {
      eventsData.count = eventsData.count || 1;
    }
-
-   this.get(
+    this.get(
      "/i",
      {
        events: [eventsData]
@@ -688,24 +637,20 @@ class Countly {
      }
    );
  };
-
- startEvent = events => {
+  startEvent = events => {
    const eventsData = { key: events };
    eventsData.dur = Ajax.getTime();
-
-   this.storedEvents[eventsData.key] = eventsData;
+    this.storedEvents[eventsData.key] = eventsData;
    this.log("storedData: ", this.storedEvents);
  };
-
- endEvent = events => {
+  endEvent = events => {
    const eventsData = this.storedEvents[events];
    eventsData.dur = Ajax.getTime() - eventsData.dur || 0;
    this.log("endEvent-TimedEvent: ", eventsData);
    this.recordEvent(eventsData);
    delete this.storedEvents[eventsData.key];
  };
-
- // sets user data
+  // sets user data
  setUserData = userDetails => {
    this.get(
      "/i",
@@ -717,65 +662,58 @@ class Countly {
      }
    );
  };
-
- // Push Notification
-
- initMessaging = (mode) => {
+  // Push Notification
+  initMessaging = (mode,notificationChannel) => {
+ firebase = require('react-native-firebase');
  
+  //PushNotification = require('react-native-push-notification');
    this.mode=mode;
-   this.checkPermission();
+   this.checkPermission(firebase);
 
-   firebase.notifications().getInitialNotification()
+   if(Platform.OS == 'android'){
+     this.NOTIFICATION_CHANNEL_ID = notificationChannel;
+   }
+
+    firebase.notifications().getInitialNotification()
      .then((notificationOpen: NotificationOpen) => {
          if (notificationOpen) {
-             console.log(notificationOpen.action);
+             this.log(notificationOpen.action);
               const action = notificationOpen.action;
                if (this.deepLinkHandler.handler1){
                  this.deepLinkHandler.handler1(action);
                }
-           this.openPush(notification._notificationId);
+           this.openPush(notificationOpen._notificationId);
          }
      });
 
-   this.onTokenRefreshListener = firebase.messaging().onTokenRefresh(fcmToken => {
-     if (Platform.OS === 'android') {
-       this.registerPush(mode, fcmToken);
-        console.log(fcmToken);
-     }   
+    this.onTokenRefreshListener = firebase.messaging().onTokenRefresh(fcmToken => {
+     if (Platform.OS == 'android') {
+       this.registerPush(fcmToken);
+     } 
       else{
         firebase.messaging().ios.getAPNSToken().then(value=>{
-           console.log("APNS Token received:", value);
            this.registerPush(value);
          });
      }
    });
 
-   this.notificationDisplayedListener = firebase.notifications().onNotificationDisplayed((notification: Notification) => {
-
-     console.log("onNotificationDisplayed", notification);
-   });
-
-   this.notificationListener = firebase.notifications().onNotification((notification: Notification) => {
-     // Process your notification as required
-     console.log('onNotification',notification);
-
-   });
-
-   this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen: NotificationOpen) => {
-     const action = notificationOpen.action;
+    this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen: NotificationOpen) => {
+    let notificationAction="";
+    if(Platform.OS == 'android'){
+      notificationAction = notificationOpen.action;
+    }
+    else{
+      notificationAction = notificationOpen.notification._data.c.l;
+    }
      if (this.deepLinkHandler.handler1){
-       this.deepLinkHandler.handler1(action);
+       this.deepLinkHandler.handler1(notificationAction);
      }
      const notification: Notification = notificationOpen.notification;
-   
-     console.log("onNotificationOpened", notification);
-     console.log(notification._notificationId);
+     this.log("onNotificationOpened", notification);
      this.openPush(notification._notificationId);
+    });
 
-   });
-
-   this.messageListener = firebase.messaging().onMessage((message: RemoteMessage) => {
-     console.log("onMessage", message);
+    this.messageListener = firebase.messaging().onMessage((message: firebase.RemoteMessage) => {
      const notification = new firebase.notifications.Notification()
      .setNotificationId('notificationId')
      .setTitle(message.data.title)
@@ -787,11 +725,12 @@ class Countly {
        key2: 'value2',
      });
   if (Platform.OS === 'android') {
-       notification._android._channelId ='countlyPushNotificationChannel';
+   
+
+       notification._android._channelId =this.NOTIFICATION_CHANNEL_ID;
        notification._android.setAutoCancel(true);
        notification._android.setClickAction(message.data['c.l']);
-
-       if(message.data['c.m']) {
+        if(message.data['c.m']) {
              notification.android.setBigPicture(message.data['c.m']);
            }
            if(message.data.smallPicture) {
@@ -816,55 +755,60 @@ class Countly {
      }
      firebase.notifications().displayNotification(notification);
  });
+  }
+  // Initmessaging  --end
 
- }
+  // Components Unmount --start
 
- // Initmessaging  --end
-     async checkPermission() {
+    UnmountNotificationListners() {
+        this.notificationOpenedListener();
+        this.onTokenRefreshListener();
+        this.messageListener();
+        this.notificationOpenedListener();
+    }
+
+  //Components Unmount--end
+     async checkPermission(firebase) {
+      
        const enabled = await firebase.messaging().hasPermission();
        if (enabled) {
-           this.getToken();
-           console.log('has permissions');
+           this.getToken(firebase);
+           this.log('has permissions');
        } else {
-           this.requestPermission();
+           this.requestPermission(firebase);
        }
      }
-
-     async requestPermission(){
+      async requestPermission(firebase){
+        
                try {
            await firebase.messaging().requestPermission();
-           this.getToken();
-           console.log('granted permissions');
+           this.getToken(firebase);
+           this.log('granted permissions');
        } catch (error) {
        }
              }
-
-     async getToken(){
+      async getToken(firebase){
+         
        if (Platform.OS === 'android') {
        firebase
          .messaging()
          .getToken()
          .then(fcmToken => {
            if (fcmToken) {
-             console.log("FCM Token received :", fcmToken);
              this.registerPush(fcmToken);
-
-
            } else {
-             console.log("No token received");
+             this.log("No token received");
            }
          });
        }
        else{
          firebase.messaging().ios.getAPNSToken().then(value=>{
-           console.log("APNS Token received:", value);
            this.registerPush(value);
          });
-       }  
+       }
      }
-
-
-registerPush = (token) => {
+ 
+ registerPush = (token) => {
    if (!this.isToken) {
      this.isToken = true;
      const data = {
@@ -875,26 +819,21 @@ registerPush = (token) => {
      this.get('/i', data, (result) => { this.log('registerPush', result); });
    }
  }
-
- openPush = (pushNumber) => {
+  openPush = (pushNumber) => {
    const eventData = { key: '[CLY]_push_open', count: 1, segmentation: { i: pushNumber } };
    this.recordEvent(eventData);
  }
-
- actionPush = (pushNumber) => {
+  actionPush = (pushNumber) => {
    const eventData = { key: '[CLY]_push_action', count: 1, segmentation: { i: pushNumber } };
    this.recordEvent(eventData);
  }
-
- sentPush = (pushNumber) => {
+  sentPush = (pushNumber) => {
    const eventData = { key: '[CLY]_push_sent', count: 1, segmentation: { i: pushNumber } };
    this.recordEvent(eventData);
  }
-
-
+ 
  // Push Notification --end
-
- // crash report
+  // crash report
  addCrashLog = (crashLog = null) => {
    const crash = {
      ...this.getDevice(),
@@ -925,19 +864,16 @@ registerPush = (token) => {
      );
    }
  };
-
- crashReportingHandler = (e, isFatal) => {
+  crashReportingHandler = (e, isFatal) => {
    const crashLog = { _error: e.message, nonFatal: !isFatal, name: "Error" };
-
-   this.crashLogData = crashLog;
+    this.crashLogData = crashLog;
    if (this.customCrashLog && typeof this.customCrashLog === "function") {
      this.customCrashLog();
    } else {
      this.addCrashLog();
    }
  };
-
- enableCrashReporting = (enable = false, enableInDevMode = false) => {
+  enableCrashReporting = (enable = false, enableInDevMode = false) => {
    if (enable) {
      setJSExceptionHandler(this.crashReportingHandler, enableInDevMode);
      setNativeExceptionHandler(errorString => {
@@ -950,13 +886,10 @@ registerPush = (token) => {
      });
    }
  };
-
- restartApp = () => RNRestart.Restart();
-
- getExceptionHandler = () => getJSExceptionHandler();
+  restartApp = () => RNRestart.Restart();
+  getExceptionHandler = () => getJSExceptionHandler();
  // crash report
-
- // view handling
+  // view handling
  recordViewDuration = (lastViewStartTime, lastView) => {
    this.recordEvent({
      key: "[CLY]_view",
@@ -967,8 +900,7 @@ registerPush = (token) => {
      }
    });
  };
-
- recordView = viewName => {
+  recordView = viewName => {
    const currTime = Ajax.getTime();
    const segmentData = { name: viewName, segment: this.getOS(), visit: 1 };
    if (this.lastView) {
@@ -985,8 +917,7 @@ registerPush = (token) => {
      });
    }
  };
-
- recordViewActions = (actionType, touchCoordinate) => {
+  recordViewActions = (actionType, touchCoordinate) => {
    this.recordEvent({
      key: "[CLY]_action",
      segmentation: {
@@ -998,18 +929,15 @@ registerPush = (token) => {
      }
    });
  };
-
- setViewTracking = isViewTracking => {
+  setViewTracking = isViewTracking => {
    this.isViewTracking = isViewTracking;
  };
  // view handling
-
- /**
+  /**
   * @description return deviceId
   */
  getDeviceID = () => this.DEVICE_ID;
-
- /**
+  /**
   * @description starRating Event
   */
  starRating = rating => {
@@ -1021,17 +949,15 @@ registerPush = (token) => {
    };
    this.recordEvent(eventData);
  };
-
- log = (arg1, arg2) => {
+  log = (arg1, arg2) => {
    if (this.isDebug) {
      console.log(arg1, arg2);
    }
  };
-
-  bgMessaging = (message) => {
-   console.log("RemoteMessage", message);
-  
-const notification = new firebase.notifications.Notification()
+   bgMessaging = (message) => {
+        firebase = require('react-native-firebase');
+   this.log("RemoteMessage", message);
+  const notification = new firebase.notifications.Notification()
      .setNotificationId('notificationId')
      .setTitle(message.data.title)
      .setBody(message.data.message)
@@ -1042,11 +968,10 @@ const notification = new firebase.notifications.Notification()
        key2: 'value2',
      });
   if (Platform.OS === 'android') {
-       notification._android._channelId ='countlyPushNotificationChannel';
+       notification._android._channelId =this.NOTIFICATION_CHANNEL_ID;
        notification._android.setAutoCancel(true);
        notification._android.setClickAction(message.data['c.l']);
-
-       if(message.data['c.m']) {
+        if(message.data['c.m']) {
              notification.android.setBigPicture(message.data['c.m']);
            }
            if(message.data.smallPicture) {
@@ -1071,7 +996,6 @@ const notification = new firebase.notifications.Notification()
      }
      this.sentPush(message._messageId);
      firebase.notifications().displayNotification(notification);
-}
-}
-export default new Countly();
-
+ }
+ }
+ export default new Countly();

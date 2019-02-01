@@ -11,7 +11,6 @@ import {
 
  import DeviceInfo from "react-native-device-info";
  import BackgroundTimer from "react-native-background-timer";
- import NotificationActions from "react-native-ios-notification-actions";
  import RNRestart from "react-native-restart";
  import {
  setJSExceptionHandler,

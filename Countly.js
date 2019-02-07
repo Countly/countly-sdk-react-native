@@ -668,7 +668,6 @@ import {
   initMessaging = (mode,notificationChannel) => {
  firebase = require('react-native-firebase');
  
-  //PushNotification = require('react-native-push-notification');
    this.mode=mode;
    this.checkPermission(firebase);
 
@@ -732,11 +731,9 @@ import {
      .setBody(message.data.message)
      .setSound(message.data.sound)
      .setNotificationId(message._messageId)
-     .setData({
-     data:message.data
-     });
+     .setData(message.data);
+
   if (Platform.OS === 'android') {
-   
 
        notification._android._channelId =this.NOTIFICATION_CHANNEL_ID;
        notification._android.setAutoCancel(true);
@@ -986,9 +983,8 @@ import {
      .setBody(message.data.message)
      .setSound(message.data.sound)
      .setNotificationId(message.messageId)
-     .setData({
-       data: message.data
-     });
+     .setData(message.data);
+     
   if (Platform.OS === 'android') {
        notification._android._channelId =this.NOTIFICATION_CHANNEL_ID;
        notification._android.setAutoCancel(true);

@@ -63,6 +63,9 @@ import {
      handler1: null,
      handler2: null
    };
+   this.jsonHandler = {
+     handler:null
+   }
    this.cerFileName = null;
    this.DEVICE_ID = null;
    this.TEST = 2;
@@ -713,6 +716,16 @@ import {
     });
 
     this.messageListener = firebase.messaging().onMessage((message: firebase.RemoteMessage) => {
+
+    this.log("RemoteMessage", message);
+
+    if (this.jsonHandler.handler){
+            this.jsonHandler.handler(message.data);
+          }
+     if(!message.data.message){
+      return ;
+    }
+
      const notification = new firebase.notifications.Notification()
      .setNotificationId('notificationId')
      .setTitle(message.data.title)
@@ -720,8 +733,7 @@ import {
      .setSound(message.data.sound)
      .setNotificationId(message._messageId)
      .setData({
-       key1: 'value1',
-       key2: 'value2',
+     data:message.data
      });
   if (Platform.OS === 'android') {
    
@@ -759,7 +771,7 @@ import {
 
   // Components Unmount --start
 
-    UnmountNotificationListners() {
+    UnmountNotificationListeners() {
         this.notificationOpenedListener();
         this.onTokenRefreshListener();
         this.messageListener();
@@ -953,9 +965,21 @@ import {
      console.log(arg1, arg2);
    }
  };
-   bgMessaging = (message) => {
+
+ //for handling background messages in android
+   bgMessaging = async(message) => {
         firebase = require('react-native-firebase');
+
    this.log("RemoteMessage", message);
+   
+         if (this.jsonHandler.handler){
+                 this.jsonHandler.handler(message.data);
+               }
+   
+    if(!message.data.message){
+      return Promise.resolve();
+    }
+
   const notification = new firebase.notifications.Notification()
      .setNotificationId('notificationId')
      .setTitle(message.data.title)
@@ -963,8 +987,7 @@ import {
      .setSound(message.data.sound)
      .setNotificationId(message.messageId)
      .setData({
-       key1: 'value1',
-       key2: 'value2',
+       data: message.data
      });
   if (Platform.OS === 'android') {
        notification._android._channelId =this.NOTIFICATION_CHANNEL_ID;
@@ -995,6 +1018,7 @@ import {
      }
      this.sentPush(message._messageId);
      firebase.notifications().displayNotification(notification);
+     return Promise.resolve();
  }
  }
  export default new Countly();

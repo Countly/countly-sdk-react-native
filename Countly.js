@@ -666,7 +666,7 @@ import {
  };
   // Push Notification
   initMessaging = (mode,notificationChannel) => {
- firebase = require('react-native-firebase');
+    const firebase = require('react-native-firebase');
  
    this.mode=mode;
    this.checkPermission(firebase);
@@ -964,14 +964,14 @@ import {
  };
 
  //for handling background messages in android
-   bgMessaging = async(message) => {
-        firebase = require('react-native-firebase');
+  bgMessaging = async(message) => {
+    const firebase = require('react-native-firebase');
 
-   this.log("RemoteMessage", message);
+    this.log("RemoteMessage", message);
    
-         if (this.jsonHandler.handler){
-                 this.jsonHandler.handler(message.data);
-               }
+    if (this.jsonHandler.handler){
+      this.jsonHandler.handler(message.data);
+    }
    
     if(!message.data.message){
       return Promise.resolve();

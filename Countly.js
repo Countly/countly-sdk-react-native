@@ -713,7 +713,7 @@ class Countly {
       .then((notificationOpen: NotificationOpen) => {
         if (notificationOpen) {
           this.log(notificationOpen.action);
-          const action = notificationOpen.action;
+          const action = notificationOpen.notification._data.c.l;
           if (this.deepLinkHandler.handler1) {
             this.deepLinkHandler.handler1(action);
           }

@@ -69,9 +69,18 @@ class Countly {
     };
     this.cerFileName = null;
     this.DEVICE_ID = null;
-    this.TEST = 2;
-    this.ADHOC = 1;
+
+     /**
+     * Enums used in Countly.initMessaging() method which controls what kind of
+     * app installation it is. Later (in Countly Dashboard or when calling Countly API method),
+     * you'll be able to choose whether you want to send a message to test devices,
+     * or to production ones.
+     * test_mode= 0 for production token, 1 for development build token, 2 for test / iOS Ad Hoc / TestFlight token
+     */
     this.PRODUCTION = 0;
+    this.TEST = 1;
+    this.ADHOC = 2;
+
     this.SESSION_INTERVAL = 60;
     this.isStarRatingVisible = false;
     if (NativeModules.ExponentUtil) {

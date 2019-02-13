@@ -710,7 +710,7 @@ class Countly {
     firebase
       .notifications()
       .getInitialNotification()
-      .then((notificationOpen: NotificationOpen) => {
+      .then((notificationOpen) => {
         if (notificationOpen) {
           this.log(notificationOpen.action);
           const action = notificationOpen.notification._data.c.l;
@@ -738,7 +738,7 @@ class Countly {
 
     this.notificationOpenedListener = firebase
       .notifications()
-      .onNotificationOpened((notificationOpen: NotificationOpen) => {
+      .onNotificationOpened((notificationOpen) => {
         let notificationAction = "";
         if (Platform.OS == "android") {
           notificationAction = notificationOpen.action;
@@ -748,14 +748,14 @@ class Countly {
         if (this.deepLinkHandler.handler1) {
           this.deepLinkHandler.handler1(notificationAction);
         }
-        const notification: Notification = notificationOpen.notification;
+        const notification = notificationOpen.notification;
         this.log("onNotificationOpened", notification);
         this.openPush(notification._notificationId);
       });
 
     this.messageListener = firebase
       .messaging()
-      .onMessage((message: firebase.RemoteMessage) => {
+      .onMessage((message) => {
         this.log("RemoteMessage", message);
 
         if (this.jsonHandler.handler) {

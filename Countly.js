@@ -843,21 +843,26 @@ class Countly {
 
   async getToken(firebase) {
     if (Platform.OS === "android") {
-      firebase
-        .messaging()
-        .getToken()
-        .then(fcmToken => {
-          if (fcmToken) {
-            this.registerPush(fcmToken);
-          } else {
-            this.log("No token received");
-          }
-        });
+      firebase.messaging().getToken().then(fcmToken => {
+        if (fcmToken) {
+          this.log("FCM Token:", fcmToken)
+          this.registerPush(fcmToken);
+        } else {
+          this.log("No token received");
+        }
+      });
     } else {
-      firebase
-        .messaging()
-        .ios.getAPNSToken()
-        .then(value => {
+      // even though the FCM token is not need for Countly, it is still handy for debugging
+      firebase.messaging().getToken().then( fcmToken => {
+        if (fcmToken) {
+         this.log("FCM Token:", fcmToken)
+        } else {
+         this.log("No FCM token received");
+        }
+      });
+      // contly needs the APNS token, not the FIREBASE token
+      firebase.messaging().ios.getAPNSToken().then(value => {
+          this.log("APNS Token:", value)
           this.registerPush(value);
         });
     }

@@ -759,7 +759,7 @@ class Countly {
         if (Platform.OS == "android") {
           notificationAction = notificationOpen.action;
         } else {
-          notificationAction = notificationOpen.notification._data.c.l;
+          if (message._data["c.l"]) notificationAction = notificationOpen.notification._data.c.l;
         }
         if (this.deepLinkHandler.handler1) {
           this.deepLinkHandler.handler1(notificationAction);

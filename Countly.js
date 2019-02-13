@@ -713,7 +713,14 @@ class Countly {
       .then((notificationOpen) => {
         if (notificationOpen) {
           this.log(notificationOpen.action);
-          const action = notificationOpen.notification._data.c.l;
+          var action;
+          // countly sends actions in a custom c.l data key.  This avoids an `l` or `c.l` undefined error if either don't exist
+          if (notificationOpen.notification._data.c && notificationOpen.notification._data.c.l) {
+            action = notificationOpen.notification._data.c.l;
+          } else  {
+            // action came from something other than countly
+            action = notificationOpen.action;
+          }
           if (this.deepLinkHandler.handler1) {
             this.deepLinkHandler.handler1(action);
           }
@@ -776,7 +783,14 @@ class Countly {
         if (Platform.OS === "android") {
           notification._android._channelId = this.NOTIFICATION_CHANNEL_ID;
           notification._android.setAutoCancel(true);
-          notification._android.setClickAction(message.data["c.l"]);
+          // countly sends actions in a custom c.l data key.  This avoids an `l` or `c.l` undefined error if either don't exist
+          if (message.data["c.l"]) {
+            notification._android.setClickAction(message.data["c.l"]);
+          } else  {
+            // action came from something other than countly
+            action = notificationOpen.action;
+          }
+          
           if (message.data["c.m"]) {
             notification.android.setBigPicture(message.data["c.m"]);
           }
@@ -1068,7 +1082,10 @@ class Countly {
     if (Platform.OS === "android") {
       notification._android._channelId = this.NOTIFICATION_CHANNEL_ID;
       notification._android.setAutoCancel(true);
-      notification._android.setClickAction(message.data["c.l"]);
+      // countly sends actions in a custom c.l data key.  This avoids an `l` or `c.l` undefined error if either don't exist
+      if (message.data["c.l"]) {
+        notification._android.setClickAction(message.data["c.l"]);
+      } 
       if (message.data["c.m"]) {
         notification.android.setBigPicture(message.data["c.m"]);
       }

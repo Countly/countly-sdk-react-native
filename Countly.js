@@ -759,7 +759,7 @@ class Countly {
         if (Platform.OS == "android") {
           notificationAction = notificationOpen.action;
         } else {
-          if (message._data["c.l"]) notificationAction = notificationOpen.notification._data.c.l;
+          if (message._data.c && message._data.c.l) notificationAction = notificationOpen.notification._data.c.l;
         }
         if (this.deepLinkHandler.handler1) {
           this.deepLinkHandler.handler1(notificationAction);
@@ -793,15 +793,15 @@ class Countly {
           notification._android._channelId = this.NOTIFICATION_CHANNEL_ID;
           notification._android.setAutoCancel(true);
           // countly sends actions in a custom c.l data key.  This avoids an `l` or `c.l` undefined error if either don't exist
-          if (message.data["c.l"]) {
-            notification._android.setClickAction(message.data["c.l"]);
+          if (message.data.c && message.data.c.l) {
+            notification._android.setClickAction(message.data.c.l);
           } else  {
             // action came from something other than countly
             action = notificationOpen.action;
           }
           
-          if (message.data["c.m"]) {
-            notification.android.setBigPicture(message.data["c.m"]);
+          if (message.data.c && message.data.c.m) {
+            notification.android.setBigPicture(message.data.c.m);
           }
           if (message.data.smallPicture) {
             notification.android.setLargeIcon(message.data.smallPicture);
@@ -809,8 +809,8 @@ class Countly {
           if (message.data.color) {
             notification.android.setColor(message.data.color);
           }
-          if (message.data["c.b"]) {
-            this.deepLinkData = JSON.parse(`${message.data["c.b"]}`);
+          if (message.data.c && message.data.c.b) {
+            this.deepLinkData = JSON.parse(`${message.data.c.b}`);
             const buttons = this.deepLinkData.map(data => `${data.t}`);
             const links = this.deepLinkData.map(data => `${data.l}`);
             if (buttons[0]) {
@@ -1088,11 +1088,11 @@ class Countly {
       notification._android._channelId = this.NOTIFICATION_CHANNEL_ID;
       notification._android.setAutoCancel(true);
       // countly sends actions in a custom c.l data key.  This avoids an `l` or `c.l` undefined error if either don't exist
-      if (message.data["c.l"]) {
-        notification._android.setClickAction(message.data["c.l"]);
+      if (message.data.c && message.data.c.l) {
+        notification._android.setClickAction(message.data.c.l);
       } 
-      if (message.data["c.m"]) {
-        notification.android.setBigPicture(message.data["c.m"]);
+      if (message.data.c && message.data.c.m) {
+        notification.android.setBigPicture(message.data.c.m);
       }
       if (message.data.smallPicture) {
         notification.android.setLargeIcon(message.data.smallPicture);
@@ -1100,8 +1100,8 @@ class Countly {
       if (message.data.color) {
         notification.android.setColor(message.data.color);
       }
-      if (message.data["c.b"]) {
-        this.deepLinkData = JSON.parse(`${message.data["c.b"]}`);
+      if (message.data.c && message.data.c.b ) {
+        this.deepLinkData = JSON.parse(`${message.data.c.b}`);
         const buttons = this.deepLinkData.map(data => `${data.t}`);
         const links = this.deepLinkData.map(data => `${data.l}`);
         if (buttons[0]) {

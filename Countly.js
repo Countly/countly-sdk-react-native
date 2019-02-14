@@ -875,15 +875,11 @@ class Countly {
         }
       });
     } else {
-      // even though the FCM token is not need for Countly, it is still handy for debugging
-      firebase.messaging().getToken().then( fcmToken => {
-        if (fcmToken) {
+      // Countly does not need an FCM token for iOS, however it still handy for debugging
+      firebase.messaging().getToken().then(fcmToken => {
          this.log("FCM Token:", fcmToken)
-        } else {
-         this.log("No FCM token received");
-        }
       });
-      // contly needs the APNS token, not the FIREBASE token
+      // for iOS Countly needs the APNS token, not the FCM token
       firebase.messaging().ios.getAPNSToken().then(value => {
           this.log("APNS Token:", value)
           this.registerPush(value);

@@ -697,9 +697,8 @@ class Countly {
   };
 
   // Push Notification
-  initMessaging = (mode, notificationChannel) => {
+  initMessaging = async (mode, notificationChannel) => {
     const firebase = require("react-native-firebase");
-
     this.mode = mode;
     this.checkPermission(firebase);
 
@@ -1039,19 +1038,15 @@ class Countly {
   };
 
   // for handling background messages in android
-  bgMessaging = async message => {
+  bgMessaging = async (message, id) => {
     const firebase = require("react-native-firebase");
-
     this.log("RemoteMessage", message);
-
     if (this.jsonHandler.handler) {
       this.jsonHandler.handler(message.data);
     }
-
     if (!message.data.message) {
       return Promise.resolve();
     }
-
     const notification = new firebase.notifications.Notification()
       .setNotificationId("notificationId")
       .setTitle(message.data.title)
@@ -1061,7 +1056,7 @@ class Countly {
       .setData(message.data);
 
     if (Platform.OS === "android") {
-      notification._android._channelId = this.NOTIFICATION_CHANNEL_ID;
+      notification._android._channelId = id;
       notification._android.setAutoCancel(true);
       notification._android.setClickAction(message.data["c.l"]);
       if (message.data["c.m"]) {

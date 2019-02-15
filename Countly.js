@@ -728,7 +728,6 @@ class Countly {
             action = notificationOpen.notification._data.c.l;
           } else  {
             // action came from something other than countly
-            action = notificationOpen.action;
           }
           if (this.deepLinkHandler.handler1) {
             this.deepLinkHandler.handler1(action);

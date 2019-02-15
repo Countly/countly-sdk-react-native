@@ -797,7 +797,6 @@ class Countly {
             notification._android.setClickAction(message.data.c.l);
           } else  {
             // action came from something other than countly
-            action = notificationOpen.action;
           }
           
           if (message.data.c && message.data.c.m) {

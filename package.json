@@ -19,6 +19,7 @@
     "react-native-background-timer": "^2.0.0",
     "react-native-device-info": "^0.15.3",
     "react-native-exception-handler": "^2.7.1",
+    "react-native-firebase": "^5.2.2",
     "react-native-modal": "^6.4.0",
     "react-native-pinch": "^0.1.0",
     "react-native-restart": "0.0.6"

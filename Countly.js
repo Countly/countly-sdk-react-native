@@ -78,8 +78,8 @@ class Countly {
      * test_mode= 0 for production token, 1 for development build token, 2 for test / iOS Ad Hoc / TestFlight token
      */
     this.PRODUCTION = 0;
-    this.TEST = 1;
-    this.ADHOC = 2;
+    this.DEVELOPMENT = 1;
+    this.TESTADHOC = 2;
 
     this.SESSION_INTERVAL = 60;
     this.isStarRatingVisible = false;

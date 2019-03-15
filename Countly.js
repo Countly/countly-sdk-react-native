@@ -712,7 +712,7 @@ class Countly {
       .then((notificationOpen: NotificationOpen) => {
         if (notificationOpen) {
           this.log(notificationOpen.action);
-          const action = notificationOpen.notification._data.c.l;
+          const action = notificationOpen && notificationOpen.notification && notificationOpen.notification._data && notificationOpen.notification._data.c && notificationOpen.notification._data.c.l;
           if (this.deepLinkHandler.handler1) {
             this.deepLinkHandler.handler1(action);
           }
@@ -742,7 +742,7 @@ class Countly {
         if (Platform.OS == "android") {
           notificationAction = notificationOpen.action;
         } else {
-          notificationAction = notificationOpen.notification._data.c.l;
+          notificationAction = notificationOpen && notificationOpen.notification && notificationOpen.notification._data && notificationOpen.notification._data.c && notificationOpen.notification._data.c.l;
         }
         if (this.deepLinkHandler.handler1) {
           this.deepLinkHandler.handler1(notificationAction);

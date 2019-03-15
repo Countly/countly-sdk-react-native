@@ -815,10 +815,10 @@ class Countly {
   // Components Unmount --start
 
   UnmountNotificationListeners() {
-    this.notificationOpenedListener();
-    this.onTokenRefreshListener();
-    this.messageListener();
-    this.notificationOpenedListener();
+    this && this.notificationOpenedListener && this.notificationOpenedListener();
+    this && this.onTokenRefreshListener && this.onTokenRefreshListener();
+    this && this.messageListener && this.messageListener();
+    this && this.notificationOpenedListener && this.notificationOpenedListener();
   }
 
   // Components Unmount--end

@@ -359,14 +359,12 @@ class Countly {
       let deviceId = null;
       try {
         deviceId = await this.setDeviceId();
-        if (deviceId) {
-          this.DEVICE_ID = deviceId;
-        } else {
-          this.DEVICE_ID = DEVICE_ID || Ajax.generateUUID();
-        }
       } catch (err) {
-        this.log("Error while getting", "DEVICE_ID");
-        return reject(new Error("Error while getting DEVICE_ID"));
+      }
+      if (deviceId) {
+        this.DEVICE_ID = deviceId;
+      } else {
+        this.DEVICE_ID = DEVICE_ID || Ajax.generateUUID();
       }
       try {
         await Ajax.setItem("DEVICE_ID", this.DEVICE_ID);

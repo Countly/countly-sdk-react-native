@@ -312,7 +312,6 @@ class Countly {
   update = async () => {
     this.log("inside update");
     if (this.isReady) {
-      // for (let i = 0, il = this.queue.length; i < il; i += 1) {
       while (this.queue.length) {
         this.log("Countly-queue-update", this.queue[0]);
         try {
@@ -707,7 +706,7 @@ class Countly {
     firebase
       .notifications()
       .getInitialNotification()
-      .then((notificationOpen: NotificationOpen) => {
+      .then((notificationOpen) => {
         if (notificationOpen) {
           this.log(notificationOpen.action);
           const action = notificationOpen && notificationOpen.notification && notificationOpen.notification._data && notificationOpen.notification._data.c && notificationOpen.notification._data.c.l;
@@ -735,7 +734,7 @@ class Countly {
 
     this.notificationOpenedListener = firebase
       .notifications()
-      .onNotificationOpened((notificationOpen: NotificationOpen) => {
+      .onNotificationOpened((notificationOpen) => {
         let notificationAction = "";
         if (Platform.OS == "android") {
           notificationAction = notificationOpen.action;
@@ -745,14 +744,14 @@ class Countly {
         if (this.deepLinkHandler.handler1) {
           this.deepLinkHandler.handler1(notificationAction);
         }
-        const notification: Notification = notificationOpen.notification;
+        const notification = notificationOpen.notification;
         this.log("onNotificationOpened", notification);
         this.openPush(notification._notificationId);
       });
 
     this.messageListener = firebase
       .messaging()
-      .onMessage((message: firebase.RemoteMessage) => {
+      .onMessage((message) => {
         this.log("RemoteMessage", message);
 
         if (this.jsonHandler.handler) {
@@ -934,7 +933,7 @@ class Countly {
   };
 
   crashReportingHandler = (e, isFatal) => {
-    const crashLog = { _error: e.message, nonFatal: !isFatal, name: "Error" };
+    const crashLog = { _error: e && e.message, nonFatal: !isFatal, name: "Error" };
     this.crashLogData = crashLog;
     if (this.customCrashLog && typeof this.customCrashLog === "function") {
       this.customCrashLog();

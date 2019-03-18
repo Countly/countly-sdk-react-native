@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Text, Button, ScrollView, Image, Platform } from 'react-native';
-import PushNotification from 'react-native-push-notification';
-import NotificationActions from 'react-native-ios-notification-actions';
+// import PushNotification from 'react-native-push-notification';
+// import NotificationActions from 'react-native-ios-notification-actions';
 import DeviceInfo from 'react-native-device-info';
 import Countly, { StarRating } from './Countly';
 Countly.enableCrashReporting(true, true);
@@ -14,40 +14,40 @@ export default class App extends Component {
     this.state = {
       isVisible: false,
     };
-    if (Platform.OS.match('ios')) {
-      let upvoteButton = new NotificationActions.Action({
-        activationMode: 'background',
-        title: 'Upvote',
-        identifier: 'UPVOTE_ACTION'
-      }, (res, done) => {
-        console.log('upvote button pressed with result: ', res);
-        res => console.log(res);
-        done(); //important!
-      });
+    // if (Platform.OS.match('ios')) {
+    //   let upvoteButton = new NotificationActions.Action({
+    //     activationMode: 'background',
+    //     title: 'Upvote',
+    //     identifier: 'UPVOTE_ACTION'
+    //   }, (res, done) => {
+    //     console.log('upvote button pressed with result: ', res);
+    //     res => console.log(res);
+    //     done(); //important!
+    //   });
 
-      // Create a "comment" button that will display a text input when the button is pressed
-      let commentTextButton = new NotificationActions.Action({
-        activationMode: 'background',
-        title: 'Reply',
-        behavior: 'textInput',
-        identifier: 'REPLY_ACTION'
-      }, (res, done) => {
-        console.log('reply typed via notification from source: ', res.source, ' with text: ', res.text);
-        res => console.log(res);
-        done(); //important!
-      });
+    //   // Create a "comment" button that will display a text input when the button is pressed
+    //   let commentTextButton = new NotificationActions.Action({
+    //     activationMode: 'background',
+    //     title: 'Reply',
+    //     behavior: 'textInput',
+    //     identifier: 'REPLY_ACTION'
+    //   }, (res, done) => {
+    //     console.log('reply typed via notification from source: ', res.source, ' with text: ', res.text);
+    //     res => console.log(res);
+    //     done(); //important!
+    //   });
 
-      // Create a category containing our two actions
-      let myCategory = new NotificationActions.Category({
-        identifier: 'something_happened',
-        actions: [upvoteButton, commentTextButton],
-        forContext: 'default'
-      });
+    //   // Create a category containing our two actions
+    //   let myCategory = new NotificationActions.Category({
+    //     identifier: 'something_happened',
+    //     actions: [upvoteButton, commentTextButton],
+    //     forContext: 'default'
+    //   });
 
-      // ** important ** update the categories
-      NotificationActions.updateCategories([myCategory]);
-      //iOS setup for push Actions end
-    }
+    //   // ** important ** update the categories
+    //   NotificationActions.updateCategories([myCategory]);
+    //   //iOS setup for push Actions end
+    // }
   }
 
   componentDidMount() {
@@ -303,13 +303,7 @@ export default class App extends Component {
 /**
  * Dev related instruction
  * npm install ../../../../plugins/countly-sdk-react-native/
- * npm install react-native-push-notification
- * npm install react-native-ios-notification-actions
- * npm install react-native-exception-handler
- * npm install react-native-pinch
- * npm install react-native-firebase
- * npm install react-native-modal
- * npm install crypto-js
+ * npm install react-native-restart react-native-background-timer react-native-device-info react-native-exception-handler react-native-pinch react-native-firebase react-native-modal crypto-js
  * react-native link
  * react-native run-android
  * adb reverse tcp:8081 tcp:8081

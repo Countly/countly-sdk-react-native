@@ -312,4 +312,5 @@ export default class App extends Component {
  * npm install crypto-js
  * react-native link
  * react-native run-android
+ * adb reverse tcp:8081 tcp:8081
  */

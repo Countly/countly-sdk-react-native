@@ -3,7 +3,7 @@ import { Text, Button, ScrollView, Image, Platform } from 'react-native';
 // import PushNotification from 'react-native-push-notification';
 // import NotificationActions from 'react-native-ios-notification-actions';
 import DeviceInfo from 'react-native-device-info';
-import Countly, { StarRating } from './Countly';
+import Countly, { StarRating } from 'countly-sdk-react-native';
 Countly.enableCrashReporting(true, true);
 
 

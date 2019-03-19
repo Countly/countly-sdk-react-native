@@ -754,14 +754,16 @@ class Countly {
       .onMessage((message) => {
         this.log("RemoteMessage", message);
 
-        if (this.jsonHandler.handler) {
-          this.jsonHandler.handler(message.data);
+        if (this && this.jsonHandler && this.jsonHandler.handler && message && message.data) {
+          try{
+            this.jsonHandler.handler(message.data);
+          }catch(err){console.log(err)}
         }
-        if (!message.data.message) {
-          return;
-        }
+        if (!message || !message.data || !message.data.message) {
+          // do nothing
+        }else{
 
-        const notification = new firebase.notifications.Notification()
+          const notification = new firebase.notifications.Notification()
           .setNotificationId("notificationId")
           .setTitle(message.data.title)
           .setBody(message.data.message)
@@ -769,42 +771,44 @@ class Countly {
           .setNotificationId(message._messageId)
           .setData(message.data);
 
-        if (Platform.OS === "android") {
-          notification._android._channelId = this.NOTIFICATION_CHANNEL_ID;
-          notification._android.setAutoCancel(true);
-          notification._android.setClickAction(message.data["c.l"]);
-          if (message.data["c.m"]) {
-            notification.android.setBigPicture(message.data["c.m"]);
-          }
-          if (message.data.smallPicture) {
-            notification.android.setLargeIcon(message.data.smallPicture);
-          }
-          if (message.data.color) {
-            notification.android.setColor(message.data.color);
-          }
-          if (message.data["c.b"]) {
-            this.deepLinkData = JSON.parse(`${message.data["c.b"]}`);
-            const buttons = this.deepLinkData.map(data => `${data.t}`);
-            const links = this.deepLinkData.map(data => `${data.l}`);
-            if (buttons[0]) {
-              const action1 = new firebase.notifications.Android.Action(
-                links[0],
-                "ic_launcher",
-                buttons[0]
-              );
-              notification.android.addAction(action1);
+          if (Platform.OS === "android") {
+            notification._android._channelId = this.NOTIFICATION_CHANNEL_ID;
+            notification._android.setAutoCancel(true);
+            notification._android.setClickAction(message.data["c.l"]);
+            if (message.data["c.m"]) {
+              notification.android.setBigPicture(message.data["c.m"]);
             }
-            if (buttons[1]) {
-              const action2 = new firebase.notifications.Android.Action(
-                links[1],
-                "ic_launcher",
-                buttons[1]
-              );
-              notification.android.addAction(action2);
+            if (message.data.smallPicture) {
+              notification.android.setLargeIcon(message.data.smallPicture);
+            }
+            if (message.data.color) {
+              notification.android.setColor(message.data.color);
+            }
+            if (message.data["c.b"]) {
+              this.deepLinkData = JSON.parse(`${message.data["c.b"]}`);
+              const buttons = this.deepLinkData.map(data => `${data.t}`);
+              const links = this.deepLinkData.map(data => `${data.l}`);
+              if (buttons[0]) {
+                const action1 = new firebase.notifications.Android.Action(
+                  links[0],
+                  "ic_launcher",
+                  buttons[0]
+                );
+                notification.android.addAction(action1);
+              }
+              if (buttons[1]) {
+                const action2 = new firebase.notifications.Android.Action(
+                  links[1],
+                  "ic_launcher",
+                  buttons[1]
+                );
+                notification.android.addAction(action2);
+              }
             }
           }
+          firebase.notifications().displayNotification(notification);
         }
-        firebase.notifications().displayNotification(notification);
+
       });
   };
   // Initmessaging  --end

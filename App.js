@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
-import { Text, Button, ScrollView, Image, Platform } from 'react-native';
+import { Text, Button, ScrollView, Image, AsyncStorage, Platform } from 'react-native';
 // import PushNotification from 'react-native-push-notification';
 // import NotificationActions from 'react-native-ios-notification-actions';
-import DeviceInfo from 'react-native-device-info';
+// import DeviceInfo from 'react-native-device-info';
 import Countly, { StarRating } from 'countly-sdk-react-native';
-Countly.enableCrashReporting(true, true);
+// Countly.enableCrashReporting(true, true);
+import firebase from 'react-native-firebase';
 
 
 export default class App extends Component {
   constructor(props) {
-    console.log(Countly);
     super(props);
     this.state = {
       isVisible: false,
@@ -51,23 +51,22 @@ export default class App extends Component {
   }
 
   componentDidMount() {
-    Countly.isDebug = true;
-    Countly.initMessaging('GCM_ID', Countly.TEST);
-    Countly.deepLinkHandler = {
-      handler1: result => console.log('handler1: ', result),
-      handler2: result => console.log('handler2: ', result),
-    };
-    // return battery level
-    DeviceInfo.getBatteryLevel().then(batteryLevel => {
-      // 0.759999
-      console.log('Battery level: ', batteryLevel);
-    });
+    // Countly.isDebug = true;
+    // Countly.initMessaging('GCM_ID', Countly.TEST);
+    // Countly.deepLinkHandler = {
+    //   handler1: result => console.log('handler1: ', result),
+    //   handler2: result => console.log('handler2: ', result),
+    // };
+    // // return battery level
+    // DeviceInfo.getBatteryLevel().then(batteryLevel => {
+    //   // 0.759999
+    //   console.log('Battery level: ', batteryLevel);
+    // });
   }
 
   init = async () => {
     try {
-      const data = await Countly.begin('https://try.count.ly', '111dcd50d5f4a43a23202330cec19c069a68bc19');
-      console.log(data);
+      const data = await Countly.begin('https://try.count.ly', '0e8a00e8c01395a0af8be0e55da05a404bb23c3e');
     } catch (err) {
       console.log('error', err);
     }
@@ -226,12 +225,71 @@ export default class App extends Component {
   hideStar = () => {
     this.setState({ isVisible: false });
   }
+  issue64 = () =>{
+    console.log('issue 64');
+    this.pushExample();
+    // this.checkPermission();
+    // firebase.auth()
+    // .signInAnonymously()
+    // .then(credential => {
+    //   if (credential) {
+    //     console.log(credential.user.toJSON());
+    //     console.log('default app user ->');
+    //   }
+    // });
+  }
 
+    //1
+    async checkPermission() {
+      const enabled = await firebase.messaging().hasPermission();
+      if (enabled) {
+          this.getToken();
+      } else {
+          this.requestPermission();
+      }
+    }
+
+    pushExample(){
+      if (Platform.OS === 'android') {
+        const channel = new firebase.notifications.Android.Channel('your_channel_id', 'your_channel_name', firebase.notifications.Android.Importance.Max)
+                .setDescription('Your_channel_description');
+        firebase.notifications().android.createChannel(channel);
+        }
+        ///For android only --END
+       Countly.initMessaging(Countly.TEST,'your_channel_id');
+    }
+      //3
+    async getToken() {
+      let fcmToken = await AsyncStorage.getItem('fcmToken');
+      if (!fcmToken) {
+          fcmToken = await firebase.messaging().getToken();
+          if (fcmToken) {
+              // user has a device token
+              await AsyncStorage.setItem('fcmToken', fcmToken);
+          }
+      }
+      console.log("fcmToken");
+      console.log(fcmToken);
+
+    }
+
+      //2
+    async requestPermission() {
+      try {
+          await firebase.messaging().requestPermission();
+          // User has authorised
+          this.getToken();
+      } catch (error) {
+          // User has rejected permissions
+          console.log('permission rejected');
+      }
+    }
   render() {
     return (
       <ScrollView>
         <Text style={[{ fontSize: 25, textAlign: 'center' }]}>Countly React Native Demo App</Text>
         <Image source={{ uri: 'https://count.ly/badges/dark.svg' }} style={{ width: 300, height: 88 }} />
+        <Button onPress={this.issue64} title='Issue 64'/>
         <Button onPress={this.init} title='Init' color='#841584' />
         <Button onPress={this.onStart} title='Start' color='#5bbd72' />
         <Button onPress={this.onStop} title='Stop' color='#d95c5c' />

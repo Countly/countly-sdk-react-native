@@ -52,7 +52,7 @@ export default class App extends Component {
 
   componentDidMount() {
     // Countly.isDebug = true;
-    // Countly.initMessaging('GCM_ID', Countly.TEST);
+    // Countly.initMessaging('GCM_ID', Countly.DEVELOPMENT);
     // Countly.deepLinkHandler = {
     //   handler1: result => console.log('handler1: ', result),
     //   handler2: result => console.log('handler2: ', result),
@@ -89,12 +89,12 @@ export default class App extends Component {
   }
 
   onRegisterDevice = () => {
-    // Countly.initMessaging('403185924621', Countly.TEST);
+    // Countly.initMessaging('403185924621', Countly.DEVELOPMENT);
   }
 
   onSendTestTokenAndroid = () => {
     const testToken = 'coyj3YaNss4:APA91bG_9rwIQF4Ul7J2JB76J3afpcP_4TJA1hTfrSjD4lxklLLQIT82ygxLlqND9uUvFbVTosFWvM83QFGiStm_M3HQFK11yO682_5e6MEzL6qsDwWkt_IBv5PTylMhRM6cn2g0CGXs';
-    Countly.registerPush(Countly.TEST, testToken);
+    Countly.registerPush(Countly.DEVELOPMENT, testToken);
   }
 
   onSendUserData = () => {
@@ -256,7 +256,7 @@ export default class App extends Component {
         firebase.notifications().android.createChannel(channel);
         }
         ///For android only --END
-       Countly.initMessaging(Countly.TEST,'your_channel_id');
+       Countly.initMessaging(Countly.DEVELOPMENT,'your_channel_id');
     }
       //3
     async getToken() {
@@ -270,7 +270,7 @@ export default class App extends Component {
       }
       console.log("fcmToken");
       console.log(fcmToken);
-      Countly.mode = Countly.TEST;
+      Countly.mode = Countly.DEVELOPMENT;
       Countly.registerPush(fcmToken);
     }
 

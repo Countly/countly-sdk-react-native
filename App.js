@@ -227,8 +227,8 @@ export default class App extends Component {
   }
   issue64 = () =>{
     console.log('issue 64');
-    this.pushExample();
-    // this.checkPermission();
+    // this.pushExample();
+    this.checkPermission();
     // firebase.auth()
     // .signInAnonymously()
     // .then(credential => {
@@ -270,7 +270,8 @@ export default class App extends Component {
       }
       console.log("fcmToken");
       console.log(fcmToken);
-
+      Countly.mode = Countly.TEST;
+      Countly.registerPush(fcmToken);
     }
 
       //2

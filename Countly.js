@@ -78,8 +78,8 @@ class Countly {
      * test_mode= 0 for production token, 1 for development build token, 2 for test / iOS Ad Hoc / TestFlight token
      */
     this.PRODUCTION = 0;
-    this.TEST = 1;
-    this.ADHOC = 2;
+    this.DEVELOPMENT = 1;
+    this.TESTADHOC = 2;
 
     this.SESSION_INTERVAL = 60;
     this.isStarRatingVisible = false;
@@ -758,7 +758,7 @@ class Countly {
         if (Platform.OS == "android") {
           notificationAction = notificationOpen.action;
         } else {
-          if (message._data["c.l"]) notificationAction = notificationOpen.notification._data.c.l;
+          if (message._data.c && message._data.c.l) notificationAction = notificationOpen.notification._data.c.l;
         }
         if (this.deepLinkHandler.handler1) {
           this.deepLinkHandler.handler1(notificationAction);
@@ -792,15 +792,14 @@ class Countly {
           notification._android._channelId = this.NOTIFICATION_CHANNEL_ID;
           notification._android.setAutoCancel(true);
           // countly sends actions in a custom c.l data key.  This avoids an `l` or `c.l` undefined error if either don't exist
-          if (message.data["c.l"]) {
-            notification._android.setClickAction(message.data["c.l"]);
+          if (message.data.c && message.data.c.l) {
+            notification._android.setClickAction(message.data.c.l);
           } else  {
             // action came from something other than countly
-            action = notificationOpen.action;
           }
           
-          if (message.data["c.m"]) {
-            notification.android.setBigPicture(message.data["c.m"]);
+          if (message.data.c && message.data.c.m) {
+            notification.android.setBigPicture(message.data.c.m);
           }
           if (message.data.smallPicture) {
             notification.android.setLargeIcon(message.data.smallPicture);
@@ -808,8 +807,8 @@ class Countly {
           if (message.data.color) {
             notification.android.setColor(message.data.color);
           }
-          if (message.data["c.b"]) {
-            this.deepLinkData = JSON.parse(`${message.data["c.b"]}`);
+          if (message.data.c && message.data.c.b) {
+            this.deepLinkData = JSON.parse(`${message.data.c.b}`);
             const buttons = this.deepLinkData.map(data => `${data.t}`);
             const links = this.deepLinkData.map(data => `${data.l}`);
             if (buttons[0]) {
@@ -874,15 +873,11 @@ class Countly {
         }
       });
     } else {
-      // even though the FCM token is not need for Countly, it is still handy for debugging
-      firebase.messaging().getToken().then( fcmToken => {
-        if (fcmToken) {
+      // Countly does not need an FCM token for iOS, however it still handy for debugging
+      firebase.messaging().getToken().then(fcmToken => {
          this.log("FCM Token:", fcmToken)
-        } else {
-         this.log("No FCM token received");
-        }
       });
-      // contly needs the APNS token, not the FIREBASE token
+      // for iOS Countly needs the APNS token, not the FCM token
       firebase.messaging().ios.getAPNSToken().then(value => {
           this.log("APNS Token:", value)
           this.registerPush(value);
@@ -1091,11 +1086,11 @@ class Countly {
       notification._android._channelId = this.NOTIFICATION_CHANNEL_ID;
       notification._android.setAutoCancel(true);
       // countly sends actions in a custom c.l data key.  This avoids an `l` or `c.l` undefined error if either don't exist
-      if (message.data["c.l"]) {
-        notification._android.setClickAction(message.data["c.l"]);
+      if (message.data.c && message.data.c.l) {
+        notification._android.setClickAction(message.data.c.l);
       } 
-      if (message.data["c.m"]) {
-        notification.android.setBigPicture(message.data["c.m"]);
+      if (message.data.c && message.data.c.m) {
+        notification.android.setBigPicture(message.data.c.m);
       }
       if (message.data.smallPicture) {
         notification.android.setLargeIcon(message.data.smallPicture);
@@ -1103,8 +1098,8 @@ class Countly {
       if (message.data.color) {
         notification.android.setColor(message.data.color);
       }
-      if (message.data["c.b"]) {
-        this.deepLinkData = JSON.parse(`${message.data["c.b"]}`);
+      if (message.data.c && message.data.c.b ) {
+        this.deepLinkData = JSON.parse(`${message.data.c.b}`);
         const buttons = this.deepLinkData.map(data => `${data.t}`);
         const links = this.deepLinkData.map(data => `${data.l}`);
         if (buttons[0]) {

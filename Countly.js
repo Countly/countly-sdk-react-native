@@ -321,7 +321,6 @@ class Countly {
   update = async () => {
     this.log("inside update");
     if (this.isReady) {
-      // for (let i = 0, il = this.queue.length; i < il; i += 1) {
       while (this.queue.length) {
         this.log("Countly-queue-update", this.queue[0]);
         try {
@@ -368,14 +367,12 @@ class Countly {
       let deviceId = null;
       try {
         deviceId = await this.setDeviceId();
-        if (deviceId) {
-          this.DEVICE_ID = deviceId;
-        } else {
-          this.DEVICE_ID = DEVICE_ID || Ajax.generateUUID();
-        }
       } catch (err) {
-        this.log("Error while getting", "DEVICE_ID");
-        return reject(new Error("Error while getting DEVICE_ID"));
+      }
+      if (deviceId) {
+        this.DEVICE_ID = deviceId;
+      } else {
+        this.DEVICE_ID = DEVICE_ID || Ajax.generateUUID();
       }
       try {
         await Ajax.setItem("DEVICE_ID", this.DEVICE_ID);
@@ -706,9 +703,8 @@ class Countly {
   };
 
   // Push Notification
-  initMessaging = (mode, notificationChannel) => {
+  initMessaging = async (mode, notificationChannel) => {
     const firebase = require("react-native-firebase");
-
     this.mode = mode;
     this.checkPermission(firebase);
 
@@ -722,13 +718,7 @@ class Countly {
       .then((notificationOpen) => {
         if (notificationOpen) {
           this.log(notificationOpen.action);
-          var action;
-          // countly sends actions in a custom c.l data key.  This avoids an `l` or `c.l` undefined error if either don't exist
-          if (notificationOpen.notification._data.c && notificationOpen.notification._data.c.l) {
-            action = notificationOpen.notification._data.c.l;
-          } else  {
-            // action came from something other than countly
-          }
+          const action = notificationOpen && notificationOpen.notification && notificationOpen.notification._data && notificationOpen.notification._data.c && notificationOpen.notification._data.c.l;
           if (this.deepLinkHandler.handler1) {
             this.deepLinkHandler.handler1(action);
           }
@@ -758,7 +748,7 @@ class Countly {
         if (Platform.OS == "android") {
           notificationAction = notificationOpen.action;
         } else {
-          if (message._data.c && message._data.c.l) notificationAction = notificationOpen.notification._data.c.l;
+          notificationAction = notificationOpen && notificationOpen.notification && notificationOpen.notification._data && notificationOpen.notification._data.c && notificationOpen.notification._data.c.l;
         }
         if (this.deepLinkHandler.handler1) {
           this.deepLinkHandler.handler1(notificationAction);
@@ -773,14 +763,16 @@ class Countly {
       .onMessage((message) => {
         this.log("RemoteMessage", message);
 
-        if (this.jsonHandler.handler) {
-          this.jsonHandler.handler(message.data);
+        if (this && this.jsonHandler && this.jsonHandler.handler && message && message.data) {
+          try{
+            this.jsonHandler.handler(message.data);
+          }catch(err){console.log(err)}
         }
-        if (!message.data.message) {
-          return;
-        }
+        if (!message || !message.data || !message.data.message) {
+          // do nothing
+        }else{
 
-        const notification = new firebase.notifications.Notification()
+          const notification = new firebase.notifications.Notification()
           .setNotificationId("notificationId")
           .setTitle(message.data.title)
           .setBody(message.data.message)
@@ -788,48 +780,44 @@ class Countly {
           .setNotificationId(message._messageId)
           .setData(message.data);
 
-        if (Platform.OS === "android") {
-          notification._android._channelId = this.NOTIFICATION_CHANNEL_ID;
-          notification._android.setAutoCancel(true);
-          // countly sends actions in a custom c.l data key.  This avoids an `l` or `c.l` undefined error if either don't exist
-          if (message.data.c && message.data.c.l) {
-            notification._android.setClickAction(message.data.c.l);
-          } else  {
-            // action came from something other than countly
-          }
-          
-          if (message.data.c && message.data.c.m) {
-            notification.android.setBigPicture(message.data.c.m);
-          }
-          if (message.data.smallPicture) {
-            notification.android.setLargeIcon(message.data.smallPicture);
-          }
-          if (message.data.color) {
-            notification.android.setColor(message.data.color);
-          }
-          if (message.data.c && message.data.c.b) {
-            this.deepLinkData = JSON.parse(`${message.data.c.b}`);
-            const buttons = this.deepLinkData.map(data => `${data.t}`);
-            const links = this.deepLinkData.map(data => `${data.l}`);
-            if (buttons[0]) {
-              const action1 = new firebase.notifications.Android.Action(
-                links[0],
-                "ic_launcher",
-                buttons[0]
-              );
-              notification.android.addAction(action1);
+          if (Platform.OS === "android") {
+            notification._android._channelId = this.NOTIFICATION_CHANNEL_ID;
+            notification._android.setAutoCancel(true);
+            notification._android.setClickAction(message.data["c.l"]);
+            if (message.data["c.m"]) {
+              notification.android.setBigPicture(message.data["c.m"]);
             }
-            if (buttons[1]) {
-              const action2 = new firebase.notifications.Android.Action(
-                links[1],
-                "ic_launcher",
-                buttons[1]
-              );
-              notification.android.addAction(action2);
+            if (message.data.smallPicture) {
+              notification.android.setLargeIcon(message.data.smallPicture);
+            }
+            if (message.data.color) {
+              notification.android.setColor(message.data.color);
+            }
+            if (message.data["c.b"]) {
+              this.deepLinkData = JSON.parse(`${message.data["c.b"]}`);
+              const buttons = this.deepLinkData.map(data => `${data.t}`);
+              const links = this.deepLinkData.map(data => `${data.l}`);
+              if (buttons[0]) {
+                const action1 = new firebase.notifications.Android.Action(
+                  links[0],
+                  "ic_launcher",
+                  buttons[0]
+                );
+                notification.android.addAction(action1);
+              }
+              if (buttons[1]) {
+                const action2 = new firebase.notifications.Android.Action(
+                  links[1],
+                  "ic_launcher",
+                  buttons[1]
+                );
+                notification.android.addAction(action2);
+              }
             }
           }
+          firebase.notifications().displayNotification(notification);
         }
-        firebase.notifications().displayNotification(notification);
+
       });
   };
   // Initmessaging  --end
@@ -837,10 +825,9 @@ class Countly {
   // Components Unmount --start
 
   UnmountNotificationListeners() {
-    this.notificationOpenedListener();
-    this.onTokenRefreshListener();
-    this.messageListener();
-    this.notificationOpenedListener();
+    this && this.notificationOpenedListener && this.notificationOpenedListener();
+    this && this.onTokenRefreshListener && this.onTokenRefreshListener();
+    this && this.messageListener && this.messageListener();
   }
 
   // Components Unmount--end
@@ -960,7 +947,7 @@ class Countly {
   };
 
   crashReportingHandler = (e, isFatal) => {
-    const crashLog = { _error: e.message, nonFatal: !isFatal, name: "Error" };
+    const crashLog = { _error: e && e.message, nonFatal: !isFatal, name: "Error" };
     this.crashLogData = crashLog;
     if (this.customCrashLog && typeof this.customCrashLog === "function") {
       this.customCrashLog();
@@ -1061,19 +1048,15 @@ class Countly {
   };
 
   // for handling background messages in android
-  bgMessaging = async message => {
+  bgMessaging = async (message, id) => {
     const firebase = require("react-native-firebase");
-
     this.log("RemoteMessage", message);
-
     if (this.jsonHandler.handler) {
       this.jsonHandler.handler(message.data);
     }
-
     if (!message.data.message) {
       return Promise.resolve();
     }
-
     const notification = new firebase.notifications.Notification()
       .setNotificationId("notificationId")
       .setTitle(message.data.title)
@@ -1083,7 +1066,7 @@ class Countly {
       .setData(message.data);
 
     if (Platform.OS === "android") {
-      notification._android._channelId = this.NOTIFICATION_CHANNEL_ID;
+      notification._android._channelId = id;
       notification._android.setAutoCancel(true);
       // countly sends actions in a custom c.l data key.  This avoids an `l` or `c.l` undefined error if either don't exist
       if (message.data.c && message.data.c.l) {

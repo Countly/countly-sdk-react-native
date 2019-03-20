@@ -1,73 +1,72 @@
 import React, { Component } from 'react';
-import { Text, Button, ScrollView, Image, Platform } from 'react-native';
-import PushNotification from 'react-native-push-notification';
-import NotificationActions from 'react-native-ios-notification-actions';
-import DeviceInfo from 'react-native-device-info';
-import Countly, { StarRating } from './Countly';
-Countly.enableCrashReporting(true, true);
+import { Text, Button, ScrollView, Image, AsyncStorage, Platform } from 'react-native';
+// import PushNotification from 'react-native-push-notification';
+// import NotificationActions from 'react-native-ios-notification-actions';
+// import DeviceInfo from 'react-native-device-info';
+import Countly, { StarRating } from 'countly-sdk-react-native';
+// Countly.enableCrashReporting(true, true);
+import firebase from 'react-native-firebase';
 
 
 export default class App extends Component {
   constructor(props) {
-    console.log(Countly);
     super(props);
     this.state = {
       isVisible: false,
     };
-    if (Platform.OS.match('ios')) {
-      let upvoteButton = new NotificationActions.Action({
-        activationMode: 'background',
-        title: 'Upvote',
-        identifier: 'UPVOTE_ACTION'
-      }, (res, done) => {
-        console.log('upvote button pressed with result: ', res);
-        res => console.log(res);
-        done(); //important!
-      });
-      
-      // Create a "comment" button that will display a text input when the button is pressed
-      let commentTextButton = new NotificationActions.Action({
-        activationMode: 'background',
-        title: 'Reply',
-        behavior: 'textInput',
-        identifier: 'REPLY_ACTION'
-      }, (res, done) => {
-        console.log('reply typed via notification from source: ', res.source, ' with text: ', res.text);
-        res => console.log(res);
-        done(); //important!
-      });
-      
-      // Create a category containing our two actions
-      let myCategory = new NotificationActions.Category({
-        identifier: 'something_happened',
-        actions: [upvoteButton, commentTextButton],
-        forContext: 'default'
-      });
-      
-      // ** important ** update the categories
-      NotificationActions.updateCategories([myCategory]);
-      //iOS setup for push Actions end
-    }
+    // if (Platform.OS.match('ios')) {
+    //   let upvoteButton = new NotificationActions.Action({
+    //     activationMode: 'background',
+    //     title: 'Upvote',
+    //     identifier: 'UPVOTE_ACTION'
+    //   }, (res, done) => {
+    //     console.log('upvote button pressed with result: ', res);
+    //     res => console.log(res);
+    //     done(); //important!
+    //   });
+
+    //   // Create a "comment" button that will display a text input when the button is pressed
+    //   let commentTextButton = new NotificationActions.Action({
+    //     activationMode: 'background',
+    //     title: 'Reply',
+    //     behavior: 'textInput',
+    //     identifier: 'REPLY_ACTION'
+    //   }, (res, done) => {
+    //     console.log('reply typed via notification from source: ', res.source, ' with text: ', res.text);
+    //     res => console.log(res);
+    //     done(); //important!
+    //   });
+
+    //   // Create a category containing our two actions
+    //   let myCategory = new NotificationActions.Category({
+    //     identifier: 'something_happened',
+    //     actions: [upvoteButton, commentTextButton],
+    //     forContext: 'default'
+    //   });
+
+    //   // ** important ** update the categories
+    //   NotificationActions.updateCategories([myCategory]);
+    //   //iOS setup for push Actions end
+    // }
   }
 
   componentDidMount() {
-    Countly.isDebug = true;
-    Countly.initMessaging('GCM_ID', Countly.TEST);
-    Countly.deepLinkHandler = {
-      handler1: result => console.log('handler1: ', result),
-      handler2: result => console.log('handler2: ', result),
-    };
-    // return battery level
-    DeviceInfo.getBatteryLevel().then(batteryLevel => {
-      // 0.759999
-      console.log('Battery level: ', batteryLevel);
-    });
+    // Countly.isDebug = true;
+    // Countly.initMessaging('GCM_ID', Countly.TEST);
+    // Countly.deepLinkHandler = {
+    //   handler1: result => console.log('handler1: ', result),
+    //   handler2: result => console.log('handler2: ', result),
+    // };
+    // // return battery level
+    // DeviceInfo.getBatteryLevel().then(batteryLevel => {
+    //   // 0.759999
+    //   console.log('Battery level: ', batteryLevel);
+    // });
   }
 
   init = async () => {
     try {
-      const data = await Countly.begin('https://try.count.ly', '111dcd50d5f4a43a23202330cec19c069a68bc19');
-      console.log(data);
+      const data = await Countly.begin('https://try.count.ly', '0e8a00e8c01395a0af8be0e55da05a404bb23c3e');
     } catch (err) {
       console.log('error', err);
     }
@@ -226,12 +225,72 @@ export default class App extends Component {
   hideStar = () => {
     this.setState({ isVisible: false });
   }
+  issue64 = () =>{
+    console.log('issue 64');
+    // this.pushExample();
+    this.checkPermission();
+    // firebase.auth()
+    // .signInAnonymously()
+    // .then(credential => {
+    //   if (credential) {
+    //     console.log(credential.user.toJSON());
+    //     console.log('default app user ->');
+    //   }
+    // });
+  }
 
+    //1
+    async checkPermission() {
+      const enabled = await firebase.messaging().hasPermission();
+      if (enabled) {
+          this.getToken();
+      } else {
+          this.requestPermission();
+      }
+    }
+
+    pushExample(){
+      if (Platform.OS === 'android') {
+        const channel = new firebase.notifications.Android.Channel('your_channel_id', 'your_channel_name', firebase.notifications.Android.Importance.Max)
+                .setDescription('Your_channel_description');
+        firebase.notifications().android.createChannel(channel);
+        }
+        ///For android only --END
+       Countly.initMessaging(Countly.TEST,'your_channel_id');
+    }
+      //3
+    async getToken() {
+      let fcmToken = await AsyncStorage.getItem('fcmToken');
+      if (!fcmToken) {
+          fcmToken = await firebase.messaging().getToken();
+          if (fcmToken) {
+              // user has a device token
+              await AsyncStorage.setItem('fcmToken', fcmToken);
+          }
+      }
+      console.log("fcmToken");
+      console.log(fcmToken);
+      Countly.mode = Countly.TEST;
+      Countly.registerPush(fcmToken);
+    }
+
+      //2
+    async requestPermission() {
+      try {
+          await firebase.messaging().requestPermission();
+          // User has authorised
+          this.getToken();
+      } catch (error) {
+          // User has rejected permissions
+          console.log('permission rejected');
+      }
+    }
   render() {
     return (
       <ScrollView>
         <Text style={[{ fontSize: 25, textAlign: 'center' }]}>Countly React Native Demo App</Text>
         <Image source={{ uri: 'https://count.ly/badges/dark.svg' }} style={{ width: 300, height: 88 }} />
+        <Button onPress={this.issue64} title='Issue 64'/>
         <Button onPress={this.init} title='Init' color='#841584' />
         <Button onPress={this.onStart} title='Start' color='#5bbd72' />
         <Button onPress={this.onStop} title='Stop' color='#d95c5c' />
@@ -299,3 +358,12 @@ export default class App extends Component {
     );
   }
 }
+
+/**
+ * Dev related instruction
+ * npm install ../../../../plugins/countly-sdk-react-native/
+ * npm install react-native-restart react-native-background-timer react-native-device-info react-native-exception-handler react-native-pinch react-native-firebase react-native-modal crypto-js
+ * react-native link
+ * react-native run-android
+ * adb reverse tcp:8081 tcp:8081
+ */

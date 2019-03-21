@@ -703,7 +703,7 @@ class Countly {
   };
 
   // Push Notification
-  initMessaging = (mode, notificationChannel) => {
+  initMessaging = async (mode, notificationChannel) => {
     const firebase = require("react-native-firebase");
     this.mode = mode;
     this.checkPermission(firebase);
@@ -780,48 +780,44 @@ class Countly {
           .setNotificationId(message._messageId)
           .setData(message.data);
 
-        if (Platform.OS === "android") {
-          notification._android._channelId = this.NOTIFICATION_CHANNEL_ID;
-          notification._android.setAutoCancel(true);
-          // countly sends actions in a custom c.l data key.  This avoids an `l` or `c.l` undefined error if either don't exist
-          if (message.data.c && message.data.c.l) {
-            notification._android.setClickAction(message.data.c.l);
-          } else  {
-            // action came from something other than countly
-          }
-          
-          if (message.data.c && message.data.c.m) {
-            notification.android.setBigPicture(message.data.c.m);
-          }
-          if (message.data.smallPicture) {
-            notification.android.setLargeIcon(message.data.smallPicture);
-          }
-          if (message.data.color) {
-            notification.android.setColor(message.data.color);
-          }
-          if (message.data.c && message.data.c.b) {
-            this.deepLinkData = JSON.parse(`${message.data.c.b}`);
-            const buttons = this.deepLinkData.map(data => `${data.t}`);
-            const links = this.deepLinkData.map(data => `${data.l}`);
-            if (buttons[0]) {
-              const action1 = new firebase.notifications.Android.Action(
-                links[0],
-                "ic_launcher",
-                buttons[0]
-              );
-              notification.android.addAction(action1);
+          if (Platform.OS === "android") {
+            notification._android._channelId = this.NOTIFICATION_CHANNEL_ID;
+            notification._android.setAutoCancel(true);
+            notification._android.setClickAction(message.data["c.l"]);
+            if (message.data["c.m"]) {
+              notification.android.setBigPicture(message.data["c.m"]);
             }
-            if (buttons[1]) {
-              const action2 = new firebase.notifications.Android.Action(
-                links[1],
-                "ic_launcher",
-                buttons[1]
-              );
-              notification.android.addAction(action2);
+            if (message.data.smallPicture) {
+              notification.android.setLargeIcon(message.data.smallPicture);
+            }
+            if (message.data.color) {
+              notification.android.setColor(message.data.color);
+            }
+            if (message.data["c.b"]) {
+              this.deepLinkData = JSON.parse(`${message.data["c.b"]}`);
+              const buttons = this.deepLinkData.map(data => `${data.t}`);
+              const links = this.deepLinkData.map(data => `${data.l}`);
+              if (buttons[0]) {
+                const action1 = new firebase.notifications.Android.Action(
+                  links[0],
+                  "ic_launcher",
+                  buttons[0]
+                );
+                notification.android.addAction(action1);
+              }
+              if (buttons[1]) {
+                const action2 = new firebase.notifications.Android.Action(
+                  links[1],
+                  "ic_launcher",
+                  buttons[1]
+                );
+                notification.android.addAction(action2);
+              }
             }
           }
+          firebase.notifications().displayNotification(notification);
         }
-        firebase.notifications().displayNotification(notification);
+
       });
   };
   // Initmessaging  --end
@@ -855,21 +851,22 @@ class Countly {
 
   async getToken(firebase) {
     if (Platform.OS === "android") {
-      firebase
-        .messaging()
-        .getToken()
-        .then(fcmToken => {
-          if (fcmToken) {
-            this.registerPush(fcmToken);
-          } else {
-            this.log("No token received");
-          }
-        });
+      firebase.messaging().getToken().then(fcmToken => {
+        if (fcmToken) {
+          this.log("FCM Token:", fcmToken)
+          this.registerPush(fcmToken);
+        } else {
+          this.log("No token received");
+        }
+      });
     } else {
-      firebase
-        .messaging()
-        .ios.getAPNSToken()
-        .then(value => {
+      // Countly does not need an FCM token for iOS, however it still handy for debugging
+      firebase.messaging().getToken().then(fcmToken => {
+         this.log("FCM Token:", fcmToken)
+      });
+      // for iOS Countly needs the APNS token, not the FCM token
+      firebase.messaging().ios.getAPNSToken().then(value => {
+          this.log("APNS Token:", value)
           this.registerPush(value);
         });
     }
@@ -1051,7 +1048,7 @@ class Countly {
   };
 
   // for handling background messages in android
-  bgMessaging = async (message) => {
+  bgMessaging = async (message, id) => {
     const firebase = require("react-native-firebase");
     this.log("RemoteMessage", message);
     if (this.jsonHandler.handler) {
@@ -1069,7 +1066,7 @@ class Countly {
       .setData(message.data);
 
     if (Platform.OS === "android") {
-      notification._android._channelId = this.NOTIFICATION_CHANNEL_ID;
+      notification._android._channelId = id;
       notification._android.setAutoCancel(true);
       // countly sends actions in a custom c.l data key.  This avoids an `l` or `c.l` undefined error if either don't exist
       if (message.data.c && message.data.c.l) {

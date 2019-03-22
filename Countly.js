@@ -78,8 +78,11 @@ class Countly {
      * test_mode= 0 for production token, 1 for development build token, 2 for test / iOS Ad Hoc / TestFlight token
      */
     this.PRODUCTION = 0;
-    this.TEST = 2;
-    this.ADHOC = 1;
+    this.DEVELOPMENT = 1;
+    this.TESTADHOC = 2;
+    if (Platform.OS.match("android")) {
+      this.DEVELOPMENT = 2;
+    }
 
     this.SESSION_INTERVAL = 60;
     this.isStarRatingVisible = false;
@@ -1071,7 +1074,7 @@ class Countly {
       // countly sends actions in a custom c.l data key.  This avoids an `l` or `c.l` undefined error if either don't exist
       if (message.data.c && message.data.c.l) {
         notification._android.setClickAction(message.data.c.l);
-      } 
+      }
       if (message.data.c && message.data.c.m) {
         notification.android.setBigPicture(message.data.c.m);
       }

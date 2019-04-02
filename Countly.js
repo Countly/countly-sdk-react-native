@@ -5,7 +5,8 @@
  */
 
 import {
-  NativeModules
+    Platform,
+    NativeModules
 } from 'react-native';
 const CountlyReactNative = NativeModules.CountlyReactNative;
 
@@ -13,24 +14,21 @@ const Countly = {};
 Countly.serverUrl = "";
 Countly.appKey = "";
 Countly.ready = false;
-Countly.messagingMode = {"TEST":1,"PRODUCTION":0};
-// countly initialization
-Countly.init = function(serverUrl,appKey){
-    Countly.serverUrl = serverUrl;
-    Countly.appKey = appKey;
-    CountlyReactNative.init([serverUrl,appKey]);
+
+Countly.messagingMode = {"DEVELOPMENT":1,"PRODUCTION":0, "ADHOC": 2};
+if (Platform.OS.match("android")) {
+    Countly.messagingMode.DEVELOPMENT = 2;
 }
 
-Countly.initMessaging = function(options){
-    Countly.projectId = options.projectId;
-    Countly.messageMode = options.messageMode;
-    // Countly.Push.onRegisterPushNotification();
-
+// countly initialization
+Countly.init = function(serverUrl,appKey, deviceId){
+    Countly.serverUrl = serverUrl;
+    Countly.appKey = appKey;
     var args = [];
-    args.push(options.registrationId || "");
-    args.push(options.messageMode || "0");
-    args.push(options.projectId || "");
-    CountlyReactNative.onregistrationid(args);
+    args.push(serverUrl || "");
+    args.push(appKey || "");
+    args.push(deviceId || "");
+    CountlyReactNative.init(args);
 }
 
 // countly sending various types of events
@@ -88,12 +86,30 @@ Countly.setUserData = function(options){
     CountlyReactNative.setuserdata(args);
 }
 
-Countly.onRegistrationId = function(options){
-    var args = [];
-    args.push(options.registrationId || "");
-    args.push(Countly.messageMode || "0");
-    args.push(options.projectId || "");
-    CountlyReactNative.onregistrationid(args);
+Countly.sendPushToken = function(options, successCallback, failureCallback){
+    // successCallback = successCallback || Countly.onSuccess;
+    // failureCallback = failureCallback || Countly.onError;
+    // if(!Countly.appKey){
+    //     return failureCallback('Countly sdk is not initialized.')
+    // }
+    // Countly.getDeviceID(function(deviceId){
+    //     var data = {
+    //         device_id: deviceId,
+    //         app_key: Countly.appKey,
+    //         token_session: 1,
+    //         test_mode: options.messagingMode,
+    //         android_token: options.token,
+    //         ios_token: options.token
+    //     };
+    //     if (Countly.isAndroid) {
+    //         delete data.ios_token;
+    //     }
+    //     if (Countly.isiOS) {
+    //         delete data.android_token;
+    //     }
+    //     Ajax.post('/i', data, successCallback);
+
+    // }, failureCallback);
 }
 // countly start for android
 Countly.start = function(){
@@ -123,19 +139,51 @@ Countly.demo = function(){
 
 }
 
-Countly.setLocation = function(newDeviceID){
-    CountlyReactNative.setLocation([newDeviceID.toString() || ""]);
+Countly.setOptionalParametersForInitialization = function(options){
+
+    var args = [];
+    args.push(options.city || "");
+    args.push(options.country || "");
+    args.push(String(options.latitude) || "0.0");
+    args.push(String(options.longitude) || "0.0");
+    args.push(String(options.ipAddress) || "0.0.0.0");
+    CountlyReactNative.setLocation(args);
 }
-Countly.changeDeviceId = function(newDeviceID){
-    CountlyReactNative.changeDeviceId([newDeviceID.toString() || ""]);
+Countly.setLocation = function(countryCode, city, location, ipAddress){
+    var args = [];
+    args.push(countryCode || "");
+    args.push(city || "");
+    args.push(location || "0,0");
+    args.push(String(options.ipAddress) || "0.0.0.0");
+    CountlyReactNative.setLocation(args);
 }
-Countly.enableParameterTamperingProtection = function(salt){
-    CountlyReactNative.enableParameterTamperingProtection([salt.toString() || ""]);
+Countly.disableLocation = function(){
+    CountlyReactNative.disableLocation();
+}
+Countly.changeDeviceId = function(newDeviceID, onServer){
+    if(onServer === false){
+        onServer = "0";
+    }else{
+        onServer = "1";
+    }
+    newDeviceID = newDeviceID.toString() || "";
+    CountlyReactNative.changeDeviceId([newDeviceID, onServer]);
 }
 Countly.enableCrashReporting = function(){
     CountlyReactNative.enableCrashReporting();
 }
-
+Countly.addCrashLog = function(crashLog){
+    CountlyReactNative.addCrashLog(crashLog);
+}
+Countly.startSession = function(){
+    CountlyReactNative.startSession();
+}
+Countly.endSession = function(){
+    CountlyReactNative.endSession();
+}
+Countly.enableParameterTamperingProtection = function(salt){
+    CountlyReactNative.enableParameterTamperingProtection([salt.toString() || ""]);
+}
 Countly.startEvent = function(eventName){
     CountlyReactNative.startEvent([eventName.toString() || ""]);
 }
@@ -189,5 +237,4 @@ Countly.userData.saveMin = function(keyName, saveMin){
 Countly.userData.setOnce = function(keyName, setOnce){
     CountlyReactNative.userData_setOnce([keyName.toString() || "", setOnce.toString() || ""]);
 };
-
 export default Countly;

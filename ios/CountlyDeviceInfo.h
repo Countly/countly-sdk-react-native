@@ -6,15 +6,18 @@
 
 #import <Foundation/Foundation.h>
 
+extern NSString* const kCountlyZeroIDFA;
+
 @interface CountlyDeviceInfo : NSObject
 
-@property (nonatomic, strong) NSString *deviceID;
+@property (nonatomic) NSString *deviceID;
 
 + (instancetype)sharedInstance;
 - (void)initializeDeviceID:(NSString *)deviceID;
 - (NSString *)zeroSafeIDFA;
 
 + (NSString *)device;
++ (NSString *)architecture;
 + (NSString *)osName;
 + (NSString *)osVersion;
 + (NSString *)carrier;
@@ -23,8 +26,6 @@
 + (NSString *)locale;
 + (NSString *)appVersion;
 + (NSString *)appBuild;
-+ (NSString *)buildUUID;
-+ (NSString *)bundleId;
 #if TARGET_OS_IOS
 + (NSInteger)hasWatch;
 + (NSInteger)installedWatchApp;
@@ -39,7 +40,7 @@
 + (unsigned long long)totalDisk;
 + (NSInteger)batteryLevel;
 + (NSString *)orientation;
-+ (float)OpenGLESversion;
++ (NSString *)OpenGLESversion;
 + (BOOL)isJailbroken;
 + (BOOL)isInBackground;
 @end

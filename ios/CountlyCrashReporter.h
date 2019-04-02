@@ -8,17 +8,14 @@
 
 @interface CountlyCrashReporter : NSObject
 #if TARGET_OS_IOS
-@property (nonatomic, strong) NSDictionary* crashSegmentation;
+@property (nonatomic) BOOL isEnabledOnInitialConfig;
+@property (nonatomic) NSDictionary* crashSegmentation;
+@property (nonatomic) NSUInteger crashLogLimit;
 
 + (instancetype)sharedInstance;
 - (void)startCrashReporting;
-- (void)recordHandledException:(NSException *)exception;
-- (void)logWithFormat:(NSString *)format andArguments:(va_list)args;
-- (void)crashTest;
-- (void)crashTest2;
-- (void)crashTest3;
-- (void)crashTest4;
-- (void)crashTest5;
-- (void)crashTest6;
+- (void)stopCrashReporting;
+- (void)recordException:(NSException *)exception withStackTrace:(NSArray *)stackTrace isFatal:(BOOL)isFatal;
+- (void)log:(NSString *)log;
 #endif
 @end

@@ -7,10 +7,29 @@
 #import "CountlyCommon.h"
 
 @interface CountlyUserDetails ()
-@property (nonatomic, strong) NSMutableDictionary* modifications;
+@property (nonatomic) NSMutableDictionary* modifications;
 @end
 
 NSString* const kCountlyLocalPicturePath = @"kCountlyLocalPicturePath";
+
+NSString* const kCountlyUDKeyName          = @"name";
+NSString* const kCountlyUDKeyUsername      = @"username";
+NSString* const kCountlyUDKeyEmail         = @"email";
+NSString* const kCountlyUDKeyOrganization  = @"organization";
+NSString* const kCountlyUDKeyPhone         = @"phone";
+NSString* const kCountlyUDKeyGender        = @"gender";
+NSString* const kCountlyUDKeyPicture       = @"picture";
+NSString* const kCountlyUDKeyBirthyear     = @"byear";
+NSString* const kCountlyUDKeyCustom        = @"custom";
+
+NSString* const kCountlyUDKeyModifierSetOnce    = @"$setOnce";
+NSString* const kCountlyUDKeyModifierIncrement  = @"$inc";
+NSString* const kCountlyUDKeyModifierMultiply   = @"$mul";
+NSString* const kCountlyUDKeyModifierMax        = @"$max";
+NSString* const kCountlyUDKeyModifierMin        = @"$min";
+NSString* const kCountlyUDKeyModifierPush       = @"$push";
+NSString* const kCountlyUDKeyModifierAddToSet   = @"$addToSet";
+NSString* const kCountlyUDKeyModifierPull       = @"$pull";
 
 @implementation CountlyUserDetails
 
@@ -32,116 +51,60 @@ NSString* const kCountlyLocalPicturePath = @"kCountlyLocalPicturePath";
     return self;
 }
 
-- (void)recordUserDetails
-{
-    [CountlyConnectionManager.sharedInstance sendUserDetails:[CountlyUserDetails.sharedInstance serialize]];
-
-    if(self.pictureLocalPath && !self.pictureURL)
-    {
-        [CountlyConnectionManager.sharedInstance sendUserDetails:[@{kCountlyLocalPicturePath:self.pictureLocalPath} cly_JSONify]];
-    }
-}
-
-- (NSString *)serialize
+- (NSString *)serializedUserDetails
 {
     NSMutableDictionary* userDictionary = NSMutableDictionary.new;
-    if(self.name)
-        userDictionary[@"name"] = self.name;
-    if(self.username)
-        userDictionary[@"username"] = self.username;
-    if(self.email)
-        userDictionary[@"email"] = self.email;
-    if(self.organization)
-        userDictionary[@"organization"] = self.organization;
-    if(self.phone)
-        userDictionary[@"phone"] = self.phone;
-    if(self.gender)
-        userDictionary[@"gender"] = self.gender;
-    if(self.pictureURL)
-        userDictionary[@"picture"] = self.pictureURL;
-    if(self.birthYear)
-        userDictionary[@"byear"] = self.birthYear;
-    if(self.custom)
-        userDictionary[@"custom"] = self.custom;
+    if (self.name)
+        userDictionary[kCountlyUDKeyName] = self.name;
+    if (self.username)
+        userDictionary[kCountlyUDKeyUsername] = self.username;
+    if (self.email)
+        userDictionary[kCountlyUDKeyEmail] = self.email;
+    if (self.organization)
+        userDictionary[kCountlyUDKeyOrganization] = self.organization;
+    if (self.phone)
+        userDictionary[kCountlyUDKeyPhone] = self.phone;
+    if (self.gender)
+        userDictionary[kCountlyUDKeyGender] = self.gender;
+    if (self.pictureURL)
+        userDictionary[kCountlyUDKeyPicture] = self.pictureURL;
+    if (self.birthYear)
+        userDictionary[kCountlyUDKeyBirthyear] = self.birthYear;
+    if (self.custom)
+        userDictionary[kCountlyUDKeyCustom] = self.custom;
 
-    return [userDictionary cly_JSONify];
-}
+    if (userDictionary.allKeys.count)
+        return [userDictionary cly_JSONify];
 
-- (NSData *)pictureUploadDataForRequest:(NSString *)requestString
-{
-#if TARGET_OS_IOS
-    NSString* unescaped = [requestString stringByRemovingPercentEncoding];
-    NSRange rLocalPicturePath = [unescaped rangeOfString:kCountlyLocalPicturePath];
-    if (rLocalPicturePath.location == NSNotFound)
-        return nil;
-
-    NSRange rChecksum = [unescaped rangeOfString:@"&checksum="];
-    NSUInteger startIndex = rLocalPicturePath.location-2;
-    NSString* pathString;
-    if (rChecksum.location == NSNotFound)
-        pathString = [unescaped substringFromIndex:startIndex];
-    else
-        pathString = [unescaped substringWithRange:(NSRange){startIndex, rChecksum.location - startIndex}];
-
-    NSDictionary* pathDictionary = [NSJSONSerialization JSONObjectWithData:[pathString cly_dataUTF8] options:0 error:nil];
-    NSString* localPicturePath = pathDictionary[kCountlyLocalPicturePath];
-    if(!localPicturePath || !localPicturePath.length)
-        return nil;
-
-    COUNTLY_LOG(@"Local picture path successfully extracted from query string: %@", localPicturePath);
-
-    NSArray* allowedFileTypes = @[@"gif", @"png", @"jpg", @"jpeg"];
-    NSString* fileExt = localPicturePath.pathExtension.lowercaseString;
-    NSInteger fileExtIndex = [allowedFileTypes indexOfObject:fileExt];
-
-    if(fileExtIndex == NSNotFound)
-        return nil;
-
-    NSData* imageData = [NSData dataWithContentsOfURL:[NSURL URLWithString:localPicturePath]];
-
-    if (!imageData)
-    {
-        COUNTLY_LOG(@"Local picture data can not be read!");
-        return nil;
-    }
-
-    COUNTLY_LOG(@"Local picture data read successfully.");
-
-    //NOTE: png file data read directly from disk somehow fails on upload, this fixes it
-    if (fileExtIndex == 1)
-        imageData = UIImagePNGRepresentation([UIImage imageWithData:imageData]);
-
-    //NOTE: for mime type jpg -> jpeg
-    if (fileExtIndex == 2)
-        fileExtIndex = 3;
-
-    NSString* boundaryStart = [NSString stringWithFormat:@"--%@\r\n", CountlyConnectionManager.sharedInstance.boundary];
-    NSString* contentDisposition = [NSString stringWithFormat:@"Content-Disposition: form-data; name=\"pictureFile\"; filename=\"%@\"\r\n", localPicturePath.lastPathComponent];
-    NSString* contentType = [NSString stringWithFormat:@"Content-Type: image/%@\r\n\r\n", allowedFileTypes[fileExtIndex]];
-    NSString* boundaryEnd = [NSString stringWithFormat:@"\r\n--%@--\r\n", CountlyConnectionManager.sharedInstance.boundary];
-
-    NSMutableData* uploadData = NSMutableData.new;
-    [uploadData appendData:[boundaryStart cly_dataUTF8]];
-    [uploadData appendData:[contentDisposition cly_dataUTF8]];
-    [uploadData appendData:[contentType cly_dataUTF8]];
-    [uploadData appendData:imageData];
-    [uploadData appendData:[boundaryEnd cly_dataUTF8]];
-    return uploadData;
-#endif
     return nil;
 }
 
+- (void)clearUserDetails
+{
+    self.name = nil;
+    self.username = nil;
+    self.email = nil;
+    self.organization = nil;
+    self.phone = nil;
+    self.gender = nil;
+    self.pictureURL = nil;
+    self.pictureLocalPath = nil;
+    self.birthYear = nil;
+    self.custom = nil;
+
+    [self.modifications removeAllObjects];
+}
 
 #pragma mark -
 
 - (void)set:(NSString *)key value:(NSString *)value
 {
-    self.modifications[key] = value;
+    self.modifications[key] = value.copy;
 }
 
 - (void)setOnce:(NSString *)key value:(NSString *)value
 {
-    self.modifications[key] = @{@"$setOnce":value};
+    self.modifications[key] = @{kCountlyUDKeyModifierSetOnce: value.copy};
 }
 
 - (void)unSet:(NSString *)key
@@ -151,66 +114,78 @@ NSString* const kCountlyLocalPicturePath = @"kCountlyLocalPicturePath";
 
 - (void)increment:(NSString *)key
 {
-    [self incrementBy:key value:1];
+    [self incrementBy:key value:@1];
 }
 
-- (void)incrementBy:(NSString *)key value:(NSInteger)value
+- (void)incrementBy:(NSString *)key value:(NSNumber *)value
 {
-    self.modifications[key] = @{@"$inc":@(value)};
+    self.modifications[key] = @{kCountlyUDKeyModifierIncrement: value};
 }
 
-- (void)multiply:(NSString *)key value:(NSInteger)value
+- (void)multiply:(NSString *)key value:(NSNumber *)value
 {
-    self.modifications[key] = @{@"$mul":@(value)};
+    self.modifications[key] = @{kCountlyUDKeyModifierMultiply: value};
 }
 
-- (void)max:(NSString *)key value:(NSInteger)value
+- (void)max:(NSString *)key value:(NSNumber *)value
 {
-    self.modifications[key] = @{@"$max":@(value)};
+    self.modifications[key] = @{kCountlyUDKeyModifierMax: value};
 }
 
-- (void)min:(NSString *)key value:(NSInteger)value
+- (void)min:(NSString *)key value:(NSNumber *)value
 {
-    self.modifications[key] = @{@"$min":@(value)};
+    self.modifications[key] = @{kCountlyUDKeyModifierMin: value};
 }
 
 - (void)push:(NSString *)key value:(NSString *)value
 {
-    self.modifications[key] = @{@"$push":value};
+    self.modifications[key] = @{kCountlyUDKeyModifierPush: value.copy};
 }
 
 - (void)push:(NSString *)key values:(NSArray *)value
 {
-    self.modifications[key] = @{@"$push":value};
+    self.modifications[key] = @{kCountlyUDKeyModifierPush: value.copy};
 }
 
 - (void)pushUnique:(NSString *)key value:(NSString *)value
 {
-    self.modifications[key] = @{@"$addToSet":value};
+    self.modifications[key] = @{kCountlyUDKeyModifierAddToSet: value.copy};
 }
 
 - (void)pushUnique:(NSString *)key values:(NSArray *)value
 {
-    self.modifications[key] = @{@"$addToSet":value};
+    self.modifications[key] = @{kCountlyUDKeyModifierAddToSet: value.copy};
 }
 
 - (void)pull:(NSString *)key value:(NSString *)value
 {
-    self.modifications[key] = @{@"$pull":value};
+    self.modifications[key] = @{kCountlyUDKeyModifierPull: value.copy};
 }
 
 - (void)pull:(NSString *)key values:(NSArray *)value
 {
-    self.modifications[key] = @{@"$pull":value};
+    self.modifications[key] = @{kCountlyUDKeyModifierPull: value.copy};
 }
 
 - (void)save
 {
-    NSDictionary* custom = @{@"custom":self.modifications};
+    if (!CountlyCommon.sharedInstance.hasStarted)
+        return;
 
-    [CountlyConnectionManager.sharedInstance sendUserDetails:[custom cly_JSONify]];
+    if (!CountlyConsentManager.sharedInstance.consentForUserDetails)
+        return;
 
-    [self.modifications removeAllObjects];
+    NSString* userDetails = [self serializedUserDetails];
+    if (userDetails)
+        [CountlyConnectionManager.sharedInstance sendUserDetails:userDetails];
+
+    if (self.pictureLocalPath && !self.pictureURL)
+        [CountlyConnectionManager.sharedInstance sendUserDetails:[@{kCountlyLocalPicturePath: self.pictureLocalPath} cly_JSONify]];
+
+    if (self.modifications.count)
+        [CountlyConnectionManager.sharedInstance sendUserDetails:[@{kCountlyUDKeyCustom: self.modifications} cly_JSONify]];
+
+    [self clearUserDetails];
 }
 
 @end

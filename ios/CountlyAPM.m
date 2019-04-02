@@ -7,13 +7,16 @@
 #import "CountlyCommon.h"
 
 @interface CountlyAPM ()
-@property (nonatomic, strong) NSMutableArray* exceptionURLs;
+@property (nonatomic) NSMutableArray* exceptionURLs;
 @end
 
 @implementation CountlyAPM
 
 + (instancetype)sharedInstance
 {
+    if (!CountlyCommon.sharedInstance.hasStarted)
+        return nil;
+
     static CountlyAPM* s_sharedInstance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{s_sharedInstance = self.new;});
@@ -22,8 +25,7 @@
 
 - (instancetype)init
 {
-    self = [super init];
-    if (self)
+    if (self = [super init])
     {
         NSURL * url = [NSURL URLWithString:CountlyConnectionManager.sharedInstance.host];
         NSString* hostAndPath = [url.host stringByAppendingString:url.path];
@@ -86,7 +88,7 @@
 
     [CountlyAPM.sharedInstance.exceptionURLs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL* stop)
     {
-        if([request.URL.host isEqualToString:obj] || [hostAndPath hasPrefix:obj])
+        if ([request.URL.host isEqualToString:obj] || [hostAndPath hasPrefix:obj])
         {
             isException = YES;
             *stop = YES;
@@ -141,7 +143,7 @@
 - (instancetype)Countly_initWithRequest:(NSURLRequest *)request delegate:(id)delegate
 {
     CountlyAPMNetworkLog* nl = [CountlyAPMNetworkLog logWithRequest:request andOriginalDelegate:delegate startNow:YES];
-    NSURLConnection* conn = [self Countly_initWithRequest:request delegate:(nl ? nl : delegate) startImmediately:YES];
+    NSURLConnection* conn = [self Countly_initWithRequest:request delegate:(nl ?: delegate) startImmediately:YES];
     conn.APMNetworkLog = nl;
 
     return conn;
@@ -150,7 +152,7 @@
 - (instancetype)Countly_initWithRequest:(NSURLRequest *)request delegate:(id)delegate startImmediately:(BOOL)startImmediately
 {
     CountlyAPMNetworkLog* nl = [CountlyAPMNetworkLog logWithRequest:request andOriginalDelegate:delegate startNow:startImmediately];
-    NSURLConnection* conn = [self Countly_initWithRequest:request delegate:(nl ? nl : delegate) startImmediately:startImmediately];
+    NSURLConnection* conn = [self Countly_initWithRequest:request delegate:(nl ?: delegate) startImmediately:startImmediately];
     conn.APMNetworkLog = nl;
 
     return conn;

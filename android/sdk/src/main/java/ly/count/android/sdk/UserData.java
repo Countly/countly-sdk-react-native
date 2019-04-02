@@ -9,38 +9,37 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.util.Log;
 
 public class UserData {
-    public static final String NAME_KEY = "name";
-    public static final String USERNAME_KEY = "username";
-    public static final String EMAIL_KEY = "email";
-    public static final String ORG_KEY = "organization";
-    public static final String PHONE_KEY = "phone";
-    public static final String PICTURE_KEY = "picture";
-    public static final String PICTURE_PATH_KEY = "picturePath";
-    public static final String GENDER_KEY = "gender";
-    public static final String BYEAR_KEY = "byear";
-    public static final String CUSTOM_KEY = "custom";
+    private static final String NAME_KEY = "name";
+    private static final String USERNAME_KEY = "username";
+    private static final String EMAIL_KEY = "email";
+    private static final String ORG_KEY = "organization";
+    private static final String PHONE_KEY = "phone";
+    private static final String PICTURE_KEY = "picture";
+    private static final String PICTURE_PATH_KEY = "picturePath";
+    private static final String GENDER_KEY = "gender";
+    private static final String BYEAR_KEY = "byear";
+    private static final String CUSTOM_KEY = "custom";
 
-    public static String name;
-    public static String username;
-    public static String email;
-    public static String org;
-    public static String phone;
-    public static String picture;
-    public static String picturePath;
-    public static String gender;
-    public static Map<String, String> custom;
-    public static Map<String, JSONObject> customMods;
-    public static int byear = 0;
-    public static boolean isSynced = true;
+    protected static String name;
+    protected static String username;
+    protected static String email;
+    protected static String org;
+    protected static String phone;
+    protected static String picture;
+    private static String picturePath;
+    protected static String gender;
+    protected static Map<String, String> custom;
+    protected static Map<String, JSONObject> customMods;
+    protected static int byear = 0;
+    private static boolean isSynced = true;
 
-    ConnectionQueue connectionQueue_;
+    final ConnectionQueue connectionQueue_;
 
     //Public methods
     /**
@@ -239,7 +238,7 @@ public class UserData {
     /**
      * Clear all submitted information
      */
-    static void clear(){
+    public static void clear(){
         name = null;
         username = null;
         email = null;
@@ -259,7 +258,7 @@ public class UserData {
      * Sets user data values.
      * @param data Map with user data
      */
-    static void setData(Map<String, String> data){
+    public static void setData(Map<String, String> data){
         if(data.containsKey(NAME_KEY))
             name = data.get(NAME_KEY);
         if(data.containsKey(USERNAME_KEY))
@@ -268,10 +267,12 @@ public class UserData {
             email = data.get(EMAIL_KEY);
         if(data.containsKey(ORG_KEY))
             org = data.get(ORG_KEY);
-        if(data.containsKey(PHONE_KEY))
+        if(data.containsKey(PHONE_KEY)) {
             phone = data.get(PHONE_KEY);
-        if(data.containsKey(PICTURE_PATH_KEY))
+        }
+        if(data.containsKey(PICTURE_PATH_KEY)) {
             picturePath = data.get(PICTURE_PATH_KEY);
+        }
         if(picturePath != null){
             File sourceFile = new File(picturePath);
             if (!sourceFile.isFile()) {
@@ -281,10 +282,12 @@ public class UserData {
                 picturePath = null;
             }
         }
-        if(data.containsKey(PICTURE_KEY))
+        if(data.containsKey(PICTURE_KEY)) {
             picture = data.get(PICTURE_KEY);
-        if(data.containsKey(GENDER_KEY))
+        }
+        if(data.containsKey(GENDER_KEY)) {
             gender = data.get(GENDER_KEY);
+        }
         if(data.containsKey(BYEAR_KEY)){
             try {
                 byear = Integer.parseInt(data.get(BYEAR_KEY));
@@ -303,9 +306,9 @@ public class UserData {
      * Sets user custom properties and values.
      * @param data Map with user custom key/values
      */
-    static void setCustomData(Map<String, String> data){
+    public static void setCustomData(Map<String, String> data){
         if(custom == null)
-            custom = new HashMap<String, String>();
+            custom = new HashMap<>();
         custom.putAll(data);
         isSynced = false;
     }
@@ -315,10 +318,11 @@ public class UserData {
      * @param key String with key for the property
      * @param value String with value for the property
      */
-    static void setCustomProperty(String key, String value){
+    public static void setCustomProperty(String key, String value){
         if(custom == null)
-            custom = new HashMap<String, String>();
+            custom = new HashMap<>();
         custom.put(key, value);
+        isSynced = false;
     }
 
     /**
@@ -327,17 +331,16 @@ public class UserData {
      * @param value numeric value to use in modification
      * @param mod String with modification command
      */
-    static void modifyCustomData(String key, double value, String mod){
+    protected static void modifyCustomData(String key, double value, String mod){
         try {
             if(customMods == null)
-                customMods = new HashMap<String, JSONObject>();
+                customMods = new HashMap<>();
             JSONObject ob;
             if(!mod.equals("$pull") && !mod.equals("$push") && !mod.equals("$addToSet")) {
                 ob = new JSONObject();
                 ob.put(mod, value);
             }
             else{
-                JSONArray arr;
                 if(customMods.containsKey(key)){
                     ob = customMods.get(key);
                 }
@@ -359,17 +362,16 @@ public class UserData {
      * @param value String value to use in modification
      * @param mod String with modification command
      */
-    static void modifyCustomData(String key, String value, String mod){
+    protected static void modifyCustomData(String key, String value, String mod){
         try {
             if(customMods == null)
-                customMods = new HashMap<String, JSONObject>();
+                customMods = new HashMap<>();
             JSONObject ob;
             if(!mod.equals("$pull") && !mod.equals("$push") && !mod.equals("$addToSet")) {
                 ob = new JSONObject();
                 ob.put(mod, value);
             }
             else{
-                JSONArray arr;
                 if(customMods.containsKey(key)){
                     ob = customMods.get(key);
                 }
@@ -389,7 +391,7 @@ public class UserData {
      * Returns &user_details= prefixed url to add to request data when making request to server
      * @return a String user_details url part with provided user data
      */
-    static String getDataForRequest(){
+    protected static String getDataForRequest(){
         if(!isSynced){
             isSynced = true;
             final JSONObject json = UserData.toJSON();
@@ -424,7 +426,7 @@ public class UserData {
      * Creates and returns a JSONObject containing the user data from this object.
      * @return a JSONObject containing the user data from this object
      */
-    static JSONObject toJSON() {
+    protected static JSONObject toJSON() {
         final JSONObject json = new JSONObject();
 
         try {
@@ -496,7 +498,7 @@ public class UserData {
      * Sets user data fields to values from its JSON representation.
      * @param json JSON object to extract event data from
      */
-    static void fromJSON(final JSONObject json) {
+    protected static void fromJSON(final JSONObject json) {
         if(json != null){
             name = json.optString(NAME_KEY, null);
             username = json.optString(USERNAME_KEY, null);
@@ -510,10 +512,10 @@ public class UserData {
                 JSONObject customJson;
                 try {
                     customJson = json.getJSONObject(CUSTOM_KEY);
-                    HashMap<String, String> custom = new HashMap<String, String>(customJson.length());
+                    custom = new HashMap<>(customJson.length());
                     Iterator<String> nameItr = customJson.keys();
                     while (nameItr.hasNext()) {
-                        final String key = (String) nameItr.next();
+                        final String key = nameItr.next();
                         if (!customJson.isNull(key)) {
                             custom.put(key, customJson.getString(key));
                         }

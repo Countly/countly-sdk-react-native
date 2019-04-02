@@ -6,19 +6,15 @@ import android.view.View;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import ly.count.android.sdk.Countly;
 
-/**
- * Created by Arturs on 21.12.2016..
- */
-
+@SuppressWarnings("UnusedParameters")
 public class ActivityExampleCustomEvents extends Activity {
-    Activity activity;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        activity = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_example_custom_events);
         Countly.onCreate(this);
@@ -50,13 +46,24 @@ public class ActivityExampleCustomEvents extends Activity {
     public void onClickRecordEvent06(View v) {
         Map<String, String> segmentation = new HashMap<>();
         segmentation.put("wall", "red");
-        Countly.sharedInstance().recordEvent("Custom event 6", segmentation, 15, 0, 0);
+        Map<String, Integer> segmentationInt = new HashMap<>();
+        segmentationInt.put("flowers", 3);
+        Map<String, Double> segmentationDouble = new HashMap<>();
+        segmentationDouble.put("area", 1.23);
+        segmentationDouble.put("volume", 7.88);
+        Countly.sharedInstance().recordEvent("Custom event 6", segmentation, segmentationInt, segmentationDouble, 15, 0, 0);
     }
 
     public void onClickRecordEvent07(View v) {
         Map<String, String> segmentation = new HashMap<>();
         segmentation.put("wall", "blue");
-        Countly.sharedInstance().recordEvent("Custom event 7", segmentation, 25, 10, 0);
+        Map<String, Integer> segmentationInt = new HashMap<>();
+        segmentationInt.put("flowers", new Random().nextInt());
+        Map<String, Double> segmentationDouble = new HashMap<>();
+        segmentationDouble.put("area", new Random().nextDouble());
+        segmentationDouble.put("volume", new Random().nextDouble());
+
+        Countly.sharedInstance().recordEvent("Custom event 7", segmentation, segmentationInt, segmentationDouble,25, 10, 0);
     }
 
     public void onClickRecordEvent08(View v) {

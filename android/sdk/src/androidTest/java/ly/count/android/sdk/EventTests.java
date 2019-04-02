@@ -21,7 +21,7 @@ THE SOFTWARE.
 */
 package ly.count.android.sdk;
 
-import android.test.AndroidTestCase;
+import android.support.test.runner.AndroidJUnit4;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,71 +29,85 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EventTests extends AndroidTestCase {
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+@RunWith(AndroidJUnit4.class)
+@SuppressWarnings("ConstantConditions")
+public class EventTests {
+
+    @Test
     public void testConstructor() {
         final Event event = new Event();
         assertNull(event.key);
         assertNull(event.segmentation);
         assertEquals(0, event.count);
         assertEquals(0, event.timestamp);
-        assertEquals(0.0d, event.sum);
+        assertEquals(0.0d, event.sum, 0.0000001);
     }
 
+    @Test
     public void testEqualsAndHashCode() {
         final Event event1 = new Event();
         final Event event2 = new Event();
+        //noinspection ObjectEqualsNull
         assertFalse(event1.equals(null));
-        assertFalse(event1.equals(new Object()));
-        assertTrue(event1.equals(event2));
+        assertNotEquals(event1, new Object());
+        assertEquals(event1, event2);
         assertEquals(event1.hashCode(), event2.hashCode());
 
         event1.key = "eventKey";
-        assertFalse(event1.equals(event2));
-        assertFalse(event2.equals(event1));
+        assertNotEquals(event1, event2);
+        assertNotEquals(event2, event1);
         assertTrue(event1.hashCode() != event2.hashCode());
 
         event2.key = "eventKey";
-        assertTrue(event1.equals(event2));
-        assertTrue(event2.equals(event1));
+        assertEquals(event1, event2);
+        assertEquals(event2, event1);
         assertEquals(event1.hashCode(), event2.hashCode());
 
         event1.timestamp = 1234;
-        assertFalse(event1.equals(event2));
-        assertFalse(event2.equals(event1));
+        assertNotEquals(event1, event2);
+        assertNotEquals(event2, event1);
         assertTrue(event1.hashCode() != event2.hashCode());
 
         event2.timestamp = 1234;
-        assertTrue(event1.equals(event2));
-        assertTrue(event2.equals(event1));
+        assertEquals(event1, event2);
+        assertEquals(event2, event1);
         assertEquals(event1.hashCode(), event2.hashCode());
 
-        event1.segmentation = new HashMap<String, String>();
-        assertFalse(event1.equals(event2));
-        assertFalse(event2.equals(event1));
+        event1.segmentation = new HashMap<>();
+        assertNotEquals(event1, event2);
+        assertNotEquals(event2, event1);
         assertTrue(event1.hashCode() != event2.hashCode());
 
-        event2.segmentation = new HashMap<String, String>();
-        assertTrue(event1.equals(event2));
-        assertTrue(event2.equals(event1));
+        event2.segmentation = new HashMap<>();
+        assertEquals(event1, event2);
+        assertEquals(event2, event1);
         assertEquals(event1.hashCode(), event2.hashCode());
 
         event1.segmentation.put("segkey", "segvalue");
-        assertFalse(event1.equals(event2));
-        assertFalse(event2.equals(event1));
+        assertNotEquals(event1, event2);
+        assertNotEquals(event2, event1);
         assertTrue(event1.hashCode() != event2.hashCode());
 
         event2.segmentation.put("segkey", "segvalue");
-        assertTrue(event1.equals(event2));
-        assertTrue(event2.equals(event1));
+        assertEquals(event1, event2);
+        assertEquals(event2, event1);
         assertEquals(event1.hashCode(), event2.hashCode());
 
         event1.sum = 3.2;
         event2.count = 42;
-        assertTrue(event1.equals(event2));
-        assertTrue(event2.equals(event1));
+        assertEquals(event1, event2);
+        assertEquals(event2, event1);
         assertEquals(event1.hashCode(), event2.hashCode());
     }
 
+    @Test
     public void testToJSON_nullSegmentation() throws JSONException {
         final Event event = new Event();
         event.key = "eventKey";
@@ -105,50 +119,53 @@ public class EventTests extends AndroidTestCase {
         assertEquals(event.key, jsonObj.getString("key"));
         assertEquals(event.timestamp, jsonObj.getInt("timestamp"));
         assertEquals(event.count, jsonObj.getInt("count"));
-        assertEquals(event.sum, jsonObj.getDouble("sum"));
+        assertEquals(event.sum, jsonObj.getDouble("sum"), 0.0000001);
     }
 
+    @Test
     public void testToJSON_emptySegmentation() throws JSONException {
         final Event event = new Event();
         event.key = "eventKey";
         event.timestamp = 1234;
         event.count = 42;
         event.sum = 3.2;
-        event.segmentation = new HashMap<String, String>();
+        event.segmentation = new HashMap<>();
         final JSONObject jsonObj = event.toJSON();
         assertEquals(7, jsonObj.length());
         assertEquals(event.key, jsonObj.getString("key"));
         assertEquals(event.timestamp, jsonObj.getInt("timestamp"));
         assertEquals(event.count, jsonObj.getInt("count"));
-        assertEquals(event.sum, jsonObj.getDouble("sum"));
+        assertEquals(event.sum, jsonObj.getDouble("sum"), 0.0000001);
         assertEquals(0, jsonObj.getJSONObject("segmentation").length());
     }
 
+    @Test
     public void testToJSON_withSegmentation() throws JSONException {
         final Event event = new Event();
         event.key = "eventKey";
         event.timestamp = 1234;
         event.count = 42;
         event.sum = 3.2;
-        event.segmentation = new HashMap<String, String>();
+        event.segmentation = new HashMap<>();
         event.segmentation.put("segkey", "segvalue");
         final JSONObject jsonObj = event.toJSON();
         assertEquals(7, jsonObj.length());
         assertEquals(event.key, jsonObj.getString("key"));
         assertEquals(event.timestamp, jsonObj.getInt("timestamp"));
         assertEquals(event.count, jsonObj.getInt("count"));
-        assertEquals(event.sum, jsonObj.getDouble("sum"));
+        assertEquals(event.sum, jsonObj.getDouble("sum"), 0.0000001);
         assertEquals(1, jsonObj.getJSONObject("segmentation").length());
         assertEquals(event.segmentation.get("segkey"), jsonObj.getJSONObject("segmentation").getString("segkey"));
     }
 
+    @Test
     public void testToJSON_sumNaNCausesJSONException() throws JSONException {
         final Event event = new Event();
         event.key = "eventKey";
         event.timestamp = 1234;
         event.count = 42;
         event.sum = Double.NaN;
-        event.segmentation = new HashMap<String, String>();
+        event.segmentation = new HashMap<>();
         event.segmentation.put("segkey", "segvalue");
         final JSONObject jsonObj = event.toJSON();
         assertEquals(6, jsonObj.length());
@@ -159,6 +176,7 @@ public class EventTests extends AndroidTestCase {
         assertEquals(event.segmentation.get("segkey"), jsonObj.getJSONObject("segmentation").getString("segkey"));
     }
 
+    @Test
     public void testFromJSON_nullJSONObj() {
         try {
             Event.fromJSON(null);
@@ -168,23 +186,27 @@ public class EventTests extends AndroidTestCase {
         }
     }
 
+    @Test
     public void testFromJSON_noKeyCausesJSONException() {
         final JSONObject jsonObj = new JSONObject();
         assertNull(Event.fromJSON(jsonObj));
     }
 
+    @Test
     public void testFromJSON_nullKey() throws JSONException {
         final JSONObject jsonObj = new JSONObject();
         jsonObj.put("key", JSONObject.NULL);
         assertNull(Event.fromJSON(jsonObj));
     }
 
+    @Test
     public void testFromJSON_emptyKey() throws JSONException {
         final JSONObject jsonObj = new JSONObject();
         jsonObj.put("key", "");
         assertNull(Event.fromJSON(jsonObj));
     }
 
+    @Test
     public void testFromJSON_keyOnly() throws JSONException {
         final Event expected = new Event();
         expected.key = "eventKey";
@@ -193,9 +215,10 @@ public class EventTests extends AndroidTestCase {
         final Event actual = Event.fromJSON(jsonObj);
         assertEquals(expected, actual);
         assertEquals(expected.count, actual.count);
-        assertEquals(expected.sum, actual.sum);
+        assertEquals(expected.sum, actual.sum, 0.0000001);
     }
 
+    @Test
     public void testFromJSON_keyOnly_nullOtherValues() throws JSONException {
         final Event expected = new Event();
         expected.key = "eventKey";
@@ -207,9 +230,10 @@ public class EventTests extends AndroidTestCase {
         final Event actual = Event.fromJSON(jsonObj);
         assertEquals(expected, actual);
         assertEquals(expected.count, actual.count);
-        assertEquals(expected.sum, actual.sum);
+        assertEquals(expected.sum, actual.sum, 0.0000001);
     }
 
+    @Test
     public void testFromJSON_noSegmentation() throws JSONException {
         final Event expected = new Event();
         expected.key = "eventKey";
@@ -224,9 +248,10 @@ public class EventTests extends AndroidTestCase {
         final Event actual = Event.fromJSON(jsonObj);
         assertEquals(expected, actual);
         assertEquals(expected.count, actual.count);
-        assertEquals(expected.sum, actual.sum);
+        assertEquals(expected.sum, actual.sum, 0.0000001);
     }
 
+    @Test
     public void testFromJSON_nullSegmentation() throws JSONException {
         final Event expected = new Event();
         expected.key = "eventKey";
@@ -242,9 +267,10 @@ public class EventTests extends AndroidTestCase {
         final Event actual = Event.fromJSON(jsonObj);
         assertEquals(expected, actual);
         assertEquals(expected.count, actual.count);
-        assertEquals(expected.sum, actual.sum);
+        assertEquals(expected.sum, actual.sum, 0.0000001);
     }
 
+    @Test
     public void testFromJSON_segmentationNotADictionary() throws JSONException {
         final Event expected = new Event();
         expected.key = "eventKey";
@@ -260,13 +286,14 @@ public class EventTests extends AndroidTestCase {
         assertNull(Event.fromJSON(jsonObj));
     }
 
+    @Test
     public void testFromJSON_emptySegmentation() throws JSONException {
         final Event expected = new Event();
         expected.key = "eventKey";
         expected.timestamp = 1234;
         expected.count = 42;
         expected.sum = 3.2;
-        expected.segmentation = new HashMap<String, String>();
+        expected.segmentation = new HashMap<>();
         final JSONObject jsonObj = new JSONObject();
         jsonObj.put("key", expected.key);
         jsonObj.put("timestamp", expected.timestamp);
@@ -276,16 +303,17 @@ public class EventTests extends AndroidTestCase {
         final Event actual = Event.fromJSON(jsonObj);
         assertEquals(expected, actual);
         assertEquals(expected.count, actual.count);
-        assertEquals(expected.sum, actual.sum);
+        assertEquals(expected.sum, actual.sum, 0.0000001);
     }
 
+    @Test
     public void testFromJSON_withSegmentation() throws JSONException {
         final Event expected = new Event();
         expected.key = "eventKey";
         expected.timestamp = 1234;
         expected.count = 42;
         expected.sum = 3.2;
-        expected.segmentation = new HashMap<String, String>();
+        expected.segmentation = new HashMap<>();
         expected.segmentation.put("segkey", "segvalue");
         final JSONObject jsonObj = new JSONObject();
         jsonObj.put("key", expected.key);
@@ -296,19 +324,22 @@ public class EventTests extends AndroidTestCase {
         final Event actual = Event.fromJSON(jsonObj);
         assertEquals(expected, actual);
         assertEquals(expected.count, actual.count);
-        assertEquals(expected.sum, actual.sum);
+        assertEquals(expected.sum, actual.sum, 0.0000001);
     }
 
+    @Test
     public void testFromJSON_withSegmentation_nonStringValue() throws JSONException {
         final Event expected = new Event();
         expected.key = "eventKey";
         expected.timestamp = 1234;
         expected.count = 42;
         expected.sum = 3.2;
-        expected.segmentation = new HashMap<String, String>();
-        expected.segmentation.put("segkey", "1234");
-        final Map<Object, Object> badMap = new HashMap<Object, Object>();
-        badMap.put("segkey", 1234); // JSONObject.getString will end up converting this to the string "1234"
+        expected.segmentation = new HashMap<>();
+        expected.segmentationDouble = new HashMap<>();
+        expected.segmentationInt = new HashMap<>();
+        expected.segmentationInt.put("segkey", 1234);
+        final Map<Object, Object> badMap = new HashMap<>();
+        badMap.put("segkey", 1234); // this should be put into int segments
         final JSONObject jsonObj = new JSONObject();
         jsonObj.put("key", expected.key);
         jsonObj.put("timestamp", expected.timestamp);
@@ -318,6 +349,6 @@ public class EventTests extends AndroidTestCase {
         final Event actual = Event.fromJSON(jsonObj);
         assertEquals(expected, actual);
         assertEquals(expected.count, actual.count);
-        assertEquals(expected.sum, actual.sum);
+        assertEquals(expected.sum, actual.sum, 0.0000001);
     }
 }

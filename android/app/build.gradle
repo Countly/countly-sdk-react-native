@@ -17,19 +17,25 @@ buildscript {
 }
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    compileSdkVersion 28
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
         applicationId "ly.count.android.demo"
         minSdkVersion 12
-        targetSdkVersion 24
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
     }
     buildTypes {
+        debug {
+            minifyEnabled true
+            useProguard true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
         release {
-            minifyEnabled false
+            minifyEnabled true
+            useProguard true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -39,7 +45,10 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project(':sdk')
-//    compile 'ly.count.android:sdk:16.12.3'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':sdk')
+
+    //implementation 'com.google.android.gms:play-services-gcm:10.0.1'
+
+    //implementation 'ly.count.android:sdk:19.02.1'
 }

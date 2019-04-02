@@ -11,15 +11,15 @@
 
 @interface CountlyConnectionManager : NSObject <NSURLSessionDelegate>
 
-@property (nonatomic, strong) NSString* appKey;
-@property (nonatomic, strong) NSString* host;
-@property (nonatomic, strong) NSURLSessionTask* connection;
-@property (nonatomic) NSTimeInterval updateSessionPeriod;
-@property (nonatomic, strong) NSArray* pinnedCertificates;
-@property (nonatomic, strong) NSString* customHeaderFieldName;
-@property (nonatomic, strong) NSString* customHeaderFieldValue;
-@property (nonatomic, strong) NSString* secretSalt;
+@property (nonatomic) NSString* appKey;
+@property (nonatomic) NSString* host;
+@property (nonatomic) NSURLSessionTask* connection;
+@property (nonatomic) NSArray* pinnedCertificates;
+@property (nonatomic) NSString* customHeaderFieldName;
+@property (nonatomic) NSString* customHeaderFieldValue;
+@property (nonatomic) NSString* secretSalt;
 @property (nonatomic) BOOL alwaysUsePOST;
+@property (nonatomic) BOOL applyZeroIDFAFix;
 
 + (instancetype)sharedInstance;
 
@@ -28,15 +28,18 @@
 - (void)endSession;
 
 - (void)sendEvents;
-- (void)sendUserDetails:(NSString *)userDetails;
 - (void)sendPushToken:(NSString *)token;
-- (void)sendCrashReportLater:(NSString *)report;
+- (void)sendLocationInfo;
+- (void)sendUserDetails:(NSString *)userDetails;
+- (void)sendCrashReport:(NSString *)report immediately:(BOOL)immediately;
 - (void)sendOldDeviceID:(NSString *)oldDeviceID;
 - (void)sendParentDeviceID:(NSString *)parentDeviceID;
-- (void)sendLocation:(CLLocationCoordinate2D)coordinate;
+- (void)sendAttribution:(NSString *)attribution;
+- (void)sendConsentChanges:(NSString *)consentChanges;
+
+- (void)proceedOnQueue;
 
 - (NSString *)queryEssentials;
-- (NSString *)boundary;
-- (BOOL)isRequestSuccessful:(NSURLResponse *)response;
-- (void)tick;
+- (NSString *)appendChecksum:(NSString *)queryString;
+
 @end

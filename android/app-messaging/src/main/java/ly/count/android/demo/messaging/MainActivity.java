@@ -13,28 +13,30 @@ import android.widget.Toast;
 import ly.count.android.sdk.Countly;
 import ly.count.android.sdk.messaging.CountlyMessaging;
 import ly.count.android.sdk.messaging.Message;
-import me.leolin.shortcutbadger.ShortcutBadgeException;
-import me.leolin.shortcutbadger.ShortcutBadger;
+//import me.leolin.shortcutbadger.ShortcutBadger;
 
 public class MainActivity extends Activity {
 
     private BroadcastReceiver messageReceiver;
 
     /** You should use try.count.ly instead of YOUR_SERVER for the line below if you are using Countly trial service */
-    final String COUNTLY_SERVER_URL = "YOUR_SERVER";
+    final String COUNTLY_SERVER_URL = "http://artem.count.ly";
     final String COUNTLY_APP_KEY = "YOUR_APP_KEY";
-    final String COUNTLY_MESSAGING_PROJECT_ID = "YOUR_PROJECT_ID(NUMBERS ONLY)";
+//    final String COUNTLY_MESSAGING_PROJECT_ID = "YOUR_PROJECT_ID(NUMBERS ONLY)";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        String latitude = "57.708358";
+        String longitude = "11.974950";
+
         Countly.sharedInstance()
-                .init(this, COUNTLY_SERVER_URL, COUNTLY_APP_KEY)
-                .initMessaging(this, MainActivity.class, COUNTLY_MESSAGING_PROJECT_ID, Countly.CountlyMessagingMode.TEST);
-//                .setLocation(LATITUDE, LONGITUDE);
-//                .setLoggingEnabled(true);
+                .setLoggingEnabled(true)
+                .setPushIntentAddMetadata(true)
+                .init(this, "http://192.168.3.77:3001", "863f97171d6ae3933aabc9ed8702dab81663a363")
+                .initMessaging(this, getClass(), "640228892478", Countly.CountlyMessagingMode.PRODUCTION);
 
         Countly.sharedInstance().recordEvent("test", 1);
 
@@ -51,7 +53,6 @@ public class MainActivity extends Activity {
                 Countly.sharedInstance().recordEvent("test3");
             }
         }, 10000);
-
     }
 
     @Override
@@ -72,7 +73,7 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
 
-        /** Register for broadcast action if you need to be notified when Countly message received */
+        // Register for broadcast action if you need to be notified when Countly message received
         messageReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -86,8 +87,8 @@ public class MainActivity extends Activity {
                     if(badgeString != null) {
                         int badgeCount = Integer.parseInt(badgeString);
 
-                        boolean succeded = ShortcutBadger.applyCount(getApplicationContext(), badgeCount);
-                        if (!succeded) {
+                        boolean succeeded = true;// ShortcutBadger.applyCount(getApplicationContext(), badgeCount);
+                        if (!succeeded) {
                             Toast.makeText(getApplicationContext(), "Unable to put badge", Toast.LENGTH_SHORT).show();
                         }
                     }

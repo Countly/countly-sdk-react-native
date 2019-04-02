@@ -6,19 +6,19 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.novoda:bintray-release:0.3.4'
+        classpath 'com.novoda:bintray-release:0.9'
     }
 }
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    compileSdkVersion 25
+    buildToolsVersion '28.0.3'
 
     defaultConfig {
         minSdkVersion 9
-        targetSdkVersion 24
+        targetSdkVersion 25
         versionCode 1
-        versionName "16.12.3"
+        versionName "19.02.1"
     }
     buildTypes {
         release {
@@ -33,17 +33,18 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.google.android.gms:play-services-gcm:10.0.1'
-    compile project(':sdk')
-//    compile 'ly.count:sdk-android:16.06.04'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.google.android.gms:play-services-gcm:10.0.1'
+    api project(':sdk')
+//    compile 'ly.count:sdk-android:18.01.2'
 }
 
 publish {
     userOrg = 'countly'
     groupId = 'ly.count.android'
     artifactId = 'sdk-messaging'
-    version = '16.12.3'
-    description = 'Countly Android SDK with GCM Support'
+    publishVersion = '19.02.1'
+    desc = 'Countly Android SDK with GCM Support'
     website = 'https://github.com/Countly/countly-sdk-android'
+    autoPublish = false
 }

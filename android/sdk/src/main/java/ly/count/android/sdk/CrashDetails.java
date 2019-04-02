@@ -46,6 +46,7 @@ import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -56,8 +57,10 @@ import java.util.regex.Pattern;
  *
  */
 class CrashDetails {
-    private static ArrayList<String> logs = new ArrayList<String>();
-    private static int startTime = Countly.currentTimestamp();
+    private static final int maxBreadcrumbLimit = 1000;//the limit of how many breadcrumbs can be saved
+    private static final int maxBreadcrumbSize = 1000;//maximum allowed length of a breadcrumb in characters
+    private static final LinkedList<String> logs = new LinkedList<>();
+    private static final int startTime = Countly.currentTimestamp();
     private static Map<String,String> customSegments = null;
     private static boolean inBackground = true;
     private static long totalMemory = 0;
@@ -65,7 +68,7 @@ class CrashDetails {
     private static long getTotalRAM() {
         if(totalMemory == 0) {
             RandomAccessFile reader = null;
-            String load = null;
+            String load;
             try {
                 reader = new RandomAccessFile("/proc/meminfo", "r");
                 load = reader.readLine();
@@ -130,7 +133,22 @@ class CrashDetails {
      * Adds a record in the log
      */
     static void addLog(String record) {
+        int recordLength = record.length();
+        if(recordLength > maxBreadcrumbSize){
+            if(Countly.sharedInstance().isLoggingEnabled()){
+                Log.d(Countly.TAG, "Breadcrumb exceeds character limit: [" + recordLength + "], reducing it to: [" + maxBreadcrumbSize + "]");
+            }
+            record = record.substring(0, Math.min(maxBreadcrumbSize, recordLength));
+        }
+
         logs.add(record);
+
+        if(logs.size() > maxBreadcrumbLimit){
+            if(Countly.sharedInstance().isLoggingEnabled()){
+                Log.d(Countly.TAG, "Breadcrumb amount limit exceeded, deleting the oldest one");
+            }
+            logs.removeFirst();
+        }
     }
 
     /**
@@ -141,7 +159,7 @@ class CrashDetails {
 
         for (String s : logs)
         {
-            allLogs.append(s + "\n");
+            allLogs.append(s).append("\n");
         }
         logs.clear();
         return allLogs.toString();
@@ -152,7 +170,7 @@ class CrashDetails {
      * like versions of dependency libraries.
      */
     static void setCustomSegments(Map<String,String> segments) {
-        customSegments = new HashMap<String, String>();
+        customSegments = new HashMap<>();
         customSegments.putAll(segments);
     }
 
@@ -170,6 +188,7 @@ class CrashDetails {
     /**
      * Returns the current device manufacturer.
      */
+    @SuppressWarnings("SameReturnValue")
     static String getManufacturer() {
         return android.os.Build.MANUFACTURER;
     }
@@ -219,7 +238,7 @@ class CrashDetails {
     /**
      * Returns the total device RAM amount.
      */
-    static String getRamTotal(Context context) {
+    static String getRamTotal() {
         return Long.toString(getTotalRAM());
     }
 
@@ -381,7 +400,7 @@ class CrashDetails {
                 "_cpu", getCpu(),
                 "_opengl", getOpenGL(context),
                 "_ram_current", getRamCurrent(context),
-                "_ram_total", getRamTotal(context),
+                "_ram_total", getRamTotal(),
                 "_disk_current", getDiskCurrent(),
                 "_disk_total", getDiskTotal(),
                 "_bat", getBatteryLevel(context),
@@ -398,15 +417,7 @@ class CrashDetails {
         } catch (JSONException e) {
             //no custom segments
         }
-        String result = json.toString();
-
-        try {
-            result = java.net.URLEncoder.encode(result, "UTF-8");
-        } catch (UnsupportedEncodingException ignored) {
-            // should never happen because Android guarantees UTF-8 support
-        }
-
-        return result;
+        return json.toString();
     }
 
     /**

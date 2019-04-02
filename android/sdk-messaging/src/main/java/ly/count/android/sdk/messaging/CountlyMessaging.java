@@ -34,6 +34,7 @@ public class CountlyMessaging extends WakefulBroadcastReceiver {
 
     protected static final String NOTIFICATION_SHOW_DIALOG = "ly.count.android.api.messaging.dialog";
     protected static final String EXTRA_MESSAGE = "ly.count.android.api.messaging.message";
+    protected static final String EXTRA_ACTION_INDEX = "ly.count.android.api.messaging.action.index";
 
     protected static final String EVENT_OPEN    = "[CLY]_push_open";
     protected static final String EVENT_ACTION  = "[CLY]_push_action";
@@ -49,13 +50,16 @@ public class CountlyMessaging extends WakefulBroadcastReceiver {
 
     protected static final int NOTIFICATION_TYPE_SOUND_DEFAULT    = 1 << 4;
     protected static final int NOTIFICATION_TYPE_SOUND_URI        = 1 << 5;
+    protected static final int NOTIFICATION_TYPE_TITLE            = 1 << 6;
+    protected static final int NOTIFICATION_TYPE_MEDIA            = 1 << 7;
+    protected static final int NOTIFICATION_TYPE_BUTTONS          = 1 << 8;
 
     /**
      * Action for Countly Messaging BroadcastReceiver.
      * Once message is arrived, Countly Messaging will send a broadcast notification with action "APP_PACKAGE_NAME.countly.messaging"
      * to which you can subscribe via BroadcastReceiver.
      */
-    public static String BROADCAST_RECEIVER_ACTION_MESSAGE = "ly.count.android.api.messaging.broadcast.message";
+    public static final String BROADCAST_RECEIVER_ACTION_MESSAGE = "ly.count.android.api.messaging.broadcast.message";
     public static String getBroadcastAction (Context context) {
         try {
             ComponentName name = new ComponentName(context, CountlyMessagingService.class);
@@ -68,6 +72,7 @@ public class CountlyMessaging extends WakefulBroadcastReceiver {
     }
 
 
+    @SuppressLint("StaticFieldLeak")
     private static Context context;
 
     /**
@@ -126,11 +131,17 @@ public class CountlyMessaging extends WakefulBroadcastReceiver {
     private static final String PROPERTY_DEVICE_ID_MODE = "ly.count.android.api.messaging.device.id.mode";
     private static final String PROPERTY_DISABLE_UI = "ly.count.android.api.messaging.disable.ui";
     private static final String PROPERTY_ACTIVITY_CLASS = "ly.count.android.api.messaging.activity.class";
+    private static final String PROPERTY_SMALL_ICON_OVERRIDE_ID = "ly.count.android.api.messaging.icon.override.id";
+    private static final String PROPERTY_LARGE_ICON_ID = "ly.count.android.api.messaging.icon.large.id";
+    private static final String PROPERTY_ACCENT_COLOR_ID = "ly.count.android.api.messaging.accent.color.id";
+    protected static final String PROPERTY_ADD_METADATA_TO_PUSH_INTENTS = "ly.count.android.api.messaging.add.intent.metadata";
+    private static final String CONSENT_GCM_PREFERENCES = "ly.count.android.api.messaging.consent.gcm";
+
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static GoogleCloudMessaging gcm;
 
 
-    public static void init(Activity activity, Class<? extends Activity> activityClass, String sender, String[] buttonNames, Boolean disableUI) {
+    public static void init(Activity activity, Class<? extends Activity> activityClass, String sender, String[] buttonNames, Boolean disableUI, Integer customIconResId, Boolean addMetadataToPushIntents, Integer customLargeIconRes, Integer customAccentColor) {
         setActivity(activity, activityClass);
 
         if (gcm != null) {
@@ -142,19 +153,25 @@ public class CountlyMessaging extends WakefulBroadcastReceiver {
         }
 
         CountlyMessaging.disableUI = disableUI;
-        getGCMPreferences(context).edit().putBoolean(PROPERTY_DISABLE_UI, disableUI).commit();
+        getGCMPreferences(context).edit().putBoolean(PROPERTY_DISABLE_UI, disableUI).apply();
+        getGCMPreferences(context).edit().putInt(PROPERTY_SMALL_ICON_OVERRIDE_ID, customIconResId).apply();
+        getGCMPreferences(context).edit().putInt(PROPERTY_LARGE_ICON_ID, customLargeIconRes).apply();
+        getGCMPreferences(context).edit().putInt(PROPERTY_ACCENT_COLOR_ID, customAccentColor).apply();
+        getGCMPreferences(context).edit().putBoolean(PROPERTY_ADD_METADATA_TO_PUSH_INTENTS, addMetadataToPushIntents).apply();
 
-        if (checkPlayServices(activity) ) {
-            gcm = GoogleCloudMessaging.getInstance(activity);
-            String registrationId = getRegistrationId(activity, sender);
-            if (registrationId.isEmpty()) {
-                registerInBackground(activity, sender);
+        if(CountlyMessaging.isConsentGiven()) {
+            if (checkPlayServices(activity)) {
+                gcm = GoogleCloudMessaging.getInstance(activity);
+                String registrationId = getRegistrationId(activity, sender);
+                if (registrationId.isEmpty()) {
+                    registerInBackground(activity, sender);
+                } else {
+                    Countly.sharedInstance().onRegistrationId(registrationId);
+                }
             } else {
-                Countly.sharedInstance().onRegistrationId(registrationId);
-            }
-        } else {
-            if (Countly.sharedInstance().isLoggingEnabled()) {
-                Log.w(TAG, "No valid Google Play Services APK found.");
+                if (Countly.sharedInstance().isLoggingEnabled()) {
+                    Log.w(TAG, "No valid Google Play Services APK found.");
+                }
             }
         }
     }
@@ -185,7 +202,7 @@ public class CountlyMessaging extends WakefulBroadcastReceiver {
             editor.putString(PROPERTY_ACTIVITY_CLASS, activityClass.getName());
         }
 
-        editor.commit();
+        editor.apply();
     }
 
     @SuppressWarnings("unchecked")
@@ -239,11 +256,11 @@ public class CountlyMessaging extends WakefulBroadcastReceiver {
         getGCMPreferences(context).edit()
                 .putString(PROPERTY_REGISTRATION_ID, regId)
                 .putString(PROPERTY_REGISTRATION_SENDER, sender)
-                .putInt(PROPERTY_REGISTRATION_VERSION, appVersion).commit();
+                .putInt(PROPERTY_REGISTRATION_VERSION, appVersion).apply();
     }
 
 
-    private static SharedPreferences getGCMPreferences(Context context) {
+    protected static SharedPreferences getGCMPreferences(Context context) {
         return context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
     }
 
@@ -303,21 +320,56 @@ public class CountlyMessaging extends WakefulBroadcastReceiver {
         return getGCMPreferences(context).getString(PROPERTY_APPLICATION_TITLE, "");
     }
 
+    protected static Boolean isConsentGiven(){
+        return getGCMPreferences(context).getBoolean(CONSENT_GCM_PREFERENCES, false);
+    }
+
     public static void recordMessageAction(Context context, String messageId) {
-        CountlyMessaging.context = context;
+        if (CountlyMessaging.context == null) {
+            CountlyMessaging.context = context;
+        }
         recordMessageAction(messageId);
+    }
+
+    public static void recordMessageAction(Context context, String messageId, int btnIndex) {
+        if (CountlyMessaging.context == null) {
+            CountlyMessaging.context = context;
+        }
+        recordMessageAction(messageId, btnIndex);
     }
 
     public static void recordMessageAction(String messageId) {
         if (!Countly.sharedInstance().isInitialized()) {
             CountlyMessaging.initCountly(getContext());
         }
-        Map<String, String> segmentation = new HashMap<String, String>();
+        Map<String, String> segmentation = new HashMap<>();
         segmentation.put("i", messageId);
+        Countly.sharedInstance().recordEvent(EVENT_ACTION, segmentation, 1);
+    }
+
+    public static void recordMessageAction(String messageId, int btnIndex) {
+        if (!Countly.sharedInstance().isInitialized()) {
+            CountlyMessaging.initCountly(getContext());
+        }
+        Map<String, String> segmentation = new HashMap<>();
+        segmentation.put("i", messageId);
+        segmentation.put("b", "" + btnIndex);
         Countly.sharedInstance().recordEvent(EVENT_ACTION, segmentation, 1);
     }
 
     public static boolean isUIDisabled (Context context) {
         return getGCMPreferences(context).getBoolean(PROPERTY_DISABLE_UI, false);
+    }
+
+    public static int getIconOverride (Context context) {
+        return getGCMPreferences(context).getInt(PROPERTY_SMALL_ICON_OVERRIDE_ID, -1);
+    }
+
+    public static int getLargeIconId (Context context) {
+        return getGCMPreferences(context).getInt(PROPERTY_LARGE_ICON_ID, -1);
+    }
+
+    public static int getAccentColor (Context context) {
+        return getGCMPreferences(context).getInt(PROPERTY_ACCENT_COLOR_ID, 0xffffffff);
     }
 }

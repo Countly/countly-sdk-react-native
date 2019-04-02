@@ -15,7 +15,7 @@ import android.util.Log;
 //******************************************************************************
 public class ReferrerReceiver extends BroadcastReceiver
 {
-    private static String key = "referrer";
+    private static final String key = "referrer";
     //--------------------------------------------------------------------------
     public static String getReferrer(Context context)
     {
@@ -26,7 +26,7 @@ public class ReferrerReceiver extends BroadcastReceiver
     public static void deleteReferrer(Context context)
     {
         // delete stored referrer.
-        context.getSharedPreferences(key, Context.MODE_PRIVATE).edit().remove(key).commit();
+        context.getSharedPreferences(key, Context.MODE_PRIVATE).edit().remove(key).apply();
     }
 
     //--------------------------------------------------------------------------
@@ -54,11 +54,13 @@ public class ReferrerReceiver extends BroadcastReceiver
                     String parts[] = referrer.split("&");
                     String cid = null;
                     String uid = null;
-                    for(int i = 0; i < parts.length; i++){
-                        if(parts[i].startsWith("countly_cid"))
-                            cid = parts[i].replace("countly_cid=", "").trim();
-                        if(parts[i].startsWith("countly_cuid"))
-                            uid = parts[i].replace("countly_cuid=", "").trim();
+                    for (String part : parts) {
+                        if (part.startsWith("countly_cid")) {
+                            cid = part.replace("countly_cid=", "").trim();
+                        }
+                        if (part.startsWith("countly_cuid")) {
+                            uid = part.replace("countly_cuid=", "").trim();
+                        }
                     }
                     String res = "";
                     if(cid != null)
@@ -69,7 +71,7 @@ public class ReferrerReceiver extends BroadcastReceiver
                     Log.d(Countly.TAG, "Processed: " + res);
                     // Persist the referrer string.
                     if(!res.equals(""))
-                        context.getSharedPreferences(key, Context.MODE_PRIVATE).edit().putString(key, res).commit();
+                        context.getSharedPreferences(key, Context.MODE_PRIVATE).edit().putString(key, res).apply();
                 }
             }
         }

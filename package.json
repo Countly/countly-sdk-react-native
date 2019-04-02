@@ -2,14 +2,15 @@
   "name": "countly-sdk-react-native",
   "repository": {
     "type": "git",
-    "url": "https://github.com/trinisofttechnologies/countly-sdk-react-native.git"
+    "url": "https://github.com/Countly/countly-sdk-react-native.git"
   },
-  "version": "0.0.1",
+  "main": "Countly.js",
+  "version": "5.0.0",
   "description": "Countly is an innovative, real-time, open source mobile analytics and push notifications platform.",
   "author": "Trinisoft Technologies <trinisofttechnologies@gmail.com> (http://trinisofttechnologies.com)",
   "nativePackage": true,
   "license": "MIT",
-  "homepage": "https://github.com/trinisofttechnologies/countly-sdk-react-native",
+  "homepage": "https://github.com/Countly/countly-sdk-react-native",
   "keywords": [
     "countly"
   ],

@@ -1,6 +1,0 @@
-{
-  "ignoreRoot": [".git", "node_modules"],
-  "watch": [
-    "../"
-  ]
-}

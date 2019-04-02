@@ -190,4 +190,4 @@ Countly.userData.setOnce = function(keyName, setOnce){
     CountlyReactNative.userData_setOnce([keyName.toString() || "", setOnce.toString() || ""]);
 };
 
-export default Countly; 
+export default Countly;

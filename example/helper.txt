@@ -7,9 +7,6 @@ react-native init AwesomeProject
 cd AwesomeProject
 npm install ../../../plugins/countly-sdk-react-native
 react-native link countly-sdk-react-native
-# mkdir sdk
-# cp -R  ../../../plugins/countly-sdk-react-native/ ./sdk/countly-sdk-react-native
-
 
 nodemon -w ./* --exec 'sh ./example/script.sh'
 

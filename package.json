@@ -8,11 +8,10 @@
   "version": "5.0.0",
   "description": "Countly is an innovative, real-time, open source mobile analytics and push notifications platform.",
   "author": "Trinisoft Technologies <trinisofttechnologies@gmail.com> (http://trinisofttechnologies.com)",
-  "nativePackage": true,
   "license": "MIT",
   "homepage": "https://github.com/Countly/countly-sdk-react-native",
   "keywords": [
-    "countly"
+    "countly", "analytics"
   ],
   "dependencies": {
   }

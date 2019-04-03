@@ -5,5 +5,13 @@ nvm use 11.10.0
 npm install -g react-native-cli
 react-native init AwesomeProject
 cd AwesomeProject
-mkdir sdk
-cp -R  ../../../plugins/countly-sdk-react-native/ ./sdk/countly-sdk-react-native
+npm install ../../../plugins/countly-sdk-react-native
+react-native link countly-sdk-react-native
+# mkdir sdk
+# cp -R  ../../../plugins/countly-sdk-react-native/ ./sdk/countly-sdk-react-native
+
+
+nodemon -w ./* --exec 'sh ./example/script.sh'
+
+react-native run-android
+react-native run-ios

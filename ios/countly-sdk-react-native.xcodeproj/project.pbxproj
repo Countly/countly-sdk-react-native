@@ -1,0 +1,408 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		8B0E001F225527EA00C809EF /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B0E001E225527EA00C809EF /* CoreTelephony.framework */; };
+		8B0E0021225527F100C809EF /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B0E0020225527F100C809EF /* OpenGLES.framework */; };
+		8B23E3372255198200807805 /* CountlyReactNative.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B23E30A2255197B00807805 /* CountlyReactNative.m */; };
+		8B23E3382255198200807805 /* CountlyCommon.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B23E30C2255197C00807805 /* CountlyCommon.m */; };
+		8B23E3392255198200807805 /* CountlyPersistency.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B23E3102255197C00807805 /* CountlyPersistency.m */; };
+		8B23E33A2255198200807805 /* Countly.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B23E3132255197C00807805 /* Countly.m */; };
+		8B23E33B2255198200807805 /* CountlyNotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B23E3142255197D00807805 /* CountlyNotificationService.m */; };
+		8B23E33C2255198200807805 /* CountlyUserDetails.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B23E3162255197D00807805 /* CountlyUserDetails.m */; };
+		8B23E33D2255198200807805 /* CountlyAPMNetworkLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B23E3172255197D00807805 /* CountlyAPMNetworkLog.m */; };
+		8B23E33E2255198200807805 /* CountlyConsentManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B23E3192255197D00807805 /* CountlyConsentManager.m */; };
+		8B23E33F2255198200807805 /* CountlyConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B23E31C2255197E00807805 /* CountlyConfig.m */; };
+		8B23E3402255198200807805 /* CountlyViewTracking.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B23E31F2255197E00807805 /* CountlyViewTracking.m */; };
+		8B23E3412255198200807805 /* CountlyEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B23E3272255197F00807805 /* CountlyEvent.m */; };
+		8B23E3422255198200807805 /* CountlyPushNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B23E3282255198000807805 /* CountlyPushNotifications.m */; };
+		8B23E3432255198200807805 /* CountlyCrashReporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B23E3292255198000807805 /* CountlyCrashReporter.m */; };
+		8B23E3442255198200807805 /* CountlyAPM.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B23E32A2255198000807805 /* CountlyAPM.m */; };
+		8B23E3452255198200807805 /* CountlyDeviceInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B23E32B2255198000807805 /* CountlyDeviceInfo.m */; };
+		8B23E3462255198200807805 /* CountlyLocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B23E32F2255198100807805 /* CountlyLocationManager.m */; };
+		8B23E3472255198200807805 /* CountlyRemoteConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B23E3312255198100807805 /* CountlyRemoteConfig.m */; };
+		8B23E3482255198200807805 /* CountlyConnectionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B23E3332255198200807805 /* CountlyConnectionManager.m */; };
+		8B23E3492255198200807805 /* Countly_OpenUDID.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B23E3342255198200807805 /* Countly_OpenUDID.m */; };
+		8B23E34A2255198200807805 /* CountlyStarRating.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B23E3352255198200807805 /* CountlyStarRating.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		DA5891D61BA9A9FC002B4DB2 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		8B0E001E225527EA00C809EF /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
+		8B0E0020225527F100C809EF /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		8B23E30A2255197B00807805 /* CountlyReactNative.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountlyReactNative.m; sourceTree = "<group>"; };
+		8B23E30B2255197B00807805 /* countly_dsym_uploader.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = countly_dsym_uploader.sh; sourceTree = "<group>"; };
+		8B23E30C2255197C00807805 /* CountlyCommon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountlyCommon.m; sourceTree = "<group>"; };
+		8B23E30D2255197C00807805 /* CountlyAPMNetworkLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountlyAPMNetworkLog.h; sourceTree = "<group>"; };
+		8B23E30E2255197C00807805 /* CountlyCrashReporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountlyCrashReporter.h; sourceTree = "<group>"; };
+		8B23E30F2255197C00807805 /* CountlyUserDetails.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountlyUserDetails.h; sourceTree = "<group>"; };
+		8B23E3102255197C00807805 /* CountlyPersistency.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountlyPersistency.m; sourceTree = "<group>"; };
+		8B23E3112255197C00807805 /* CountlyCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountlyCommon.h; sourceTree = "<group>"; };
+		8B23E3122255197C00807805 /* CountlyNotificationService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountlyNotificationService.h; sourceTree = "<group>"; };
+		8B23E3132255197C00807805 /* Countly.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Countly.m; sourceTree = "<group>"; };
+		8B23E3142255197D00807805 /* CountlyNotificationService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountlyNotificationService.m; sourceTree = "<group>"; };
+		8B23E3152255197D00807805 /* CountlyConsentManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountlyConsentManager.h; sourceTree = "<group>"; };
+		8B23E3162255197D00807805 /* CountlyUserDetails.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountlyUserDetails.m; sourceTree = "<group>"; };
+		8B23E3172255197D00807805 /* CountlyAPMNetworkLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountlyAPMNetworkLog.m; sourceTree = "<group>"; };
+		8B23E3182255197D00807805 /* CountlyEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountlyEvent.h; sourceTree = "<group>"; };
+		8B23E3192255197D00807805 /* CountlyConsentManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountlyConsentManager.m; sourceTree = "<group>"; };
+		8B23E31A2255197D00807805 /* CountlyReactNative.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountlyReactNative.h; sourceTree = "<group>"; };
+		8B23E31B2255197E00807805 /* CountlyViewTracking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountlyViewTracking.h; sourceTree = "<group>"; };
+		8B23E31C2255197E00807805 /* CountlyConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountlyConfig.m; sourceTree = "<group>"; };
+		8B23E31D2255197E00807805 /* CountlyAPM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountlyAPM.h; sourceTree = "<group>"; };
+		8B23E31E2255197E00807805 /* Countly_OpenUDID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Countly_OpenUDID.h; sourceTree = "<group>"; };
+		8B23E31F2255197E00807805 /* CountlyViewTracking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountlyViewTracking.m; sourceTree = "<group>"; };
+		8B23E3202255197E00807805 /* CountlyDeviceInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountlyDeviceInfo.h; sourceTree = "<group>"; };
+		8B23E3212255197E00807805 /* CountlyLocationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountlyLocationManager.h; sourceTree = "<group>"; };
+		8B23E3222255197F00807805 /* CountlyPersistency.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountlyPersistency.h; sourceTree = "<group>"; };
+		8B23E3232255197F00807805 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		8B23E3242255197F00807805 /* Countly.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Countly.h; sourceTree = "<group>"; };
+		8B23E3252255197F00807805 /* LICENSE.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
+		8B23E3262255197F00807805 /* CountlyConnectionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountlyConnectionManager.h; sourceTree = "<group>"; };
+		8B23E3272255197F00807805 /* CountlyEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountlyEvent.m; sourceTree = "<group>"; };
+		8B23E3282255198000807805 /* CountlyPushNotifications.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountlyPushNotifications.m; sourceTree = "<group>"; };
+		8B23E3292255198000807805 /* CountlyCrashReporter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountlyCrashReporter.m; sourceTree = "<group>"; };
+		8B23E32A2255198000807805 /* CountlyAPM.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountlyAPM.m; sourceTree = "<group>"; };
+		8B23E32B2255198000807805 /* CountlyDeviceInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountlyDeviceInfo.m; sourceTree = "<group>"; };
+		8B23E32C2255198000807805 /* CountlyConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountlyConfig.h; sourceTree = "<group>"; };
+		8B23E32D2255198000807805 /* CHANGELOG.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = "<group>"; };
+		8B23E32E2255198100807805 /* Countly.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Countly.podspec; sourceTree = "<group>"; };
+		8B23E32F2255198100807805 /* CountlyLocationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountlyLocationManager.m; sourceTree = "<group>"; };
+		8B23E3302255198100807805 /* CountlyRemoteConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountlyRemoteConfig.h; sourceTree = "<group>"; };
+		8B23E3312255198100807805 /* CountlyRemoteConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountlyRemoteConfig.m; sourceTree = "<group>"; };
+		8B23E3322255198100807805 /* CountlyStarRating.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountlyStarRating.h; sourceTree = "<group>"; };
+		8B23E3332255198200807805 /* CountlyConnectionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountlyConnectionManager.m; sourceTree = "<group>"; };
+		8B23E3342255198200807805 /* Countly_OpenUDID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Countly_OpenUDID.m; sourceTree = "<group>"; };
+		8B23E3352255198200807805 /* CountlyStarRating.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountlyStarRating.m; sourceTree = "<group>"; };
+		8B23E3362255198200807805 /* CountlyPushNotifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountlyPushNotifications.h; sourceTree = "<group>"; };
+		DA5891D81BA9A9FC002B4DB2 /* libcountly-sdk-react-native.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcountly-sdk-react-native.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		DA5891D51BA9A9FC002B4DB2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8B0E0021225527F100C809EF /* OpenGLES.framework in Frameworks */,
+				8B0E001F225527EA00C809EF /* CoreTelephony.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		8B0E001D225527EA00C809EF /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				8B0E0020225527F100C809EF /* OpenGLES.framework */,
+				8B0E001E225527EA00C809EF /* CoreTelephony.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		DA5891CF1BA9A9FC002B4DB2 = {
+			isa = PBXGroup;
+			children = (
+				DA5891DA1BA9A9FC002B4DB2 /* src */,
+				DA5891D91BA9A9FC002B4DB2 /* Products */,
+				8B0E001D225527EA00C809EF /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		DA5891D91BA9A9FC002B4DB2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DA5891D81BA9A9FC002B4DB2 /* libcountly-sdk-react-native.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		DA5891DA1BA9A9FC002B4DB2 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				8B23E32D2255198000807805 /* CHANGELOG.md */,
+				8B23E30B2255197B00807805 /* countly_dsym_uploader.sh */,
+				8B23E31E2255197E00807805 /* Countly_OpenUDID.h */,
+				8B23E3342255198200807805 /* Countly_OpenUDID.m */,
+				8B23E3242255197F00807805 /* Countly.h */,
+				8B23E3132255197C00807805 /* Countly.m */,
+				8B23E32E2255198100807805 /* Countly.podspec */,
+				8B23E31D2255197E00807805 /* CountlyAPM.h */,
+				8B23E32A2255198000807805 /* CountlyAPM.m */,
+				8B23E30D2255197C00807805 /* CountlyAPMNetworkLog.h */,
+				8B23E3172255197D00807805 /* CountlyAPMNetworkLog.m */,
+				8B23E3112255197C00807805 /* CountlyCommon.h */,
+				8B23E30C2255197C00807805 /* CountlyCommon.m */,
+				8B23E32C2255198000807805 /* CountlyConfig.h */,
+				8B23E31C2255197E00807805 /* CountlyConfig.m */,
+				8B23E3262255197F00807805 /* CountlyConnectionManager.h */,
+				8B23E3332255198200807805 /* CountlyConnectionManager.m */,
+				8B23E3152255197D00807805 /* CountlyConsentManager.h */,
+				8B23E3192255197D00807805 /* CountlyConsentManager.m */,
+				8B23E30E2255197C00807805 /* CountlyCrashReporter.h */,
+				8B23E3292255198000807805 /* CountlyCrashReporter.m */,
+				8B23E3202255197E00807805 /* CountlyDeviceInfo.h */,
+				8B23E32B2255198000807805 /* CountlyDeviceInfo.m */,
+				8B23E3182255197D00807805 /* CountlyEvent.h */,
+				8B23E3272255197F00807805 /* CountlyEvent.m */,
+				8B23E3212255197E00807805 /* CountlyLocationManager.h */,
+				8B23E32F2255198100807805 /* CountlyLocationManager.m */,
+				8B23E3122255197C00807805 /* CountlyNotificationService.h */,
+				8B23E3142255197D00807805 /* CountlyNotificationService.m */,
+				8B23E3222255197F00807805 /* CountlyPersistency.h */,
+				8B23E3102255197C00807805 /* CountlyPersistency.m */,
+				8B23E3362255198200807805 /* CountlyPushNotifications.h */,
+				8B23E3282255198000807805 /* CountlyPushNotifications.m */,
+				8B23E31A2255197D00807805 /* CountlyReactNative.h */,
+				8B23E30A2255197B00807805 /* CountlyReactNative.m */,
+				8B23E3302255198100807805 /* CountlyRemoteConfig.h */,
+				8B23E3312255198100807805 /* CountlyRemoteConfig.m */,
+				8B23E3322255198100807805 /* CountlyStarRating.h */,
+				8B23E3352255198200807805 /* CountlyStarRating.m */,
+				8B23E30F2255197C00807805 /* CountlyUserDetails.h */,
+				8B23E3162255197D00807805 /* CountlyUserDetails.m */,
+				8B23E31B2255197E00807805 /* CountlyViewTracking.h */,
+				8B23E31F2255197E00807805 /* CountlyViewTracking.m */,
+				8B23E3252255197F00807805 /* LICENSE.md */,
+				8B23E3232255197F00807805 /* README.md */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		DA5891D71BA9A9FC002B4DB2 /* countly-sdk-react-native */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DA5891E11BA9A9FC002B4DB2 /* Build configuration list for PBXNativeTarget "countly-sdk-react-native" */;
+			buildPhases = (
+				DA5891D41BA9A9FC002B4DB2 /* Sources */,
+				DA5891D51BA9A9FC002B4DB2 /* Frameworks */,
+				DA5891D61BA9A9FC002B4DB2 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "countly-sdk-react-native";
+			productName = "countly-sdk-react-native";
+			productReference = DA5891D81BA9A9FC002B4DB2 /* libcountly-sdk-react-native.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		DA5891D01BA9A9FC002B4DB2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0700;
+				ORGANIZATIONNAME = Learnium;
+				TargetAttributes = {
+					DA5891D71BA9A9FC002B4DB2 = {
+						CreatedOnToolsVersion = 7.0;
+					};
+				};
+			};
+			buildConfigurationList = DA5891D31BA9A9FC002B4DB2 /* Build configuration list for PBXProject "countly-sdk-react-native" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = DA5891CF1BA9A9FC002B4DB2;
+			productRefGroup = DA5891D91BA9A9FC002B4DB2 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				DA5891D71BA9A9FC002B4DB2 /* countly-sdk-react-native */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		DA5891D41BA9A9FC002B4DB2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8B23E33D2255198200807805 /* CountlyAPMNetworkLog.m in Sources */,
+				8B23E3422255198200807805 /* CountlyPushNotifications.m in Sources */,
+				8B23E3492255198200807805 /* Countly_OpenUDID.m in Sources */,
+				8B23E3442255198200807805 /* CountlyAPM.m in Sources */,
+				8B23E3392255198200807805 /* CountlyPersistency.m in Sources */,
+				8B23E3452255198200807805 /* CountlyDeviceInfo.m in Sources */,
+				8B23E3432255198200807805 /* CountlyCrashReporter.m in Sources */,
+				8B23E3472255198200807805 /* CountlyRemoteConfig.m in Sources */,
+				8B23E33C2255198200807805 /* CountlyUserDetails.m in Sources */,
+				8B23E33F2255198200807805 /* CountlyConfig.m in Sources */,
+				8B23E3382255198200807805 /* CountlyCommon.m in Sources */,
+				8B23E33E2255198200807805 /* CountlyConsentManager.m in Sources */,
+				8B23E33B2255198200807805 /* CountlyNotificationService.m in Sources */,
+				8B23E3402255198200807805 /* CountlyViewTracking.m in Sources */,
+				8B23E3412255198200807805 /* CountlyEvent.m in Sources */,
+				8B23E34A2255198200807805 /* CountlyStarRating.m in Sources */,
+				8B23E33A2255198200807805 /* Countly.m in Sources */,
+				8B23E3372255198200807805 /* CountlyReactNative.m in Sources */,
+				8B23E3482255198200807805 /* CountlyConnectionManager.m in Sources */,
+				8B23E3462255198200807805 /* CountlyLocationManager.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		DA5891DF1BA9A9FC002B4DB2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		DA5891E01BA9A9FC002B4DB2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		DA5891E21BA9A9FC002B4DB2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)/usr/local/include",
+					"$(SRCROOT)/../../React/**",
+					"$(SRCROOT)/node_modules/react-native/React/**",
+					"$(SRCROOT)/../react-native/React/**",
+					"$(SRCROOT)/../../../node_modules/react-native/React/**",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		DA5891E31BA9A9FC002B4DB2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)/usr/local/include",
+					"$(SRCROOT)/../../React/**",
+					"$(SRCROOT)/node_modules/react-native/React/**",
+					"$(SRCROOT)/../react-native/React/**",
+					"$(SRCROOT)/../../../node_modules/react-native/React/**",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		DA5891D31BA9A9FC002B4DB2 /* Build configuration list for PBXProject "countly-sdk-react-native" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DA5891DF1BA9A9FC002B4DB2 /* Debug */,
+				DA5891E01BA9A9FC002B4DB2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DA5891E11BA9A9FC002B4DB2 /* Build configuration list for PBXNativeTarget "countly-sdk-react-native" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DA5891E21BA9A9FC002B4DB2 /* Debug */,
+				DA5891E31BA9A9FC002B4DB2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = DA5891D01BA9A9FC002B4DB2 /* Project object */;
+}

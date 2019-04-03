@@ -132,7 +132,7 @@ class AwesomeProject extends Component {
           <ScrollView>
             <Text style={[{fontSize:25, textAlign: 'center'}]}>Countly Cordova Demo App</Text>
             <Image source={{uri: 'https://try.count.ly/images/dashboard/countly_logo.svg'}} style={{width: 300, height: 88}} />
-            < Button onPress = { test } title = "Test" color = "#1b1c1d"> </Button>
+            < Button onPress = { this.test } title = "Test" color = "#1b1c1d"> </Button>
             < Button onPress = { this.onInit } title = "Init"> </Button>
             < Button onPress = { this.onStart } title = "Start" color = "#5bbd72"> </Button>
             < Button onPress = { this.onStop } title = "Stop" color = "#d95c5c"> </Button>

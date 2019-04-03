@@ -3,7 +3,6 @@
 @interface CountlyReactNative : NSObject <RCTBridgeModule>
 
 
-- (void)echo:(NSArray*)arguments;
 - (void)init:(NSArray*)arguments;
 - (void)event:(NSArray*)arguments;
 - (void)setloggingenabled:(NSArray*)arguments;

@@ -30,7 +30,12 @@ Countly.init = function(serverUrl,appKey, deviceId){
     args.push(deviceId || "");
     CountlyReactNative.init(args);
 }
-
+Countly.isInitialized = function(){
+    return CountlyReactNative.isInitialized([]);
+}
+Countly.hasBeenCalledOnStart = function(){
+    return CountlyReactNative.hasBeenCalledOnStart([]);
+}
 // countly sending various types of events
 Countly.sendEvent = function(options){
     var args = [];
@@ -46,12 +51,20 @@ Countly.sendEvent = function(options){
 
     args.push(eventType);
 
-    if(options.eventName)
+    if(options.eventName){
         args.push(options.eventName.toString());
-    if(options.eventCount)
+    }else{
+        args.push("");
+    }
+    if(options.eventCount){
         args.push(options.eventCount.toString());
-    if(options.eventSum)
+    }
+    else{
+        args.push("1");
+    }
+    if(options.eventSum){
         args.push(options.eventSum.toString());
+    }
 
     if(options.segments)
         segments = options.segments;
@@ -70,21 +83,7 @@ Countly.setLoggingEnabled = function(boolean){
     CountlyReactNative.setloggingenabled([]);
 }
 
-// countly sending user data
-Countly.setUserData = function(options){
-    var args = [];
-    args.push(options.name || "");
-    args.push(options.username || "");
-    args.push(options.email || "");
-    args.push(options.org || "");
-    args.push(options.phone || "");
-    args.push(options.picture || "");
-    args.push(options.picturePath || "");
-    args.push(options.gender || "");
-    args.push(options.byear || 0);
 
-    CountlyReactNative.setuserdata(args);
-}
 
 Countly.sendPushToken = function(options, successCallback, failureCallback){
     // successCallback = successCallback || Countly.onSuccess;
@@ -140,7 +139,6 @@ Countly.demo = function(){
 }
 
 Countly.setOptionalParametersForInitialization = function(options){
-
     var args = [];
     args.push(options.city || "");
     args.push(options.country || "");
@@ -154,7 +152,7 @@ Countly.setLocation = function(countryCode, city, location, ipAddress){
     args.push(countryCode || "");
     args.push(city || "");
     args.push(location || "0,0");
-    args.push(String(options.ipAddress) || "0.0.0.0");
+    args.push(ipAddress || "0.0.0.0");
     CountlyReactNative.setLocation(args);
 }
 Countly.disableLocation = function(){
@@ -169,11 +167,22 @@ Countly.changeDeviceId = function(newDeviceID, onServer){
     newDeviceID = newDeviceID.toString() || "";
     CountlyReactNative.changeDeviceId([newDeviceID, onServer]);
 }
+Countly.setHttpPostForced = function(bool){
+    var args = [];
+    args.push(bool?"1":"0");
+    CountlyReactNative.setHttpPostForced(args);
+}
 Countly.enableCrashReporting = function(){
     CountlyReactNative.enableCrashReporting();
 }
 Countly.addCrashLog = function(crashLog){
     CountlyReactNative.addCrashLog(crashLog);
+}
+Countly.setCustomCrashSegments = function(logs){
+    if(!logs){
+        logs = [];
+    }
+    CountlyReactNative.setCustomCrashSegments(logs);
 }
 Countly.startSession = function(){
     CountlyReactNative.startSession();
@@ -199,12 +208,17 @@ Countly.endEvent = function(options){
 
     args.push(eventType);
 
-    if(options.eventName)
-        args.push(options.eventName.toString());
-    if(options.eventCount)
-        args.push(options.eventCount.toString());
-    if(options.eventSum)
-        args.push(options.eventSum.toString());
+    if(!options.eventName)
+        options.eventName = "";
+    args.push(options.eventName.toString());
+
+    if(!options.eventCount)
+        options.eventCount = "1";
+    args.push(options.eventCount.toString());
+
+    if(!options.eventSum)
+        options.eventSum = "0";
+    args.push(options.eventSum.toString());
 
     if(options.segments)
         segments = options.segments;
@@ -215,6 +229,21 @@ Countly.endEvent = function(options){
     CountlyReactNative.endEvent(args);
 };
 
+// countly sending user data
+Countly.setUserData = function(options){
+    var args = [];
+    args.push(options.name || "");
+    args.push(options.username || "");
+    args.push(options.email || "");
+    args.push(options.org || "");
+    args.push(options.phone || "");
+    args.push(options.picture || "");
+    args.push(options.picturePath || "");
+    args.push(options.gender || "");
+    args.push(options.byear || 0);
+
+    CountlyReactNative.setuserdata(args);
+}
 Countly.userData = {};
 Countly.userData.setProperty = function(keyName, keyValue){
     CountlyReactNative.userData_setProperty([keyName.toString() || "", keyValue.toString() || ""]);
@@ -237,4 +266,18 @@ Countly.userData.saveMin = function(keyName, saveMin){
 Countly.userData.setOnce = function(keyName, setOnce){
     CountlyReactNative.userData_setOnce([keyName.toString() || "", setOnce.toString() || ""]);
 };
+Countly.userData.pushUniqueValue = function(keyName, keyValue){
+    CountlyReactNative.userData_pushUniqueValue([keyName.toString() || "", keyValue.toString() || ""]);
+};
+Countly.userData.pushValue = function(keyName, keyValue){
+    CountlyReactNative.userData_pushValue([keyName.toString() || "", keyValue.toString() || ""]);
+};
+Countly.userData.pullValue = function(keyName, keyValue){
+    CountlyReactNative.userData_pullValue([keyName.toString() || "", keyValue.toString() || ""]);
+};
+
+// GDPR
+Countly.setRequiresConsent = function(){
+    CountlyReactNative.setRequiresConsent([]);
+}
 export default Countly;

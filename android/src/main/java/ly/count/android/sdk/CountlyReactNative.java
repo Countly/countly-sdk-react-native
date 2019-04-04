@@ -60,25 +60,39 @@ public class CountlyReactNative extends ReactContextBaseJavaModule {
 	public void init(ReadableArray args){
         String serverUrl = args.getString(0);
         String appKey = args.getString(1);
-        Countly.sharedInstance().init(_reactContext, serverUrl, appKey);
-        // if(args.size() == 2){
-        //     Countly.sharedInstance()
-        //         .init(_reactContext, serverUrl, appKey,null,DeviceId.Type.OPEN_UDID);
-        // }else if(args.size() == 3){
-        //     String yourDeviceID = args.getString(2);
-        //     Countly.sharedInstance()
-        //         .init(_reactContext, serverUrl, appKey,yourDeviceID,null);
-        // }else{
+        String deviceId = args.getString(2);
+        if("".equals(deviceId)){
+            Countly.sharedInstance()
+                .init(_reactContext, serverUrl, appKey,null,DeviceId.Type.OPEN_UDID);
+        }else (args.size() == 3){
+            Countly.sharedInstance()
+                .init(_reactContext, serverUrl, appKey,deviceId,null);
+        }
+        // else{
         //     Countly.sharedInstance()
         //         .init(_reactContext, serverUrl, appKey,null,DeviceId.Type.ADVERTISING_ID);
         // }
-		Countly.sharedInstance().onStart(getCurrentActivity());
 	}
+
+    @ReactMethod
+    public void isInitialized(ReadableArray args){
+        return Countly.sharedInstance().isInitialized();
+    }
+
+    @ReactMethod
+    public void hasBeenCalledOnStart(ReadableArray args){
+        return Countly.sharedInstance().hasBeenCalledOnStart();
+    }
 
     @ReactMethod
     public void changeDeviceId(ReadableArray args){
         String newDeviceID = args.getString(0);
-        Countly.sharedInstance().changeDeviceId(newDeviceID);
+        String onServerString = args.getString(1);
+        if("1".equals(onServerString)){
+            Countly.sharedInstance().changeDeviceId(newDeviceID);
+        }else{
+            Countly.sharedInstance().changeDeviceId(DeviceId.Type.DEVELOPER_SUPPLIED, newDeviceID);
+        }
     }
 
     @ReactMethod
@@ -99,9 +113,25 @@ public class CountlyReactNative extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setLocation(ReadableArray args){
-        double latitude = Double.parseDouble(args.getString(0));
-        double longitude = Double.parseDouble(args.getString(1));
-        // Countly.sharedInstance().setLocation(latitude, longitude);
+        String countryCode = args.getString(0);
+        String city = args.getString(1);
+        String location = args.getString(2);
+        String ipAddress = args.getString(3);
+        if("".equals(countryCode)){
+            countryCode = null;
+        }
+        if("".equals(city)){
+            city = null;
+        }
+        if("0.0.0.0".equals(ipAddress)){
+            ipAddress = null;
+        }
+        Countly.sharedInstance().setLocation(countryCode, city, location, ipAddress);
+    }
+
+    @ReactMethod
+    public void disableLocation(){
+        Countly.sharedInstance().disableLocation();
     }
 
     @ReactMethod
@@ -115,10 +145,19 @@ public class CountlyReactNative extends ReactContextBaseJavaModule {
         Countly.sharedInstance().addCrashLog(record);
     }
 
+    @ReactMethod
+    public void setCustomCrashSegments(ReadableArray args){
+        Map<String, String> segments = null;
+        for(int i=0,il=args.size();i<il;i++){
+            segments.put(args.getString(i), args.getString(i));
+        }
+        Countly.sharedInstance().setCustomCrashSegments(segments);
+    }
+
    @ReactMethod
     public void event(ReadableArray args){
         String eventType = args.getString(0);
-            if("event".equals(eventType)){
+        if("event".equals(eventType)){
             String eventName = args.getString(1);
             int eventCount= Integer.parseInt(args.getString(2));
             Countly.sharedInstance().recordEvent(eventName, eventCount);
@@ -138,7 +177,7 @@ public class CountlyReactNative extends ReactContextBaseJavaModule {
             }
             Countly.sharedInstance().recordEvent(eventName, segmentation, eventCount);
             }
-            else if ("eventWithSumSegment".equals(eventType)) {
+        else if ("eventWithSumSegment".equals(eventType)) {
             String eventName = args.getString(1);
             int eventCount= Integer.parseInt(args.getString(2));
             float eventSum= new Float(args.getString(3)).floatValue();
@@ -149,7 +188,7 @@ public class CountlyReactNative extends ReactContextBaseJavaModule {
             Countly.sharedInstance().recordEvent(eventName, segmentation, eventCount,eventSum);
         }
         else{
-
+            // nothing to do here
         }
     }
 
@@ -194,8 +233,7 @@ public class CountlyReactNative extends ReactContextBaseJavaModule {
 	@ReactMethod
 	public void setuserdata(ReadableArray args){
         Map<String, String> bundle = new HashMap<String, String>();
-        bundle .put("name", args.getString(0));
-
+        bundle.put("name", args.getString(0));
         bundle.put("username", args.getString(1));
         bundle.put("email", args.getString(2));
         bundle.put("org", args.getString(3));
@@ -289,6 +327,35 @@ public class CountlyReactNative extends ReactContextBaseJavaModule {
         Countly.userData.save();
     }
 
+    @ReactMethod
+    public void userData_pushUniqueValue(ReadableArray args){
+        String keyName = args.getString(0);
+        String keyValue = args.getString(1);
+        Countly.userData.pushUniqueValue(keyName, keyValue);
+        Countly.userData.save();
+    }
+
+    @ReactMethod
+    public void userData_pushValue(ReadableArray args){
+        String keyName = args.getString(0);
+        String keyValue = args.getString(1);
+        Countly.userData.pushValue(keyName, keyValue);
+        Countly.userData.save();
+    }
+
+    @ReactMethod
+    public void userData_pullValue(ReadableArray args){
+        String keyName = args.getString(0);
+        String keyValue = args.getString(1);
+        Countly.userData.pullValue(keyName, keyValue);
+        Countly.userData.save();
+    }
+
+    // GDPR
+    @ReactMethod
+    public void setRequiresConsent(ReadableArray args){
+        Countly.sharedInstance().setRequiresConsent(true);
+    }
 }
 
 

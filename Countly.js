@@ -85,7 +85,7 @@ Countly.setLoggingEnabled = function(boolean){
 
 
 
-Countly.sendPushToken = function(options, successCallback, failureCallback){
+Countly.sendPushToken = function(options){
     // successCallback = successCallback || Countly.onSuccess;
     // failureCallback = failureCallback || Countly.onError;
     // if(!Countly.appKey){
@@ -166,6 +166,14 @@ Countly.changeDeviceId = function(newDeviceID, onServer){
     }
     newDeviceID = newDeviceID.toString() || "";
     CountlyReactNative.changeDeviceId([newDeviceID, onServer]);
+}
+Countly.userLoggedIn = function(deviceId){
+    var args = [];
+    args.push(deviceId || "");
+    CountlyReactNative.userLoggedIn(args);
+}
+Countly.userLoggedOut = function(deviceId){
+    CountlyReactNative.userLoggedOut([]);
 }
 Countly.setHttpPostForced = function(bool){
     var args = [];

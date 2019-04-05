@@ -64,7 +64,7 @@ public class CountlyReactNative extends ReactContextBaseJavaModule {
         if("".equals(deviceId)){
             Countly.sharedInstance()
                 .init(_reactContext, serverUrl, appKey,null,DeviceId.Type.OPEN_UDID);
-        }else (args.size() == 3){
+        }else if(args.size() == 3){
             Countly.sharedInstance()
                 .init(_reactContext, serverUrl, appKey,deviceId,null);
         }
@@ -75,12 +75,12 @@ public class CountlyReactNative extends ReactContextBaseJavaModule {
 	}
 
     @ReactMethod
-    public void isInitialized(ReadableArray args){
+    public Boolean isInitialized(ReadableArray args){
         return Countly.sharedInstance().isInitialized();
     }
 
     @ReactMethod
-    public void hasBeenCalledOnStart(ReadableArray args){
+    public Boolean hasBeenCalledOnStart(ReadableArray args){
         return Countly.sharedInstance().hasBeenCalledOnStart();
     }
 

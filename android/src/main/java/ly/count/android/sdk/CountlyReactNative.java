@@ -356,9 +356,19 @@ public class CountlyReactNative extends ReactContextBaseJavaModule {
     public void setRequiresConsent(ReadableArray args){
         Countly.sharedInstance().setRequiresConsent(true);
     }
+
+    @ReactMethod
+    public void giveConsent(ReadableArray args){
+        String keyNameFeature = args.getString(0);
+        Countly.sharedInstance().giveConsent(new String[]{keyNameFeature});
+    }
+
+    @ReactMethod
+    public void removeConsent(ReadableArray args){
+        String keyNameFeature = args.getString(0);
+        Countly.sharedInstance().removeConsent(new String[]{keyNameFeature});
+    }
 }
-
-
 
 
 

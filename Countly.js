@@ -288,4 +288,12 @@ Countly.userData.pullValue = function(keyName, keyValue){
 Countly.setRequiresConsent = function(){
     CountlyReactNative.setRequiresConsent([]);
 }
+
+Countly.giveConsent = function(keyName){
+    CountlyReactNative.giveConsent([keyName.toString() || ""]);
+}
+
+Countly.removeConsent = function(keyName){
+    CountlyReactNative.removeConsent([keyName.toString() || ""]);
+}
 export default Countly;

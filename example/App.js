@@ -101,6 +101,18 @@ class AwesomeProject extends Component {
       Countly.enableParameterTamperingProtection("salt");
     };
 
+    setRequiresConsent(){
+      Countly.setRequiresConsent();
+    }
+
+    giveConsent(){
+      Countly.giveConsent("sessions");
+    };
+
+    removeConsent(){
+      Countly.removeConsent("sessions");
+    };
+
     test(){
       this.onInit();
       this.onStart();
@@ -171,7 +183,9 @@ class AwesomeProject extends Component {
             < Button onPress = { this.pushMessage } title = "Push Message" color = "#00b5ad"> </Button>
             < Button onPress = { this.changeDeviceId } title = "Change Device ID" color = "#00b5ad"> </Button>
             < Button onPress = { this.enableParameterTamperingProtection } title = "Enable Parameter Tapmering Protection" color = "#00b5ad"> </Button>
-
+            < Button onPress = { this.setRequiresConsent } title = "Init Consent" color = "#00b5ad"> </Button>
+            < Button onPress = { this.giveConsent } title = "Session start Consent" color = "#00b5ad"> </Button>
+            < Button onPress = { this.removeConsent } title = "Session remove Consent" color = "#00b5ad"> </Button>
 
             <Text style={[{textAlign: 'center'}]}>Other Methods End</Text>
 

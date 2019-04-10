@@ -6,6 +6,7 @@ npm install -g react-native-cli
 react-native init AwesomeProject
 cd AwesomeProject
 npm install ../../../plugins/countly-sdk-react-native
+npm install https://github.com/Countly/countly-sdk-react-native.git#v3
 react-native link countly-sdk-react-native
 
 nodemon -w ./* --exec 'sh ./example/script.sh'

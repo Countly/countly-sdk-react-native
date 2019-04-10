@@ -106,11 +106,11 @@ class AwesomeProject extends Component {
     }
 
     giveConsent(){
-      Countly.giveConsent("sessions");
+      Countly.giveConsent("events");
     };
 
     removeConsent(){
-      Countly.removeConsent("sessions");
+      Countly.removeConsent("events");
     };
 
     test(){
@@ -184,8 +184,8 @@ class AwesomeProject extends Component {
             < Button onPress = { this.changeDeviceId } title = "Change Device ID" color = "#00b5ad"> </Button>
             < Button onPress = { this.enableParameterTamperingProtection } title = "Enable Parameter Tapmering Protection" color = "#00b5ad"> </Button>
             < Button onPress = { this.setRequiresConsent } title = "Init Consent" color = "#00b5ad"> </Button>
-            < Button onPress = { this.giveConsent } title = "Session start Consent" color = "#00b5ad"> </Button>
-            < Button onPress = { this.removeConsent } title = "Session remove Consent" color = "#00b5ad"> </Button>
+            < Button onPress = { this.giveConsent } title = "Events start Consent" color = "#00b5ad"> </Button>
+            < Button onPress = { this.removeConsent } title = "Events remove Consent" color = "#00b5ad"> </Button>
 
             <Text style={[{textAlign: 'center'}]}>Other Methods End</Text>
 

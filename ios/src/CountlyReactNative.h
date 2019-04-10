@@ -29,6 +29,8 @@
 - (void)userData_saveMax:(NSArray*)arguments;
 - (void)userData_saveMin:(NSArray*)arguments;
 - (void)demo:(NSArray*)arguments;
-
+- (void)setRequiresConsent:(NSArray*)arguments;
+- (void)giveConsent:(NSArray*)arguments;
+- (void)removeConsent:(NSArray*)arguments;
 
 @end

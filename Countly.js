@@ -289,6 +289,7 @@ Countly.setRequiresConsent = function(){
     CountlyReactNative.setRequiresConsent([]);
 }
 
+
 Countly.giveConsent = function(keyName){
     CountlyReactNative.giveConsent([keyName.toString() || ""]);
 }

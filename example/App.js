@@ -1,11 +1,53 @@
 import React, { Component } from 'react';
 import { AppRegistry, Text, Button, ScrollView, Image } from 'react-native';
 import Countly from 'countly-sdk-react-native';
+import PushNotificationIOS from 'react-native';
+import PubNubReact from 'pubnub-react';
+var PushNotification = require('react-native-push-notification');
 
 class AwesomeProject extends Component {
     constructor(props) {
         super(props);
         this.test = this.test.bind(this);
+        this.pubnub = new PubNubReact({
+            publishKey: 'pub-c-ab20221b-1a8a-4976-904e-d9c39c5dc5ff',
+            subscribeKey: 'sub-c-181ba220-5c27-11e9-a239-aa8227b65335'
+        });
+        this.pubnub.init(this);
+        PushNotification.configure({
+          // Called when Token is generated.
+          onRegister: function(token) {
+              console.log( 'TOKEN:', token );
+              if (token.os == "ios") {
+                this.pubnub.push.addChannels(
+                {
+                  channels: ['notifications'],
+                  device: token.token,
+                  pushGateway: 'apns'
+                });
+                // Send iOS Notification from debug console: {"pn_apns":{"aps":{"alert":"Hello World."}}}
+              } else if (token.os == "android"){
+                this.pubnub.push.addChannels(
+                {
+                  channels: ['notifications'],
+                  device: token.token,
+                  pushGateway: 'gcm' // apns, gcm, mpns
+                });
+                // Send Android Notification from debug console: {"pn_gcm":{"data":{"message":"Hello World."}}}
+              }  
+          }.bind(this),
+          // Something not working?
+          // See: https://support.pubnub.com/support/solutions/articles/14000043605-how-can-i-troubleshoot-my-push-notification-issues-
+          // Called when a remote or local notification is opened or received.
+          onNotification: function(notification) {
+            console.log( 'NOTIFICATION:', notification );
+            // Do something with the notification.
+            // Required on iOS only (see fetchCompletionHandler docs: https://facebook.github.io/react-native/docs/pushnotificationios.html)
+            // notification.finish(PushNotificationIOS.FetchResult.NoData);
+          },
+          // ANDROID: GCM or FCM Sender ID
+          senderID: "sender-id",
+      });
     };
     onInit(){
       Countly.init("https://try.count.ly","0e8a00e8c01395a0af8be0e55da05a404bb23c3e");
@@ -29,10 +71,6 @@ class AwesomeProject extends Component {
       options.gender = "M";
       options.byear = 1989;
       Countly.setUserData(options);
-    };
-    pushMessage(){
-      // implementation is pending
-
     };
     basicEvent(){
       // example for basic event
@@ -93,9 +131,35 @@ class AwesomeProject extends Component {
       Countly.userData.setOnce("keyName", 200);
     };
 
-    changeDeviceId(){
-      Countly.changeDeviceId("123456");
+    onRegisterDevice(){
+      // Countly.initMessaging('403185924621', Countly.TEST);
+    }
+
+    onSendTestTokenAndroid(){
+      const testToken = 'coyj3YaNss4:APA91bG_9rwIQF4Ul7J2JB76J3afpcP_4TJA1hTfrSjD4lxklLLQIT82ygxLlqND9uUvFbVTosFWvM83QFGiStm_M3HQFK11yO682_5e6MEzL6qsDwWkt_IBv5PTylMhRM6cn2g0CGXs';
+      Countly.registerPush(Countly.TEST, testToken);
+    }
+
+    pushMessage(){
+      // implementation is pending
+      PushNotification.localNotification({
+        /* Android Only Properties */
+        id: '0',
+
+        /* iOS and Android properties */
+        title: 'My Notification Title', // (optional, for iOS this is only used in apple watch, the title will be the app name on other iOS devices)
+        message: 'My Notification Message1', // (required)
+        actions: '["Yes", "No"]', // (Android only) See the doc for notification actions to know more
+      });
     };
+
+    changeDeviceId(){
+      Countly.changeDeviceId('02d56d66-6a39-482d-aff0-d14e4d5e5fda');
+    };
+
+    cancelMessage(){
+      PushNotification.cancelAllLocalNotifications();
+    }
 
     enableParameterTamperingProtection(){
       Countly.enableParameterTamperingProtection("salt");
@@ -180,8 +244,17 @@ class AwesomeProject extends Component {
             < Button onPress = { function(){Countly.recordView("HomePage")} } title = "Record View: 'HomePage'" color = "#e0e0e0"> </Button>
             < Button onPress = { function(){Countly.recordView("Dashboard")} } title = "Record View: 'Dashboard'" color = "#e0e0e0"> </Button>
 
-            < Button onPress = { this.pushMessage } title = "Push Message" color = "#00b5ad"> </Button>
-            < Button onPress = { this.changeDeviceId } title = "Change Device ID" color = "#00b5ad"> </Button>
+
+
+            < Text style={[{ textAlign: 'center' }]}>Push Notification Start</Text>
+            < Button onPress={this.onRegisterDevice} title='Register Device' color='#00b5ad' />
+            < Button onPress={this.onSendTestTokenAndroid} title='Test Token Android' color='#00b5ad' />
+            < Button onPress={this.pushMessage} title='Push Message' color='#00b5ad' />
+            < Button onPress={this.cancelMessage} title='Cancel Push Message' color='#00b5ad' />
+            < Button onPress={this.changeDeviceId} title='Change Device ID' color='#00b5ad' />
+            < Text style={[{ textAlign: 'center' }]}>Push Notification End</Text>
+
+
             < Button onPress = { this.enableParameterTamperingProtection } title = "Enable Parameter Tapmering Protection" color = "#00b5ad"> </Button>
             < Button onPress = { this.setRequiresConsent } title = "Init Consent" color = "#00b5ad"> </Button>
             < Button onPress = { this.giveConsent } title = "Events start Consent" color = "#00b5ad"> </Button>

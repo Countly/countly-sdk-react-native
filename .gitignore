@@ -5,3 +5,4 @@ android/countly-sdk-react-native.iml
 ios/.git
 node_modules
 .DS_Store
+yarn.lock

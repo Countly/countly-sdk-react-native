@@ -1,53 +1,13 @@
 import React, { Component } from 'react';
 import { AppRegistry, Text, Button, ScrollView, Image } from 'react-native';
 import Countly from 'countly-sdk-react-native';
-import PushNotificationIOS from 'react-native';
-import PubNubReact from 'pubnub-react';
+// import PushNotificationIOS from 'react-native';
+// import PubNubReact from 'pubnub-react';
 var PushNotification = require('react-native-push-notification');
 
 class AwesomeProject extends Component {
     constructor(props) {
-        super(props);
-        this.test = this.test.bind(this);
-        this.pubnub = new PubNubReact({
-            publishKey: 'pub-c-ab20221b-1a8a-4976-904e-d9c39c5dc5ff',
-            subscribeKey: 'sub-c-181ba220-5c27-11e9-a239-aa8227b65335'
-        });
-        this.pubnub.init(this);
-        PushNotification.configure({
-          // Called when Token is generated.
-          onRegister: function(token) {
-              console.log( 'TOKEN:', token );
-              if (token.os == "ios") {
-                this.pubnub.push.addChannels(
-                {
-                  channels: ['notifications'],
-                  device: token.token,
-                  pushGateway: 'apns'
-                });
-                // Send iOS Notification from debug console: {"pn_apns":{"aps":{"alert":"Hello World."}}}
-              } else if (token.os == "android"){
-                this.pubnub.push.addChannels(
-                {
-                  channels: ['notifications'],
-                  device: token.token,
-                  pushGateway: 'gcm' // apns, gcm, mpns
-                });
-                // Send Android Notification from debug console: {"pn_gcm":{"data":{"message":"Hello World."}}}
-              }  
-          }.bind(this),
-          // Something not working?
-          // See: https://support.pubnub.com/support/solutions/articles/14000043605-how-can-i-troubleshoot-my-push-notification-issues-
-          // Called when a remote or local notification is opened or received.
-          onNotification: function(notification) {
-            console.log( 'NOTIFICATION:', notification );
-            // Do something with the notification.
-            // Required on iOS only (see fetchCompletionHandler docs: https://facebook.github.io/react-native/docs/pushnotificationios.html)
-            // notification.finish(PushNotificationIOS.FetchResult.NoData);
-          },
-          // ANDROID: GCM or FCM Sender ID
-          senderID: "sender-id",
-      });
+        super(props);        
     };
     onInit(){
       Countly.init("https://try.count.ly","0e8a00e8c01395a0af8be0e55da05a404bb23c3e");
@@ -177,6 +137,48 @@ class AwesomeProject extends Component {
       Countly.removeConsent("events");
     };
 
+    setupPush(){
+      PushNotification.configure({
+          // (optional) Called when Token is generated (iOS and Android)
+          onRegister: function(token) {
+            var token = token;
+            token.messagingMode = "0";
+            Countly.sendPushToken(token)
+          },
+
+          // (required) Called when a remote or local notification is opened or received
+          onNotification: function(notification) {
+              alert( 'NOTIFICATION:', notification );
+
+              // process the notification
+
+              // required on iOS only (see fetchCompletionHandler docs: https://facebook.github.io/react-native/docs/pushnotificationios.html)
+              notification.finish(PushNotificationIOS.FetchResult.NoData);
+          },
+
+          // ANDROID ONLY: GCM or FCM Sender ID (product_number) (optional - not required for local notifications, but is need to receive remote push notifications)
+          senderID: "881000050249",
+
+          // IOS ONLY (optional): default: all - Permissions to register.
+          permissions: {
+              alert: true,
+              badge: true,
+              sound: true
+          },
+
+          // Should the initial notification be popped automatically
+          // default: true
+          popInitialNotification: true,
+
+          /**
+            * (optional) default: true
+            * - Specified if permissions (ios) and token (android and ios) will requested or not,
+            * - if not, you must call PushNotificationsHandler.requestPermissions() later
+            */
+          requestPermissions: true,
+      });
+    }
+
     test(){
       this.onInit();
       this.onStart();
@@ -259,6 +261,7 @@ class AwesomeProject extends Component {
             < Button onPress = { this.setRequiresConsent } title = "Init Consent" color = "#00b5ad"> </Button>
             < Button onPress = { this.giveConsent } title = "Events start Consent" color = "#00b5ad"> </Button>
             < Button onPress = { this.removeConsent } title = "Events remove Consent" color = "#00b5ad"> </Button>
+            < Button onPress = { this.setupPush } title = "Setup Push" color = "#00b5ad"> </Button>
 
             <Text style={[{textAlign: 'center'}]}>Other Methods End</Text>
 

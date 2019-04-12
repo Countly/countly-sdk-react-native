@@ -85,31 +85,14 @@ Countly.setLoggingEnabled = function(boolean){
 
 
 
-Countly.sendPushToken = function(options){
-    // successCallback = successCallback || Countly.onSuccess;
-    // failureCallback = failureCallback || Countly.onError;
-    // if(!Countly.appKey){
-    //     return failureCallback('Countly sdk is not initialized.')
-    // }
-    // Countly.getDeviceID(function(deviceId){
-    //     var data = {
-    //         device_id: deviceId,
-    //         app_key: Countly.appKey,
-    //         token_session: 1,
-    //         test_mode: options.messagingMode,
-    //         android_token: options.token,
-    //         ios_token: options.token
-    //     };
-    //     if (Countly.isAndroid) {
-    //         delete data.ios_token;
-    //     }
-    //     if (Countly.isiOS) {
-    //         delete data.android_token;
-    //     }
-    //     Ajax.post('/i', data, successCallback);
-
-    // }, failureCallback);
+Countly.sendPushToken = function(options, successCallback, failureCallback){
+    var args = [];
+    args.push(options.token || "");
+    args.push(options.messagingMode || "");
+    args.push(options.projectId || "");
+    CountlyReactNative.onregistrationid(args);
 }
+
 // countly start for android
 Countly.start = function(){
     CountlyReactNative.start();

@@ -7,6 +7,7 @@
 #import "CountlyReactNative.h"
 #import "CountlyConfig.h"
 #import "CountlyPushNotifications.h"
+#import "CountlyConnectionManager.h"
 
 
 CountlyConfig* config = nil;
@@ -130,8 +131,9 @@ RCT_EXPORT_METHOD(onregistrationid:(NSArray*)arguments)
   if(mode == 1){
     // [[CountlyConnectionQueue sharedInstance] setStartedWithTest:YES];
   }
-  //  CountlyPushNotifications.sharedInstance.token = token;
-  //  [CountlyPushNotifications.sharedInstance sendToken];
+  [CountlyConnectionManager.sharedInstance sendPushToken:token];
+   // CountlyPushNotifications.sharedInstance.token = token;
+   // [CountlyPushNotifications.sharedInstance sendToken];
   // [Countly.sharedInstance didRegisterForRemoteNotificationsWithDeviceToken:tokenByte];
 
   // [[CountlyConnectionQueue sharedInstance] tokenSession:token];

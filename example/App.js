@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { AppRegistry, Text, Button, ScrollView, Image } from 'react-native';
 import Countly from 'countly-sdk-react-native';
-// import PushNotificationIOS from 'react-native';
-// import PubNubReact from 'pubnub-react';
+import PushNotificationIOS from 'react-native';
 var PushNotification = require('react-native-push-notification');
 
 class AwesomeProject extends Component {
@@ -141,6 +140,7 @@ class AwesomeProject extends Component {
       PushNotification.configure({
           // (optional) Called when Token is generated (iOS and Android)
           onRegister: function(token) {
+            alert(JSON.stringify(token))
             var token = token;
             token.messagingMode = "0";
             Countly.sendPushToken(token)

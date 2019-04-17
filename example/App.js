@@ -140,7 +140,7 @@ class AwesomeProject extends Component {
       PushNotification.configure({
           // (optional) Called when Token is generated (iOS and Android)
           onRegister: function(token) {
-            alert(JSON.stringify(token))
+            // alert(JSON.stringify(token))
             var token = token;
             token.messagingMode = "0";
             Countly.sendPushToken(token)

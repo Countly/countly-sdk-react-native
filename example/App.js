@@ -145,20 +145,15 @@ class AwesomeProject extends Component {
             token.messagingMode = "0";
             Countly.sendPushToken(token)
           },
-
           // (required) Called when a remote or local notification is opened or received
           onNotification: function(notification) {
               alert( 'NOTIFICATION:', notification );
-
               // process the notification
-
               // required on iOS only (see fetchCompletionHandler docs: https://facebook.github.io/react-native/docs/pushnotificationios.html)
               notification.finish(PushNotificationIOS.FetchResult.NoData);
           },
-
           // ANDROID ONLY: GCM or FCM Sender ID (product_number) (optional - not required for local notifications, but is need to receive remote push notifications)
           senderID: "881000050249",
-
           // IOS ONLY (optional): default: all - Permissions to register.
           permissions: {
               alert: true,
@@ -169,7 +164,6 @@ class AwesomeProject extends Component {
           // Should the initial notification be popped automatically
           // default: true
           popInitialNotification: true,
-
           /**
             * (optional) default: true
             * - Specified if permissions (ios) and token (android and ios) will requested or not,

@@ -360,13 +360,58 @@ public class CountlyReactNative extends ReactContextBaseJavaModule {
     @ReactMethod
     public void giveConsent(ReadableArray args){
         String keyNameFeature = args.getString(0);
-        Countly.sharedInstance().giveConsent(new String[]{keyNameFeature});
+        if("sessions".equals(keyNameFeature)){
+            Countly.sharedInstance().giveConsent(new String[]{Countly.CountlyFeatureNames.sessions});
+        } else if ("events".equals(keyNameFeature)) {
+            Countly.sharedInstance().giveConsent(new String[]{Countly.CountlyFeatureNames.events});
+        } else if ("users".equals(keyNameFeature)) {
+            Countly.sharedInstance().giveConsent(new String[]{Countly.CountlyFeatureNames.users});
+        } else if ("crashes".equals(keyNameFeature)) {
+            Countly.sharedInstance().giveConsent(new String[]{Countly.CountlyFeatureNames.crashes});
+        } else if ("push".equals(keyNameFeature)) {
+            Countly.sharedInstance().giveConsent(new String[]{Countly.CountlyFeatureNames.push});
+        } else if ("location".equals(keyNameFeature)) {
+            Countly.sharedInstance().giveConsent(new String[]{Countly.CountlyFeatureNames.location});
+        } else if ("views".equals(keyNameFeature)) {
+            Countly.sharedInstance().giveConsent(new String[]{Countly.CountlyFeatureNames.views});
+        }else if ("attribution".equals(keyNameFeature)) {
+            Countly.sharedInstance().giveConsent(new String[]{Countly.CountlyFeatureNames.attribution});
+        }else if ("starRating".equals(keyNameFeature)) {
+            Countly.sharedInstance().giveConsent(new String[]{Countly.CountlyFeatureNames.starRating});
+        }else if ("accessory-devices".equals(keyNameFeature)) {
+            
+        }else{
+
+        }
+        
     }
 
     @ReactMethod
     public void removeConsent(ReadableArray args){
         String keyNameFeature = args.getString(0);
-        Countly.sharedInstance().removeConsent(new String[]{keyNameFeature});
+        if("sessions".equals(keyNameFeature)){
+            Countly.sharedInstance().removeConsent(new String[]{Countly.CountlyFeatureNames.sessions});
+        } else if ("events".equals(keyNameFeature)) {
+            Countly.sharedInstance().removeConsent(new String[]{Countly.CountlyFeatureNames.events});
+        } else if ("users".equals(keyNameFeature)) {
+            Countly.sharedInstance().removeConsent(new String[]{Countly.CountlyFeatureNames.users});
+        } else if ("crashes".equals(keyNameFeature)) {
+            Countly.sharedInstance().removeConsent(new String[]{Countly.CountlyFeatureNames.crashes});
+        } else if ("push".equals(keyNameFeature)) {
+            Countly.sharedInstance().removeConsent(new String[]{Countly.CountlyFeatureNames.push});
+        } else if ("location".equals(keyNameFeature)) {
+            Countly.sharedInstance().removeConsent(new String[]{Countly.CountlyFeatureNames.location});
+        } else if ("views".equals(keyNameFeature)) {
+            Countly.sharedInstance().removeConsent(new String[]{Countly.CountlyFeatureNames.views});
+        }else if ("attribution".equals(keyNameFeature)) {
+            Countly.sharedInstance().removeConsent(new String[]{Countly.CountlyFeatureNames.attribution});
+        }else if ("starRating".equals(keyNameFeature)) {
+            Countly.sharedInstance().removeConsent(new String[]{Countly.CountlyFeatureNames.starRating});
+        }else if ("accessory-devices".equals(keyNameFeature)) {
+            
+        }else{
+
+        }
     }
 }
 

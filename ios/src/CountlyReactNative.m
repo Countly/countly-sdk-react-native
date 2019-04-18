@@ -427,7 +427,7 @@ RCT_EXPORT_METHOD(giveConsent:(NSArray*)arguments)
   else if ([keyName  isEqual: @"attribution"]){
     [Countly.sharedInstance giveConsentForFeature:CLYConsentAttribution];
   }
-  else if ([keyName  isEqual: @"star-rating"]){
+  else if ([keyName  isEqual: @"starRating"]){
    [Countly.sharedInstance giveConsentForFeature:CLYConsentStarRating];
   }
   else if ([keyName  isEqual: @"accessory-devices"]){
@@ -461,7 +461,7 @@ RCT_EXPORT_METHOD(removeConsent:(NSArray*)arguments)
   else if ([keyName  isEqual: @"attribution"]){
     [Countly.sharedInstance cancelConsentForFeature:CLYConsentAttribution];
   }
-  else if ([keyName  isEqual: @"star-rating"]){
+  else if ([keyName  isEqual: @"starRating"]){
    [Countly.sharedInstance cancelConsentForFeature:CLYConsentStarRating];
   }
   else if ([keyName  isEqual: @"accessory-devices"]){

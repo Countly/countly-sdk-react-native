@@ -136,6 +136,25 @@ class AwesomeProject extends Component {
       Countly.removeConsent("events");
     };
 
+    remoteConfigUpdate(){
+      Countly.remoteConfigUpdate();
+    };
+
+    updateRemoteConfigForKeysOnly(){
+      Countly.updateRemoteConfigForKeysOnly("test1");
+    };
+
+    updateRemoteConfigExceptKeys(){
+      Countly.updateRemoteConfigExceptKeys("test1");
+    };
+
+    getRemoteConfigValueForKey(){
+      Countly.getRemoteConfigValueForKey("test1");
+    };
+    
+    
+
+
     setupPush(){
       PushNotification.configure({
           // (optional) Called when Token is generated (iOS and Android)
@@ -256,6 +275,12 @@ class AwesomeProject extends Component {
             < Button onPress = { this.giveConsent } title = "Events start Consent" color = "#00b5ad"> </Button>
             < Button onPress = { this.removeConsent } title = "Events remove Consent" color = "#00b5ad"> </Button>
             < Button onPress = { this.setupPush } title = "Setup Push" color = "#00b5ad"> </Button>
+
+
+            < Button onPress = { this.remoteConfigUpdate } title = "Update Remote Config" color = "#00b5ad"> </Button>
+            < Button onPress = { this.updateRemoteConfigForKeysOnly } title = "Update Remote Config with Keys Only" color = "#00b5ad"> </Button>
+            < Button onPress = { this.updateRemoteConfigExceptKeys } title = "Update Remote Config Except Keys" color = "#00b5ad"> </Button>
+            < Button onPress = { this.getRemoteConfigValueForKey } title = "Check Remote Config value" color = "#00b5ad"> </Button>
 
             <Text style={[{textAlign: 'center'}]}>Other Methods End</Text>
 

@@ -29,7 +29,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import android.widget.Toast;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -58,9 +57,24 @@ public class CountlyReactNative extends ReactContextBaseJavaModule {
 
 	@ReactMethod
 	public void init(ReadableArray args){
+        Log.e(Countly.TAG, "Testing In It item");
         String serverUrl = args.getString(0);
         String appKey = args.getString(1);
         String deviceId = args.getString(2);
+        Countly.sharedInstance().setRemoteConfigAutomaticDownload(true, new RemoteConfig.RemoteConfigCallback() {
+            @Override
+            public void callback(String error) {
+                if(error == null) {
+                    // Log.i("AdvertisingIdAdapter", "Advertising ID cannot be determined yet");
+                    Log.e(Countly.TAG, "Automatic remote config download has completed");
+                    // Toast.makeText(activity, "Automatic remote config download has completed", Toast.LENGTH_LONG).show();
+                } else {
+                    Log.e(Countly.TAG, "akslkjslkd aklsjlkasjlkjaskljlaksjflkajslkfjalksjflksajlkfjlaksjl ID cannot be determined yet");
+                    // alert("Automatic remote config download encountered a problem,");
+                    // Toast.makeText(activity, "Automatic remote config download encountered a problem, " + error, Toast.LENGTH_LONG).show();
+                }
+            }
+        });
         if("".equals(deviceId)){
             Countly.sharedInstance()
                 .init(_reactContext, serverUrl, appKey,null,DeviceId.Type.OPEN_UDID);
@@ -412,6 +426,59 @@ public class CountlyReactNative extends ReactContextBaseJavaModule {
         }else{
 
         }
+    }
+
+
+    @ReactMethod
+    public void remoteConfigUpdate(ReadableArray args){
+        Countly.sharedInstance().remoteConfigUpdate(new RemoteConfig.RemoteConfigCallback() {
+            @Override
+            public void callback(String error) {
+                if(error == null) {
+                    Log.e(Countly.TAG, "Update finished");
+                } else {
+                    Log.e(Countly.TAG, "Error: " + error);
+                }
+            }
+        });
+    }
+
+    @ReactMethod
+    public void updateRemoteConfigForKeysOnly(ReadableArray args){
+        String keyName = args.getString(0);
+        Countly.sharedInstance().updateRemoteConfigForKeysOnly(new String[]{keyName}, new RemoteConfig.RemoteConfigCallback() {
+            @Override
+            public void callback(String error) {
+                if(error == null) {
+                    Log.e(Countly.TAG, "Update with inclusion finished");
+                } else {
+                    Log.e(Countly.TAG, "Error: " + error);
+                }
+            }
+        });
+    }
+
+
+    @ReactMethod
+    public void updateRemoteConfigExceptKeys(ReadableArray args){
+        String keyName = args.getString(0);
+        Countly.sharedInstance().updateRemoteConfigExceptKeys(new String[]{keyName}, new RemoteConfig.RemoteConfigCallback() {
+            @Override
+            public void callback(String error) {
+                if (error == null) {
+                    Log.e(Countly.TAG, "Update with exclusion finished");
+                } else {
+                    Log.e(Countly.TAG, "Error: " + error);
+                }
+            }
+        });
+    }
+
+    @ReactMethod
+    public void getRemoteConfigValueForKey(ReadableArray args){
+        String keyName = args.getString(0);
+        Object value_1 = Countly.sharedInstance().getRemoteConfigValueForKey(keyName);
+        Log.e(Countly.TAG, "value of : " + keyName +" is "+ value_1);
     }
 }
 

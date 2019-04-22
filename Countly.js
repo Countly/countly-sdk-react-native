@@ -280,4 +280,22 @@ Countly.giveConsent = function(keyName){
 Countly.removeConsent = function(keyName){
     CountlyReactNative.removeConsent([keyName.toString() || ""]);
 }
+
+Countly.remoteConfigUpdate = function(){
+    CountlyReactNative.remoteConfigUpdate([]);
+}
+
+Countly.updateRemoteConfigForKeysOnly = function(keyName){
+    CountlyReactNative.updateRemoteConfigForKeysOnly([keyName.toString() || ""]);
+}
+
+Countly.updateRemoteConfigExceptKeys = function(keyName){
+    CountlyReactNative.updateRemoteConfigExceptKeys([keyName.toString() || ""]);
+}
+
+Countly.getRemoteConfigValueForKey = function(keyName){
+    CountlyReactNative.getRemoteConfigValueForKey([keyName.toString() || ""]);
+}
+
+
 export default Countly;

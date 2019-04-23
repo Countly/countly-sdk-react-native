@@ -272,7 +272,6 @@ Countly.setRequiresConsent = function(){
     CountlyReactNative.setRequiresConsent([]);
 }
 
-
 Countly.giveConsent = function(keyName){
     CountlyReactNative.giveConsent([keyName.toString() || ""]);
 }
@@ -282,7 +281,8 @@ Countly.removeConsent = function(keyName){
 }
 
 Countly.remoteConfigUpdate = function(){
-    CountlyReactNative.remoteConfigUpdate([]);
+    var stringItem = CountlyReactNative.remoteConfigUpdate([]);
+    alert(stringItem);
 }
 
 Countly.updateRemoteConfigForKeysOnly = function(keyName){
@@ -294,7 +294,8 @@ Countly.updateRemoteConfigExceptKeys = function(keyName){
 }
 
 Countly.getRemoteConfigValueForKey = function(keyName){
-    CountlyReactNative.getRemoteConfigValueForKey([keyName.toString() || ""]);
+    var stringItem = CountlyReactNative.getRemoteConfigValueForKey([keyName.toString() || ""]);
+    alert(stringItem);
 }
 
 

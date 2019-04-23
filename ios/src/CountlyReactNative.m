@@ -30,6 +30,8 @@ RCT_EXPORT_METHOD(init:(NSArray*)arguments)
   }
   config.appKey = appkey;
   config.host = serverurl;
+  config.enableRemoteConfig = YES;
+
 
   if (serverurl != nil && [serverurl length] > 0) {
     [[Countly sharedInstance] startWithConfig:config];
@@ -466,6 +468,68 @@ RCT_EXPORT_METHOD(removeConsent:(NSArray*)arguments)
   }
   else if ([keyName  isEqual: @"accessory-devices"]){
     [Countly.sharedInstance cancelConsentForFeature:CLYConsentAppleWatch];
+  }
+}
+
+RCT_EXPORT_METHOD(remoteConfigUpdate:(NSArray*)arguments)
+{
+  [Countly.sharedInstance updateRemoteConfigWithCompletionHandler:^(NSError * error)
+  {
+      if (!error)
+      {
+          NSLog(@"Remote Config is updated and ready to use!");
+      }
+      else
+      {
+          NSLog(@"There is an error while updating Remote Config:\n%@", error);
+      }
+  }];
+}
+
+RCT_EXPORT_METHOD(updateRemoteConfigForKeysOnly:(NSArray*)arguments)
+{
+  NSString* keyName = [arguments objectAtIndex:0];
+  [Countly.sharedInstance updateRemoteConfigOnlyForKeys:@[keyName] completionHandler:^(NSError * error)
+  {
+      if (!error)
+      {
+          NSLog(@"Remote Config is updated only for given keys and ready to use!");
+      }
+      else
+      {
+          NSLog(@"There is an error while updating Remote Config:\n%@", error);
+      }
+  }];
+}
+
+RCT_EXPORT_METHOD(updateRemoteConfigExceptKeys:(NSArray*)arguments)
+{
+  NSString* keyName = [arguments objectAtIndex:0];
+  [Countly.sharedInstance updateRemoteConfigExceptForKeys:@[keyName] completionHandler:^(NSError * error)
+  {
+      if (!error)
+      {
+          NSLog(@"Remote Config is updated except for given keys and ready to use !");
+      }
+      else
+      {
+          NSLog(@"There is an error while updating Remote Config:\n%@", error);
+      }
+  }];
+}
+
+RCT_EXPORT_METHOD(getRemoteConfigValueForKey:(NSArray*)arguments)
+{
+  NSString* keyName = [arguments objectAtIndex:0];
+  id value = [Countly.sharedInstance remoteConfigValueForKey:keyName];
+
+  if (value) // if value exists, you can use it as you see fit
+  {
+      NSLog(@"Value %@", [value description]);
+  }
+  else //if value does not exist, you can set your default fallback value
+  {
+    value = @"Default Value";   
   }
 }
 

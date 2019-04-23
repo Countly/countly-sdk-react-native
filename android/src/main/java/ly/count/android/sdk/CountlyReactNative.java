@@ -475,10 +475,12 @@ public class CountlyReactNative extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void getRemoteConfigValueForKey(ReadableArray args){
+    public String getRemoteConfigValueForKey(ReadableArray args){
         String keyName = args.getString(0);
         Object value_1 = Countly.sharedInstance().getRemoteConfigValueForKey(keyName);
-        Log.e(Countly.TAG, "value of : " + keyName +" is "+ value_1);
+        String resultString = ("value of : " + keyName +" is "+ value_1 + "").toString();
+        Log.e(Countly.TAG, resultString);
+        return "kwjelkfjlkwejflkwejlkfjklw";
     }
 }
 

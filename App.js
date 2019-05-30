@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Text, Button, ScrollView, Image, AsyncStorage, Platform } from 'react-native';
+import { Text, Button, ScrollView, Image, Platform } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 // import PushNotification from 'react-native-push-notification';
 // import NotificationActions from 'react-native-ios-notification-actions';
 // import DeviceInfo from 'react-native-device-info';

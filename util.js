@@ -1,4 +1,4 @@
-import { AsyncStorage } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import SHA256 from 'crypto-js/sha256';
 import pinch from 'react-native-pinch';
 import Countly from './Countly';

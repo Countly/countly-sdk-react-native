@@ -1,13 +1,13 @@
 import {
   Platform,
   NativeModules,
-  AsyncStorage,
   Alert,
   Dimensions,
   AppState,
   PushNotificationIOS,
   DeviceEventEmitter
 } from "react-native";
+import AsyncStorage from "@react-native-community/async-storage";
 
 import DeviceInfo from "react-native-device-info";
 import BackgroundTimer from "react-native-background-timer";

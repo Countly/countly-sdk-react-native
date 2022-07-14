@@ -22,7 +22,7 @@
     "react-native-firebase": "^5.2.2",
     "react-native-modal": "^6.4.0",
     "react-native-pinch": "^0.1.0",
-    "react-native-restart": "0.0.6"
+    "react-native-restart": "0.0.24"
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",

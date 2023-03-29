@@ -1,4 +1,4 @@
-### **This is an unmaintained SDK, and will be declared as end-of-life very soon. Please use React Native (bridge) SDK instead: https://github.com/Countly/countly-sdk-react-native-bridge **
+### **This SDK has been sunsetted. This repo has been archived and will not be maintained anymore. Please use React Native (bridge) SDK instead: https://github.com/Countly/countly-sdk-react-native-bridge **
 
 
 
